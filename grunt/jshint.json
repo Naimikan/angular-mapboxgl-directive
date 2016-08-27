@@ -1,0 +1,11 @@
+{
+	"options": {
+		"jshintrc": true
+	},
+	"source": {
+		"src": ["src/directives/*.js"]
+	},
+	"grunt": {
+		"src": ["Gruntfile.js"]
+	}
+}

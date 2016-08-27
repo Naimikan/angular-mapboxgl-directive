@@ -1,0 +1,36 @@
+{
+  "name": "angular-mapboxgl-directive",
+  "version": "0.1.0",
+  "description": "An AngularJS directive for Mapbox GL",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Naimikan/angular-mapboxgl-directive.git"
+  },
+  "keywords": [
+    "angularjs",
+    "mapboxgl",
+    "cli"
+  ],
+  "author": "https://github.com/Naimikan/angular-mapboxgl-directive/graphs/contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Naimikan/angular-mapboxgl-directive/issues"
+  },
+  "homepage": "https://naimikan.github.io/angular-mapboxgl-directive/",
+  "dependencies": {
+    "angular": "1.x",
+    "mapbox-gl": "^0.23.0"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-uglify": "^2.0.0",
+    "load-grunt-config": "^0.19.2"
+  }
+}

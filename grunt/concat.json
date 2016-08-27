@@ -1,0 +1,14 @@
+{
+	"dist": {
+		"options": {
+			"banner": "/*!\n*  <%= package.name %> <%= package.version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n*  <%= package.description %>\n*  <%= package.repository.type %>: <%= package.repository.url %>\n*/\n(function (angular, mapboxgl, undefined) {\n'use strict';\n",
+			"footer": "\n}(angular, mapboxgl));"
+		},
+		"src": [
+			"src/directives/mapboxgl.js",
+			"src/factories/*.js",
+			"src/**/*.js"
+		],
+		"dest": "dist/angular-mapboxgl-directive.js"
+	}
+}
