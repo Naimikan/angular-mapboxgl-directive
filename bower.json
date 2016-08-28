@@ -1,0 +1,24 @@
+{
+  "name": "angular-mapboxgl-directive",
+  "version": "0.1.0",
+  "homepage": "https://naimikan.github.io/angular-mapboxgl-directive/",
+  "authors": [
+    "https://github.com/Naimikan/angular-mapboxgl-directive/graphs/contributors"
+  ],
+  "description": "An AngularJS directive for Mapbox GL",
+  "main": "dist/angular-mapboxgl-directive.js",
+  "keywords": [
+    "angularjs",
+    "mapboxgl",
+    "directive",
+    "javascript"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

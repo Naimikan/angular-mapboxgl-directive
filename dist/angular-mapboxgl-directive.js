@@ -1,3 +1,10 @@
+/*!
+*  angular-mapboxgl-directive 0.1.0 2016-08-28
+*  An AngularJS directive for Mapbox GL
+*  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
+*/
+(function (angular, mapboxgl, undefined) {
+'use strict';
 angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', function ($q, mapboxglUtils) {
   function mapboxGlDirectiveController ($scope) {
     this._mapboxGlMap = $q.defer();
@@ -265,3 +272,83 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
   return directive;
 }]);
+angular.module('mapboxgl-directive').factory('mapboxglUtils', [function () {
+	function generateMapId () {
+		return 'mapbox-gl-map-' + Date.now();
+	}
+
+	var mapboxglUtils = {
+		generateMapId: generateMapId
+	};
+
+	return mapboxglUtils;
+}]);
+angular.module('mapboxgl-directive').directive('glCenter', [function () {
+	function mapboxGlCenterDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+		controller.getMap().then(function (map) {
+			mapboxglScope.$watch('glCenter', function (center) {
+				var newCenter = [0, 0];
+
+				if (center.lat !== void 0 && center.lng !== void 0) {
+          newCenter = [center.lat, center.lng];
+        } else if (angular.isArray(center) && center.length === 2) {
+          newCenter = center;
+        }
+
+        map.setCenter(newCenter);
+			}, true);
+		});
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlCenterDirectiveLink
+	};
+
+	return directive;
+}]);
+angular.module('mapboxgl-directive').directive('glStyle', [function () {
+	function mapboxGlStyleDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		/*
+      mapbox://styles/mapbox/streets-v9
+      mapbox://styles/mapbox/outdoors-v9
+      mapbox://styles/mapbox/light-v9
+      mapbox://styles/mapbox/dark-v9
+      mapbox://styles/mapbox/satellite-v9
+			mapbox://styles/mapbox/satellite-streets-v9
+    */
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+		controller.getMap().then(function (map) {
+			mapboxglScope.$watch('glStyle', function (style) {
+				map.setStyle(style);
+			}, true);
+		});
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlStyleDirectiveLink
+	};
+
+	return directive;
+}]);
+
+}(angular, mapboxgl));
