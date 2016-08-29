@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').directive('glCenter', [function () {
+angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', function (mapboxglUtils) {
 	function mapboxGlCenterDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -8,15 +8,13 @@ angular.module('mapboxgl-directive').directive('glCenter', [function () {
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glCenter', function (center) {
-				var newCenter = [0, 0];
+				if (mapboxglUtils.isValidCenter(center)) {
+					var newCenter = mapboxglUtils.formatCenter(center);
 
-				if (center.lat !== void 0 && center.lng !== void 0) {
-          newCenter = [center.lat, center.lng];
-        } else if (angular.isArray(center) && center.length === 2) {
-          newCenter = center;
-        }
-
-        map.setCenter(newCenter);
+					map.setCenter(newCenter);
+				} else {
+					throw new Error('Invalid center');
+				}
 			}, true);
 		});
 	}
