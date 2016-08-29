@@ -169,76 +169,6 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
         // ToDo: Other official plugins and custom controls
       }
     });
-
-    scope.$watch(function () { return scope.mapMinZoom; }, function (newValue, oldValue) {
-      if (newValue !== void 0) {
-        var newMinZoomValue = 0;
-
-        if (angular.isNumber(newValue)) {
-          newMinZoomValue = newValue;
-        } else {
-          console.warn('Invalid Min Zoom. Changing to ' + newMinZoomValue);
-        }
-
-        scope.mapboxGlMap.setMinZoom(newMinZoomValue);
-      }
-    });
-
-    scope.$watch(function () { return scope.mapMaxZoom; }, function (newValue, oldValue) {
-      if (newValue !== void 0) {
-        var newMaxZoomValue = 20;
-
-        if (angular.isNumber(newValue)) {
-          newMaxZoomValue = newValue;
-        } else {
-          console.warn('Invalid Max Zoom. Changing to ' + newMaxZoomValue);
-        }
-
-        scope.mapboxGlMap.setMaxZoom(newMaxZoomValue);
-      }
-    });
-
-    scope.$watch(function () { return scope.mapZoom; }, function (newValue, oldValue) {
-      if (newValue !== void 0) {
-        var newZoomValue = 9;
-
-        if (angular.isNumber(newValue)) {
-          newZoomValue = newValue;
-        } else {
-          console.warn('Invalid Zoom. Changing to ' + newZoomValue);
-        }
-
-        scope.mapboxGlMap.setZoom(newZoomValue);
-      }
-    });
-
-    scope.$watch(function () { return scope.mapBearing; }, function (newValue, oldValue) {
-      if (newValue !== void 0) {
-        var newBearingValue = 0;
-
-        if (angular.isNumber(newValue)) {
-          newBearingValue = newValue;
-        } else {
-          console.warn('Invalid Bearing. Changing to ' + newBearingValue);
-        }
-
-        scope.mapboxGlMap.setBearing(newBearingValue);
-      }
-    });
-
-    scope.$watch(function () { return scope.mapPitch; }, function (newValue, oldValue) {
-      if (newValue !== void 0) {
-        var newPitchValue = 0;
-
-        if (angular.isNumber(newValue)) {
-          newPitchValue = newValue;
-        } else {
-          console.warn('Invalid Pitch. Changing to ' + newPitchValue);
-        }
-
-        scope.mapboxGlMap.setPitch(newPitchValue);
-      }
-    });
   }
 
   var directive = {
@@ -247,11 +177,12 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     scope: {
       glStyle: '=',
       glCenter: '=',
-      mapMinZoom: '=',
-      mapMaxZoom: '=',
-      mapZoom: '=',
-      mapBearing: '=',
-      mapPitch: '=',
+      glMinZoom: '=',
+      glMaxZoom: '=',
+      glZoom: '=',
+      glBearing: '=',
+      glPitch: '=',
+
       isInteractive: '=',
       controlsAvailables: '='
     },

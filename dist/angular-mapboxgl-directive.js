@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.1.0 2016-08-28
+*  angular-mapboxgl-directive 0.1.0 2016-08-29
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -176,76 +176,6 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
         // ToDo: Other official plugins and custom controls
       }
     });
-
-    scope.$watch(function () { return scope.mapMinZoom; }, function (newValue, oldValue) {
-      if (newValue !== void 0) {
-        var newMinZoomValue = 0;
-
-        if (angular.isNumber(newValue)) {
-          newMinZoomValue = newValue;
-        } else {
-          console.warn('Invalid Min Zoom. Changing to ' + newMinZoomValue);
-        }
-
-        scope.mapboxGlMap.setMinZoom(newMinZoomValue);
-      }
-    });
-
-    scope.$watch(function () { return scope.mapMaxZoom; }, function (newValue, oldValue) {
-      if (newValue !== void 0) {
-        var newMaxZoomValue = 20;
-
-        if (angular.isNumber(newValue)) {
-          newMaxZoomValue = newValue;
-        } else {
-          console.warn('Invalid Max Zoom. Changing to ' + newMaxZoomValue);
-        }
-
-        scope.mapboxGlMap.setMaxZoom(newMaxZoomValue);
-      }
-    });
-
-    scope.$watch(function () { return scope.mapZoom; }, function (newValue, oldValue) {
-      if (newValue !== void 0) {
-        var newZoomValue = 9;
-
-        if (angular.isNumber(newValue)) {
-          newZoomValue = newValue;
-        } else {
-          console.warn('Invalid Zoom. Changing to ' + newZoomValue);
-        }
-
-        scope.mapboxGlMap.setZoom(newZoomValue);
-      }
-    });
-
-    scope.$watch(function () { return scope.mapBearing; }, function (newValue, oldValue) {
-      if (newValue !== void 0) {
-        var newBearingValue = 0;
-
-        if (angular.isNumber(newValue)) {
-          newBearingValue = newValue;
-        } else {
-          console.warn('Invalid Bearing. Changing to ' + newBearingValue);
-        }
-
-        scope.mapboxGlMap.setBearing(newBearingValue);
-      }
-    });
-
-    scope.$watch(function () { return scope.mapPitch; }, function (newValue, oldValue) {
-      if (newValue !== void 0) {
-        var newPitchValue = 0;
-
-        if (angular.isNumber(newValue)) {
-          newPitchValue = newValue;
-        } else {
-          console.warn('Invalid Pitch. Changing to ' + newPitchValue);
-        }
-
-        scope.mapboxGlMap.setPitch(newPitchValue);
-      }
-    });
   }
 
   var directive = {
@@ -254,11 +184,12 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     scope: {
       glStyle: '=',
       glCenter: '=',
-      mapMinZoom: '=',
-      mapMaxZoom: '=',
-      mapZoom: '=',
-      mapBearing: '=',
-      mapPitch: '=',
+      glMinZoom: '=',
+      glMaxZoom: '=',
+      glZoom: '=',
+      glBearing: '=',
+      glPitch: '=',
+
       isInteractive: '=',
       controlsAvailables: '='
     },
@@ -273,17 +204,77 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
   return directive;
 }]);
 angular.module('mapboxgl-directive').factory('mapboxglUtils', [function () {
+	/*
+		Generate Map ID by Date timestamp
+
+		return: <string>
+	*/
 	function generateMapId () {
 		return 'mapbox-gl-map-' + Date.now();
 	}
 
+	/*
+		Check if center is valid and format it.
+
+		return: <Array|boolean> If center is valid, return [Lng, Lat] array. If center is invalid, return false.
+	*/
+	function validateAndFormatCenter (center) {
+		// [lng, lat]
+		var formattedCenter = null;
+
+		if (angular.isDefined(center)) {
+			if (angular.isNumber(center.lat) && angular.isNumber(center.lng) && (center.lng > -180 || center.lng < 180) && (center.lat > -90 || center.lat < 90)) {
+				formattedCenter = [center.lng, center.lat];
+			} else if (angular.isArray(center) && center.length === 2 && angular.isNumber(center[0]) && angular.isNumber(center[1]) && (center[0] > -180 || center[0] < 180) && (center[1] > -90 || center[1] < 90)) {
+				formattedCenter = center;
+			} else {
+				return false;
+			}
+
+			return formattedCenter;
+		}
+
+		return false;
+	}
+
 	var mapboxglUtils = {
-		generateMapId: generateMapId
+		generateMapId: generateMapId,
+		validateAndFormatCenter: validateAndFormatCenter
 	};
 
 	return mapboxglUtils;
 }]);
-angular.module('mapboxgl-directive').directive('glCenter', [function () {
+
+angular.module('mapboxgl-directive').directive('glBearing', [function () {
+	function mapboxGlBearingDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+		controller.getMap().then(function (map) {
+			mapboxglScope.$watch('glBearing', function (bearing) {
+				if (angular.isNumber(bearing)) {
+					map.setBearing(bearing);
+				} else {
+					throw new Error('Invalid bearing');
+				}
+			}, true);
+		});
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlBearingDirectiveLink
+	};
+
+	return directive;
+}]);
+angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', function (mapboxglUtils) {
 	function mapboxGlCenterDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -293,15 +284,13 @@ angular.module('mapboxgl-directive').directive('glCenter', [function () {
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glCenter', function (center) {
-				var newCenter = [0, 0];
+				center = mapboxglUtils.validateAndFormatCenter(center);
 
-				if (center.lat !== void 0 && center.lng !== void 0) {
-          newCenter = [center.lat, center.lng];
-        } else if (angular.isArray(center) && center.length === 2) {
-          newCenter = center;
-        }
-
-        map.setCenter(newCenter);
+				if (center) {
+					map.panTo(center);
+				} else {
+					throw new Error('Invalid center');
+				}
 			}, true);
 		});
 	}
@@ -312,6 +301,123 @@ angular.module('mapboxgl-directive').directive('glCenter', [function () {
 		replace: false,
 		require: '?^mapboxgl',
 		link: mapboxGlCenterDirectiveLink
+	};
+
+	return directive;
+}]);
+
+angular.module('mapboxgl-directive').directive('glMaxBounds', [function () {
+	function mapboxGlMaxBoundsDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+		controller.getMap().then(function (map) {
+			mapboxglScope.$watch('glMaxBounds', function (maxBounds) {
+				if (angular.isArray(maxBounds) && maxBounds.length === 2) {
+					map.setMaxBounds(maxBounds);
+				} else {
+					throw new Error('Invalid max bounds');
+				}
+			}, true);
+		});
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlMaxBoundsDirectiveLink
+	};
+
+	return directive;
+}]);
+angular.module('mapboxgl-directive').directive('glMaxZoom', [function () {
+	function mapboxGlMaxZoomDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+		controller.getMap().then(function (map) {
+			mapboxglScope.$watch('glMaxZoom', function (maxZoom) {
+				if (angular.isNumber(maxZoom)) {
+					map.setMaxZoom(maxZoom);
+				} else {
+					throw new Error('Invalid max zoom');
+				}
+			}, true);
+		});
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlMaxZoomDirectiveLink
+	};
+
+	return directive;
+}]);
+angular.module('mapboxgl-directive').directive('glMinZoom', [function () {
+	function mapboxGlMinZoomDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+		controller.getMap().then(function (map) {
+			mapboxglScope.$watch('glMinZoom', function (minZoom) {
+				if (angular.isNumber(minZoom)) {
+					map.setMinZoom(minZoom);
+				} else {
+					throw new Error('Invalid min zoom');
+				}
+			}, true);
+		});
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlMinZoomDirectiveLink
+	};
+
+	return directive;
+}]);
+angular.module('mapboxgl-directive').directive('glPitch', [function () {
+	function mapboxGlPitchDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+		controller.getMap().then(function (map) {
+			mapboxglScope.$watch('glPitch', function (pitch) {
+				if (angular.isNumber(pitch) && (pitch >= 0 || pitch <= 60)) {
+					map.setPitch(pitch);
+				} else {
+					throw new Error('Invalid pitch');
+				}
+			}, true);
+		});
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlPitchDirectiveLink
 	};
 
 	return directive;
@@ -351,4 +457,33 @@ angular.module('mapboxgl-directive').directive('glStyle', [function () {
 	return directive;
 }]);
 
+angular.module('mapboxgl-directive').directive('glZoom', [function () {
+	function mapboxGlZoomDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+		controller.getMap().then(function (map) {
+			mapboxglScope.$watch('glZoom', function (zoom) {
+				if (angular.isNumber(zoom)) {
+					map.setZoom(zoom);
+				} else {
+					throw new Error('Invalid zoom');
+				}
+			}, true);
+		});
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlZoomDirectiveLink
+	};
+
+	return directive;
+}]);
 }(angular, mapboxgl));
