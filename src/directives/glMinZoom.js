@@ -8,7 +8,7 @@ angular.module('mapboxgl-directive').directive('glMinZoom', [function () {
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glMinZoom', function (minZoom) {
-				if (angular.isNumber(minZoom)) {
+				if (angular.isNumber(minZoom) && (minZoom >= 0 || minZoom <= 20)) {
 					map.setMinZoom(minZoom);
 				} else {
 					throw new Error('Invalid min zoom');

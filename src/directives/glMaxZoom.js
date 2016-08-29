@@ -8,7 +8,7 @@ angular.module('mapboxgl-directive').directive('glMaxZoom', [function () {
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glMaxZoom', function (maxZoom) {
-				if (angular.isNumber(maxZoom)) {
+				if (angular.isNumber(maxZoom) && (maxZoom >= 0 || maxZoom <= 20)) {
 					map.setMaxZoom(maxZoom);
 				} else {
 					throw new Error('Invalid max zoom');
