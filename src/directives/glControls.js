@@ -12,6 +12,10 @@ angular.module('mapboxgl-directive').directive('glControls', [function () {
         navigation: {
           enabled: true | false,
           position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+        },
+        scale: {
+          enabled: true | false,
+          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
         }
 
 
@@ -43,6 +47,15 @@ angular.module('mapboxgl-directive').directive('glControls', [function () {
           });
 
           map.addControl(mapboxGlControls.navigation);
+        }
+
+        // Scale Control
+        if (angular.isDefined(controls.scale) && angular.isDefined(controls.scale.enabled) && controls.scale.enabled) {
+          mapboxGlControls.scale = new mapboxgl.Scale({
+            position: controls.scale.position || 'bottom-right'
+          });
+
+          map.addControl(mapboxGlControls.scale);
         }
 			}, true);
 		});
