@@ -5,7 +5,7 @@
 */
 (function (angular, mapboxgl, undefined) {
 'use strict';
-angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', function ($q, mapboxglUtils) {
+angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', 'mapboxglConstants', function ($q, mapboxglUtils, mapboxglConstants) {
   function mapboxGlDirectiveController ($scope) {
     this._mapboxGlMap = $q.defer();
 
@@ -54,7 +54,9 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     if (angular.isDefined(attrs.width)) {
       updateWidth();
 
-      scope.$watch(function () { return element[0].getAttribute('width'); }, function () {
+      scope.$watch(function () {
+        return element[0].getAttribute('width');
+      }, function () {
         updateWidth();
       });
     }
@@ -62,15 +64,17 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     if (angular.isDefined(attrs.height)) {
       updateHeight();
 
-      scope.$watch(function () { return element[0].getAttribute('height'); }, function () {
+      scope.$watch(function () {
+        return element[0].getAttribute('height');
+      }, function () {
         updateHeight();
       });
     }
 
     var mapboxGlMap = new mapboxgl.Map({
       container: scope.mapboxglMapId,
-      style: 'mapbox://styles/mapbox/streets-v9', // ToDo: Move to default parameters
-      center: [0, 0], // ToDo: Move to default parameters
+      style: mapboxglConstants.defaultStyle,
+      center: mapboxglConstants.defaultCenter,
       interactive: scope.isInteractive || true
     });
 
@@ -81,67 +85,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     });
 
     
-
-
-
-
-
-
-    scope.mapboxGlControls = {};
-
-    /*
-      controlsAvailables: {
-        navigationControl: {
-          enabled: true | false,
-          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-        },
-        geolocateControl: {
-          enabled: true | false,
-          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-        },
-        scaleControl: {
-          enabled: true | false,
-          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-        },
-        drawControl: {
-          enabled: true | false,
-          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-        }
-      }
-    */
-    scope.$watch(function () { return scope.controlsAvailables; }, function (newValue, oldValue) {
+    /*scope.$watch(function () { return scope.controlsAvailables; }, function (newValue, oldValue) {
       if (newValue !== void 0) {
-        // Navigation Control
-        if (newValue.navigationControl !== void 0 && newValue.navigationControl.enabled !== void 0 && newValue.navigationControl.enabled) {
-          scope.mapboxGlControls.navigation = new mapboxgl.Navigation({
-            position: newValue.navigationControl.position || 'top-right'
-          });
-
-          scope.mapboxGlMap.addControl(scope.mapboxGlControls.navigation);
-        }
-
-        // Geolocate Control
-        if (newValue.geolocateControl !== void 0 && newValue.geolocateControl.enabled !== void 0 && newValue.geolocateControl.enabled) {
-          scope.mapboxGlControls.geolocate = new mapboxgl.Geolocate({
-            position: newValue.geolocateControl.position || 'bottom-right'
-          });
-
-          scope.mapboxGlMap.addControl(scope.mapboxGlControls.geolocate);
-        }
-
-        // Custom Control ScaleRule
-        if (newValue.scaleControl !== void 0 && newValue.scaleControl.enabled !== void 0 && newValue.scaleControl.enabled) {
-          if (mapboxgl.ScaleRule !== void 0) {
-            scope.mapboxGlControls.scaleRule = new mapboxgl.ScaleRule({
-              position: newValue.scaleControl.position || 'bottom-left'
-            });
-
-            scope.mapboxGlMap.addControl(scope.mapboxGlControls.scaleRule);
-          } else {
-            throw new Error('mapboxgl.ScaleRule plugin is not included.');
-          }
-        }
-
         // Custom Control DrawGl
         if (newValue.drawControl !== void 0 && newValue.drawControl.enabled !== void 0 && newValue.drawControl.enabled) {
           if (mapboxgl.DrawGl !== void 0) {
@@ -172,10 +117,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
             throw new Error('mapboxgl.DrawGl plugin is not included.');
           }
         }
-
-        // ToDo: Other official plugins and custom controls
       }
-    });
+    }); */
   }
 
   var directive = {
@@ -189,9 +132,11 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glZoom: '=',
       glBearing: '=',
       glPitch: '=',
+      glControls: '=',
+      glFilter: '=',
+      glClasses: '=',
 
-      isInteractive: '=',
-      controlsAvailables: '='
+      isInteractive: '='
     },
     transclude: true,
     template: '<div class="angular-mapboxgl-map"><div ng-transclude></div></div>',
@@ -246,6 +191,10 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', [function () {
 	return mapboxglUtils;
 }]);
 
+angular.module('mapboxgl-directive').constant('mapboxglConstants', {
+	defaultStyle: 'mapbox://styles/mapbox/streets-v9',
+	defaultCenter: [0, 0]
+});
 angular.module('mapboxgl-directive').directive('glBearing', [function () {
 	function mapboxGlBearingDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
@@ -307,6 +256,42 @@ angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', fun
 	return directive;
 }]);
 
+angular.module('mapboxgl-directive').directive('glClasses', [function () {
+	function mapboxGlClassesDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+		controller.getMap().then(function (map) {
+			mapboxglScope.$watch('glClasses', function (classes) {
+        if (angular.isDefined(classes)) {
+          if (angular.isArray(classes)) {
+            map.setClasses(classes);
+          }
+        } else {
+          var currentClasses = map.getClasses();
+
+          currentClasses.map(function (eachClass) {
+            map.removeClass(eachClass);
+          });
+        }
+			}, true);
+		});
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlClassesDirectiveLink
+	};
+
+	return directive;
+}]);
+
 angular.module('mapboxgl-directive').directive('glControls', [function () {
 	function mapboxGlControlsDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
@@ -321,22 +306,22 @@ angular.module('mapboxgl-directive').directive('glControls', [function () {
         navigation: {
           enabled: true | false,
           position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+        },
+        scale: {
+          enabled: true | false,
+          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+        },
+        attribution: {
+          enabled: true | false,
+          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+        },
+        geolocate: {
+          enabled: true | false,
+          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
         }
 
 
-
-        navigationControl: {
-          enabled: true | false,
-          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-        },
-        geolocateControl: {
-          enabled: true | false,
-          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-        },
-        scaleControl: {
-          enabled: true | false,
-          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-        },
+        // ToDo
         drawControl: {
           enabled: true | false,
           position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
@@ -345,13 +330,42 @@ angular.module('mapboxgl-directive').directive('glControls', [function () {
     */
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glControls', function (controls) {
-        // Navigation Control
-        if (angular.isDefined(controls.navigation) && angular.isDefined(controls.navigation.enabled) && controls.navigation.enabled) {
-          mapboxGlControls.navigation = new mapboxgl.Navigation({
-            position: controls.navigation.position || 'top-right'
-          });
+        if (angular.isDefined(controls)) {
+          // Navigation Control
+          if (angular.isDefined(controls.navigation) && angular.isDefined(controls.navigation.enabled) && controls.navigation.enabled) {
+            mapboxGlControls.navigation = new mapboxgl.Navigation({
+              position: controls.navigation.position || 'top-right'
+            });
 
-          map.addControl(mapboxGlControls.navigation);
+            map.addControl(mapboxGlControls.navigation);
+          }
+
+          // Scale Control
+          if (angular.isDefined(controls.scale) && angular.isDefined(controls.scale.enabled) && controls.scale.enabled) {
+            mapboxGlControls.scale = new mapboxgl.Scale({
+              position: controls.scale.position || 'bottom-left'
+            });
+
+            map.addControl(mapboxGlControls.scale);
+          }
+
+          // Attribution Control
+          if (angular.isDefined(controls.attribution) && angular.isDefined(controls.attribution.enabled) && controls.attribution.enabled) {
+            mapboxGlControls.attribution = new mapboxgl.Attribution({
+              position: controls.attribution.position || 'bottom-right'
+            });
+
+            map.addControl(mapboxGlControls.attribution);
+          }
+
+          // Geolocate Control
+          if (angular.isDefined(controls.geolocate) && angular.isDefined(controls.geolocate.enabled) && controls.geolocate.enabled) {
+            mapboxGlControls.geolocate = new mapboxgl.Geolocate({
+              position: controls.geolocate.position || 'top-left'
+            });
+
+            map.addControl(mapboxGlControls.geolocate);
+          }
         }
 			}, true);
 		});
@@ -363,6 +377,50 @@ angular.module('mapboxgl-directive').directive('glControls', [function () {
 		replace: false,
 		require: '?^mapboxgl',
 		link: mapboxGlControlsDirectiveLink
+	};
+
+	return directive;
+}]);
+
+angular.module('mapboxgl-directive').directive('glFilter', [function () {
+	function mapboxGlFilterDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+		controller.getMap().then(function (map) {
+			mapboxglScope.$watch('glFilter', function (filter) {
+				if (angular.isDefined(filter)) {
+					if (Object.prototype.toString.call(filter) === Object.prototype.toString.call({})) {
+						if (angular.isDefined(filter.layerId) && angular.isDefined(filter.filter) && angular.isArray(filter.filter)) {
+							map.setFilter(filter.layerId, filter.filter);
+						} else {
+							throw new Error('Invalid filter parameter');
+						}
+					} else if (Object.prototype.toString.call(filter) === Object.prototype.toString.call([])) {
+						filter.map(function (eachFilter) {
+							if (angular.isDefined(eachFilter.layerId) && angular.isDefined(eachFilter.filter) && angular.isArray(eachFilter.filter)) {
+								map.setFilter(eachFilter.layerId, eachFilter.filter);
+							} else {
+								throw new Error('Invalid filter parameter');
+							}
+						});
+					} else {
+						throw new Error('Invalid filter parameter');
+					}
+				}
+			}, true);
+		});
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlFilterDirectiveLink
 	};
 
 	return directive;
