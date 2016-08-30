@@ -73,7 +73,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       mapboxGlMap.remove();
     });
 
-
+    
 
 
 

@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.1.0 2016-08-29
+*  angular-mapboxgl-directive 0.1.0 2016-08-30
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -80,7 +80,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       mapboxGlMap.remove();
     });
 
-
+    
 
 
 
@@ -203,6 +203,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
   return directive;
 }]);
+
 angular.module('mapboxgl-directive').factory('mapboxglUtils', [function () {
 	/*
 		Generate Map ID by Date timestamp
@@ -306,6 +307,67 @@ angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', fun
 	return directive;
 }]);
 
+angular.module('mapboxgl-directive').directive('glControls', [function () {
+	function mapboxGlControlsDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+    var mapboxGlControls = {};
+
+    /*
+      controls: {
+        navigation: {
+          enabled: true | false,
+          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+        }
+
+
+
+        navigationControl: {
+          enabled: true | false,
+          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+        },
+        geolocateControl: {
+          enabled: true | false,
+          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+        },
+        scaleControl: {
+          enabled: true | false,
+          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+        },
+        drawControl: {
+          enabled: true | false,
+          position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+        }
+      }
+    */
+		controller.getMap().then(function (map) {
+			mapboxglScope.$watch('glControls', function (controls) {
+        // Navigation Control
+        if (angular.isDefined(controls.navigation) && angular.isDefined(controls.navigation.enabled) && controls.navigation.enabled) {
+          mapboxGlControls.navigation = new mapboxgl.Navigation({
+            position: controls.navigation.position || 'top-right'
+          });
+
+          map.addControl(mapboxGlControls.navigation);
+        }
+			}, true);
+		});
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlControlsDirectiveLink
+	};
+
+	return directive;
+}]);
+
 angular.module('mapboxgl-directive').directive('glMaxBounds', [function () {
 	function mapboxGlMaxBoundsDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
@@ -345,7 +407,7 @@ angular.module('mapboxgl-directive').directive('glMaxZoom', [function () {
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glMaxZoom', function (maxZoom) {
-				if (angular.isNumber(maxZoom)) {
+				if (angular.isNumber(maxZoom) && (maxZoom >= 0 || maxZoom <= 20)) {
 					map.setMaxZoom(maxZoom);
 				} else {
 					throw new Error('Invalid max zoom');
@@ -374,7 +436,7 @@ angular.module('mapboxgl-directive').directive('glMinZoom', [function () {
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glMinZoom', function (minZoom) {
-				if (angular.isNumber(minZoom)) {
+				if (angular.isNumber(minZoom) && (minZoom >= 0 || minZoom <= 20)) {
 					map.setMinZoom(minZoom);
 				} else {
 					throw new Error('Invalid min zoom');
@@ -467,7 +529,7 @@ angular.module('mapboxgl-directive').directive('glZoom', [function () {
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glZoom', function (zoom) {
-				if (angular.isNumber(zoom)) {
+				if (angular.isNumber(zoom) && (zoom >= 0 || zoom <= 20)) {
 					map.setZoom(zoom);
 				} else {
 					throw new Error('Invalid zoom');
