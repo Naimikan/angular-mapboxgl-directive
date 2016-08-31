@@ -1,8 +1,20 @@
 body {
-  background-color: #FAFAFA;
+  background-color: #FFFFFF;
   font-family: 'Noto Serif', serif;
   overflow-y: scroll;
   margin: 0;
+}
+
+.map-container {
+  margin-bottom: 10px;
+}
+
+.title {
+
+}
+
+.project-description {
+
 }
 
 .forkme {
