@@ -17,6 +17,14 @@ body {
 
 }
 
+.method-title {
+  margin-bottom: 5px;
+}
+
+.getstarted-description {
+  
+}
+
 .forkme {
   position: absolute;
   top: 0;
