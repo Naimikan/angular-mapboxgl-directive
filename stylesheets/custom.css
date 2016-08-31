@@ -1,6 +1,8 @@
 body {
+  background-color: #FAFAFA;
   font-family: 'Noto Serif', serif;
   overflow-y: scroll;
+  margin: 0;
 }
 
 .forkme {
@@ -8,10 +10,4 @@ body {
   top: 0;
   right: 0;
   z-index: 99999;
-}
-
-@media only screen and (max-width: 767px) {
-  .forkme {
-    display: none;
-  }
 }
