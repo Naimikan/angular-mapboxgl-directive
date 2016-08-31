@@ -169,7 +169,7 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', functi
 
 		if (angular.isDefined(center)) {
 			if (angular.isDefined(center.autodiscover) && center.autodiscover) {
-				$window.navigation.geolocation.getCurrentPosition(function (position) {
+				$window.navigator.geolocation.getCurrentPosition(function (position) {
 					var coordinates = position.coords;
 
 					return [coordinates.longitude, coordinates.latitude];
