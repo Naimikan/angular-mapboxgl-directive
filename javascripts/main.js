@@ -8,6 +8,10 @@
   }])
 
   .controller('IndexController', ['$scope', function ($scope) {
+    $scope.glCenter = {
+      autodiscover: true
+    };
+
     $scope.glControls = {
       navigation: {
         enabled: true,
