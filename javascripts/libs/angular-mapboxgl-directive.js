@@ -149,7 +149,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
   return directive;
 }]);
 
-angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', function ($window) {
+angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', function ($window, $q) {
 	/*
 		Generate Map ID by Date timestamp
 
@@ -166,30 +166,32 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', functi
 	*/
 	function validateAndFormatCenter (center) {
 		// [lng, lat]
+    var defer = $q.defer();
 
 		if (angular.isDefined(center)) {
 			if (angular.isDefined(center.autodiscover) && center.autodiscover) {
 				$window.navigator.geolocation.getCurrentPosition(function (position) {
 					var coordinates = position.coords;
 
-					return [coordinates.longitude, coordinates.latitude];
+          defer.resolve([coordinates.longitude, coordinates.latitude]);
 				}, function (error) {
 					console.warn('ERROR(' + error.code + '): ' + error.message);
+          defer.resolve(false);
 				}, {
 					enableHighAccuracy: true,
   				timeout: 5000,
   				maximumAge: 0
 				});
 			} else if (angular.isNumber(center.lat) && angular.isNumber(center.lng) && (center.lng > -180 || center.lng < 180) && (center.lat > -90 || center.lat < 90)) {
-				return [center.lng, center.lat];
+        defer.resolve([center.lng, center.lat]);
 			} else if (angular.isArray(center) && center.length === 2 && angular.isNumber(center[0]) && angular.isNumber(center[1]) && (center[0] > -180 || center[0] < 180) && (center[1] > -90 || center[1] < 90)) {
-				return center;
+        defer.resolve(center);
 			} else {
-				return false;
+				defer.resolve(false);
 			}
 		}
 
-		return false;
+		return defer.promise;
 	}
 
 	var mapboxglUtils = {
@@ -243,13 +245,13 @@ angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', fun
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glCenter', function (center) {
-				center = mapboxglUtils.validateAndFormatCenter(center);
-
-				if (center) {
-					map.panTo(center);
-				} else {
-					throw new Error('Invalid center');
-				}
+				mapboxglUtils.validateAndFormatCenter(center).then(function (newCenter) {
+          if (newCenter) {
+  					map.panTo(newCenter);
+  				} else {
+  					throw new Error('Invalid center');
+  				}
+        });
 			}, true);
 		});
 	}
