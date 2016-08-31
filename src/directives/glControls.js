@@ -82,7 +82,7 @@ angular.module('mapboxgl-directive').directive('glControls', [function () {
 					if (angular.isDefined(controls.draw) && angular.isDefined(controls.draw.enabled) && controls.draw.enabled) {
 						if (angular.isDefined(mapboxgl.Draw) && angular.isFunction(mapboxgl.Draw)) {
 							var drawOptions = {};
-							drawOptions.position = controls.draw.position || 'top-right'
+							drawOptions.position = controls.draw.position || 'top-right';
 
 							if (angular.isDefined(controls.draw.drawOptions)) {
 								angular.extend(drawOptions, controls.draw.drawOptions);

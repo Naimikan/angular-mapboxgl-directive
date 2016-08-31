@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.1.0 2016-08-30
+*  angular-mapboxgl-directive 0.1.0 2016-08-31
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -318,7 +318,12 @@ angular.module('mapboxgl-directive').directive('glControls', [function () {
         geolocate: {
           enabled: true | false,
           position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-        }
+        },
+				draw: {
+					enabled: true | false,
+					position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+				}
+
 
 
         // ToDo
@@ -366,6 +371,24 @@ angular.module('mapboxgl-directive').directive('glControls', [function () {
 
             map.addControl(mapboxGlControls.geolocate);
           }
+
+					// Draw Control
+					if (angular.isDefined(controls.draw) && angular.isDefined(controls.draw.enabled) && controls.draw.enabled) {
+						if (angular.isDefined(mapboxgl.Draw) && angular.isFunction(mapboxgl.Draw)) {
+							var drawOptions = {};
+							drawOptions.position = controls.draw.position || 'top-right';
+
+							if (angular.isDefined(controls.draw.drawOptions)) {
+								angular.extend(drawOptions, controls.draw.drawOptions);
+							}
+
+							mapboxGlControls.draw = new mapboxgl.Draw(drawOptions);
+
+	            map.addControl(mapboxGlControls.draw);
+						} else {
+							throw new Error('mapboxgl.Draw plugin is not included.');
+						}
+					}
         }
 			}, true);
 		});
