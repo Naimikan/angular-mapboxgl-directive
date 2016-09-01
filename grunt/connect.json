@@ -1,0 +1,16 @@
+{
+  "server": {
+    "options": {
+      "port": 9900,
+      "hostname": "0.0.0.0",
+      "keepalive": "true",
+      "base": {
+        "path": "public",
+        "options": {
+          "index": "index.html",
+          "maxAge": 300000
+        }
+      }
+    }
+  }
+}

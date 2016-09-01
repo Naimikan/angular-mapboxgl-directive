@@ -4,7 +4,8 @@
 			"banner": "/*!\n*  <%= package.name %> <%= package.version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n*  <%= package.description %>\n*  <%= package.repository.type %>: <%= package.repository.url %>\n*/\n"
 		},
 		"files": {
-			"dist/<%= package.name %>.min.js": ["dist/<%= package.name %>.js"]
+			"dist/<%= package.name %>.min.js": ["dist/<%= package.name %>.js"],
+      "public/lib/<%= package.name %>.min.js": ["dist/<%= package.name %>.js"]
 		}
 	}
 }

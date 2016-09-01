@@ -17,7 +17,11 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     }
 
     if (!mapboxgl.accessToken) {
-      throw new Error('Mapbox access token does not defined');
+      if (angular.isDefined(attrs.accessToken) && attrs.accessToken.length > 0) {
+        mapboxgl.accessToken = attrs.accessToken;
+      } else {
+        throw new Error('Mapbox access token does not defined');
+      }
     }
 
     if (!mapboxgl.supported()) {
@@ -77,7 +81,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       mapboxGlMap.remove();
     });
 
-    
+
     /*scope.$watch(function () { return scope.controlsAvailables; }, function (newValue, oldValue) {
       if (newValue !== void 0) {
         // Custom Control DrawGl
@@ -128,6 +132,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glControls: '=',
       glFilter: '=',
       glClasses: '=',
+      glGeojson: '=',
 
       isInteractive: '='
     },

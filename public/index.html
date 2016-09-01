@@ -1,0 +1,17 @@
+<html ng-app="app">
+  <head>
+    <title>Test Server - angular-mapboxgl-directive</title>
+
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.23.0/mapbox-gl.css" rel="stylesheet" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.23.0/mapbox-gl.js"></script>
+
+    <script src="lib/angular-mapboxgl-directive.js"></script>
+
+    <script src="app.js"></script>
+  </head>
+  <body ng-controller="IndexController" style="margin: 0;">
+    <mapboxgl gl-center="glCenter" gl-zoom="2" gl-controls="glControls" gl-geojson="glGeojson" height="{{glHeight}}"></mapboxgl>
+  </body>
+</html>
