@@ -6,6 +6,20 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 
 		var mapboxglScope = controller.getMapboxGlScope();
 
+    var geojsonWatched = function (map, geojson) {
+      if (angular.isDefined(geojson)) {
+        if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call({})) {
+          mapboxglGeojsonUtils.createGeojsonByObject(map, geojson);
+        } else if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call([])) {
+          geojson.map(function (eachGeojson) {
+            mapboxglGeojsonUtils.createGeojsonByObject(map, eachGeojson);
+          });
+        } else {
+          throw new Error('Invalid geojson parameter');
+        }
+      }
+    };
+
     /*
       geojson: <Object | Array<Object>>
 
@@ -17,30 +31,10 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 		controller.getMap().then(function (map) {
       mapboxglScope.$watchCollection('glGeojson', function (geojson) {
         if (map.loaded()) {
-          if (angular.isDefined(geojson)) {
-            if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call({})) {
-              mapboxglGeojsonUtils.createGeojsonByObject(map, geojson);
-            } else if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call([])) {
-              geojson.map(function (eachGeojson) {
-                mapboxglGeojsonUtils.createGeojsonByObject(map, eachGeojson);
-              });
-            } else {
-              throw new Error('Invalid geojson parameter');
-            }
-          }
+          geojsonWatched(map, geojson);
         } else {
           map.on('load', function () {
-            if (angular.isDefined(geojson)) {
-              if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call({})) {
-                mapboxglGeojsonUtils.createGeojsonByObject(map, geojson);
-              } else if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call([])) {
-                geojson.map(function (eachGeojson) {
-                  mapboxglGeojsonUtils.createGeojsonByObject(map, eachGeojson);
-                });
-              } else {
-                throw new Error('Invalid geojson parameter');
-              }
-            }
+            geojsonWatched(map, geojson);
           });
         }
       });

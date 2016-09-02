@@ -55,6 +55,12 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       }
     };
 
+    var updateLanguage = function (map) {
+      if (angular.isDefined(attrs.language)) {
+        map.setLayoutProperty('country-label-lg', 'text-field', '{name_' + attrs.language + '}');
+      }
+    };
+
     if (angular.isDefined(attrs.width)) {
       updateWidth();
 
@@ -85,6 +91,20 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     controller._mapboxGlMap.resolve(mapboxGlMap);
 
     mapboxglEventsUtils.exposeMapEvents(mapboxGlMap);
+
+    controller.getMap().then(function (map) {
+      scope.$watch(function () {
+        return attrs.language;
+      }, function () {
+        if (map.loaded()) {
+          updateLanguage(map);
+        } else {
+          map.on('load', function () {
+            updateLanguage(map);
+          });
+        }
+      });
+    });
 
     scope.$on('$destroy', function () {
       mapboxGlMap.remove();
@@ -583,6 +603,20 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 
 		var mapboxglScope = controller.getMapboxGlScope();
 
+    var geojsonWatched = function (map, geojson) {
+      if (angular.isDefined(geojson)) {
+        if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call({})) {
+          mapboxglGeojsonUtils.createGeojsonByObject(map, geojson);
+        } else if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call([])) {
+          geojson.map(function (eachGeojson) {
+            mapboxglGeojsonUtils.createGeojsonByObject(map, eachGeojson);
+          });
+        } else {
+          throw new Error('Invalid geojson parameter');
+        }
+      }
+    };
+
     /*
       geojson: <Object | Array<Object>>
 
@@ -594,30 +628,10 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 		controller.getMap().then(function (map) {
       mapboxglScope.$watchCollection('glGeojson', function (geojson) {
         if (map.loaded()) {
-          if (angular.isDefined(geojson)) {
-            if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call({})) {
-              mapboxglGeojsonUtils.createGeojsonByObject(map, geojson);
-            } else if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call([])) {
-              geojson.map(function (eachGeojson) {
-                mapboxglGeojsonUtils.createGeojsonByObject(map, eachGeojson);
-              });
-            } else {
-              throw new Error('Invalid geojson parameter');
-            }
-          }
+          geojsonWatched(map, geojson);
         } else {
           map.on('load', function () {
-            if (angular.isDefined(geojson)) {
-              if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call({})) {
-                mapboxglGeojsonUtils.createGeojsonByObject(map, geojson);
-              } else if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call([])) {
-                geojson.map(function (eachGeojson) {
-                  mapboxglGeojsonUtils.createGeojsonByObject(map, eachGeojson);
-                });
-              } else {
-                throw new Error('Invalid geojson parameter');
-              }
-            }
+            geojsonWatched(map, geojson);
           });
         }
       });
