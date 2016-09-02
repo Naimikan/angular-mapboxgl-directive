@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', 'mapboxglConstants', function ($q, mapboxglUtils, mapboxglConstants) {
+angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', 'mapboxglConstants', 'mapboxglEventsUtils', function ($q, mapboxglUtils, mapboxglConstants, mapboxglEventsUtils) {
   function mapboxGlDirectiveController ($scope) {
     this._mapboxGlMap = $q.defer();
 
@@ -76,6 +76,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     });
 
     controller._mapboxGlMap.resolve(mapboxGlMap);
+
+    mapboxglEventsUtils.exposeMapEvents(mapboxGlMap);
 
     scope.$on('$destroy', function () {
       mapboxGlMap.remove();

@@ -1,11 +1,11 @@
 /*!
-*  angular-mapboxgl-directive 0.1.0 2016-09-01
+*  angular-mapboxgl-directive 0.1.0 2016-09-02
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
 (function (angular, mapboxgl, undefined) {
 'use strict';
-angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', 'mapboxglConstants', function ($q, mapboxglUtils, mapboxglConstants) {
+angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', 'mapboxglConstants', 'mapboxglEventsUtils', function ($q, mapboxglUtils, mapboxglConstants, mapboxglEventsUtils) {
   function mapboxGlDirectiveController ($scope) {
     this._mapboxGlMap = $q.defer();
 
@@ -84,6 +84,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
     controller._mapboxGlMap.resolve(mapboxGlMap);
 
+    mapboxglEventsUtils.exposeMapEvents(mapboxGlMap);
+
     scope.$on('$destroy', function () {
       mapboxGlMap.remove();
     });
@@ -152,6 +154,57 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
   mapboxGlDirectiveController.$inject = ['$scope'];
 
   return directive;
+}]);
+
+angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope', function ($rootScope) {
+  var eventsAvailables = [
+    'webglcontextlost ',
+    'webglcontextrestored',
+    'error',
+    'render',
+    'mouseout',
+    'mousedown',
+    'mouseup',
+    'mousemove',
+    'touchstart',
+    'touchend',
+    'touchmove',
+    'touchcancel',
+    'click',
+    'dblclick',
+    'contextmenu',
+    'load',
+    'movestart',
+    'moveend',
+    'move',
+    'zoomend',
+    'zoomstart',
+    'zoom',
+    'boxzoomend',
+    'boxzoomcancel',
+    'boxzoomstart',
+    'rotatestart',
+    'rotateend',
+    'rotate',
+    'dragstart',
+    'drag',
+    'dragend',
+    'pitch'
+  ];
+
+  function exposeMapEvents (map) {
+    eventsAvailables.map(function (eachEvent) {
+      map.on(eachEvent, function (event) {
+        $rootScope.$broadcast('mapboxglMap:' + eachEvent, event);
+      });
+    });
+  }
+
+  var mapboxglEventsUtils = {
+    exposeMapEvents: exposeMapEvents
+	};
+
+	return mapboxglEventsUtils;
 }]);
 
 angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', [function () {

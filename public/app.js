@@ -10,6 +10,12 @@
   .controller('IndexController', ['$scope', '$window', '$timeout', function ($scope, $window, $timeout) {
     $scope.glHeight = $window.innerHeight;
 
+    $window.onresize = function (event) {
+      $scope.$apply(function () {
+        $scope.glHeight = event.target.innerHeight;
+      });
+    };
+
     $scope.glCenter = {
       autodiscover: true
     };

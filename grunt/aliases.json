@@ -8,7 +8,7 @@
 		"concat:dist",
 		"uglify"
 	],
-	"start_server": [
+	"preview": [
 		"connect:server"
 	]
 }
