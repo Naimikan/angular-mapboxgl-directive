@@ -78,7 +78,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       container: scope.mapboxglMapId,
       style: mapboxglConstants.defaultStyle,
       center: mapboxglConstants.defaultCenter,
-      interactive: scope.isInteractive || true
+      interactive: angular.isDefined(scope.isInteractive) && !scope.isInteractive ? scope.isInteractive : true
     });
 
     controller._mapboxGlMap.resolve(mapboxGlMap);
