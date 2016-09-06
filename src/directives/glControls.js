@@ -179,7 +179,7 @@ angular.module('mapboxgl-directive').directive('glControls', [function () {
 							controls.custom.map(function (eachCustomControl) {
 	              if (angular.isDefined(eachCustomControl.constructor)) {
 	                var CustomControlFn = eachCustomControl.constructor.bind.apply(eachCustomControl.constructor, eachCustomControl.options);
-	                var customControl = new CustomControlFn();
+	                var customControl = new CustomControlFn(eachCustomControl.options);
 
 									addNewControlCreated(eachCustomControl.name, customControl, true);
 
