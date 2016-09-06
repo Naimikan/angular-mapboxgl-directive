@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.5.0 2016-09-05
+*  angular-mapboxgl-directive 0.6.0 2016-09-06
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -85,7 +85,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       container: scope.mapboxglMapId,
       style: mapboxglConstants.defaultStyle,
       center: mapboxglConstants.defaultCenter,
-      interactive: angular.isDefined(scope.isInteractive) && !scope.isInteractive ? scope.isInteractive : true
+      attributionControl: false
     });
 
     controller._mapboxGlMap.resolve(mapboxGlMap);
@@ -93,6 +93,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     mapboxglEventsUtils.exposeMapEvents(mapboxGlMap);
 
     controller.getMap().then(function (map) {
+      // Language
       scope.$watch(function () {
         return attrs.language;
       }, function () {
@@ -162,8 +163,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glFilter: '=',
       glClasses: '=',
       glGeojson: '=',
-
-      isInteractive: '='
+      glInteractive: '='
     },
     transclude: true,
     template: '<div class="angular-mapboxgl-map"><div ng-transclude></div></div>',
@@ -739,6 +739,48 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 		replace: false,
 		require: '?^mapboxgl',
 		link: mapboxGlGeojsonDirectiveLink
+  };
+
+  return directive;
+}]);
+
+angular.module('mapboxgl-directive').directive('glInteractive', [function () {
+  function mapboxGlInteractiveDirectiveLink (scope, element, attrs, controller) {
+    if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+    var actionsAvailables = [
+      'touchZoomRotate',
+      'scrollZoom',
+      'boxZoom',
+      'dragRotate',
+      'dragPan',
+      'doubleClickZoom',
+      'keyboard'
+    ];
+
+    var mapboxglScope = controller.getMapboxGlScope();
+
+    controller.getMap().then(function (map) {
+      mapboxglScope.$watch('glInteractive', function (isInteractive) {
+        if (angular.isDefined(isInteractive) && typeof(isInteractive) === 'boolean') {
+          var functionToExecute = isInteractive ? 'enable' : 'disable';
+
+          actionsAvailables.map(function (eachAction) {
+            map[eachAction][functionToExecute]();
+          });
+        }
+      });
+    });
+  }
+
+  var directive = {
+    restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlInteractiveDirectiveLink
   };
 
   return directive;

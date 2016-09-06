@@ -78,7 +78,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       container: scope.mapboxglMapId,
       style: mapboxglConstants.defaultStyle,
       center: mapboxglConstants.defaultCenter,
-      interactive: angular.isDefined(scope.isInteractive) && !scope.isInteractive ? scope.isInteractive : true
+      attributionControl: false
     });
 
     controller._mapboxGlMap.resolve(mapboxGlMap);
@@ -86,6 +86,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     mapboxglEventsUtils.exposeMapEvents(mapboxGlMap);
 
     controller.getMap().then(function (map) {
+      // Language
       scope.$watch(function () {
         return attrs.language;
       }, function () {
@@ -155,8 +156,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glFilter: '=',
       glClasses: '=',
       glGeojson: '=',
-
-      isInteractive: '='
+      glInteractive: '='
     },
     transclude: true,
     template: '<div class="angular-mapboxgl-map"><div ng-transclude></div></div>',
