@@ -78,6 +78,11 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       container: scope.mapboxglMapId,
       style: mapboxglConstants.defaultStyle,
       center: mapboxglConstants.defaultCenter,
+      hash: angular.isDefined(attrs.hash) && typeof(attrs.hash) === 'boolean' ? attrs.hash : mapboxglConstants.defaultHash,
+      bearingSnap: angular.isDefined(attrs.bearingSnap) && angular.isNumber(attrs.bearingSnap) ? attrs.bearingSnap : mapboxglConstants.defaultBearingSnap,
+      failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) && typeof(attrs.failIfMajorPerformanceCaveat) === 'boolean' ? attrs.failIfMajorPerformanceCaveat : mapboxglConstants.defaultFailIfMajorPerformanceCaveat,
+      preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) && typeof(attrs.preserveDrawingBuffer) === 'boolean' ? attrs.preserveDrawingBuffer : mapboxglConstants.defaultPreserveDrawingBuffer,
+      trackResize: angular.isDefined(attrs.trackResize) && typeof(attrs.trackResize) === 'boolean' ? attrs.trackResize : mapboxglConstants.defaultTrackResize,
       attributionControl: false
     });
 
@@ -156,7 +161,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glFilter: '=',
       glClasses: '=',
       glGeojson: '=',
-      glInteractive: '='
+      glInteractive: '=',
+      glHandlers: '='
     },
     transclude: true,
     template: '<div class="angular-mapboxgl-map"><div ng-transclude></div></div>',

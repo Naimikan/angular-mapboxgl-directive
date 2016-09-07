@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.6.1 2016-09-06
+*  angular-mapboxgl-directive 0.7.0 2016-09-07
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -85,6 +85,11 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       container: scope.mapboxglMapId,
       style: mapboxglConstants.defaultStyle,
       center: mapboxglConstants.defaultCenter,
+      hash: angular.isDefined(attrs.hash) && typeof(attrs.hash) === 'boolean' ? attrs.hash : mapboxglConstants.defaultHash,
+      bearingSnap: angular.isDefined(attrs.bearingSnap) && angular.isNumber(attrs.bearingSnap) ? attrs.bearingSnap : mapboxglConstants.defaultBearingSnap,
+      failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) && typeof(attrs.failIfMajorPerformanceCaveat) === 'boolean' ? attrs.failIfMajorPerformanceCaveat : mapboxglConstants.defaultFailIfMajorPerformanceCaveat,
+      preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) && typeof(attrs.preserveDrawingBuffer) === 'boolean' ? attrs.preserveDrawingBuffer : mapboxglConstants.defaultPreserveDrawingBuffer,
+      trackResize: angular.isDefined(attrs.trackResize) && typeof(attrs.trackResize) === 'boolean' ? attrs.trackResize : mapboxglConstants.defaultTrackResize,
       attributionControl: false
     });
 
@@ -163,7 +168,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glFilter: '=',
       glClasses: '=',
       glGeojson: '=',
-      glInteractive: '='
+      glInteractive: '=',
+      glHandlers: '='
     },
     transclude: true,
     template: '<div class="angular-mapboxgl-map"><div ng-transclude></div></div>',
@@ -335,8 +341,14 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 	defaultStyle: 'mapbox://styles/mapbox/streets-v9',
-	defaultCenter: [0, 0]
+	defaultCenter: [0, 0],
+	defaultHash: false,
+	defaultBearingSnap: 7,
+	defaultFailIfMajorPerformanceCaveat: false,
+	defaultPreserveDrawingBuffer: false,
+	defaultTrackResize: true
 });
+
 angular.module('mapboxgl-directive').directive('glBearing', [function () {
 	function mapboxGlBearingDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
@@ -739,6 +751,49 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 		replace: false,
 		require: '?^mapboxgl',
 		link: mapboxGlGeojsonDirectiveLink
+  };
+
+  return directive;
+}]);
+
+angular.module('mapboxgl-directive').directive('glHandlers', [function () {
+  function mapboxGlHandlersDirectiveLink (scope, element, attrs, controller) {
+    if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+    /*
+      handlers: {
+        scrollZoom: true | false,
+        boxZoom: true | false,
+        dragRotate: true | false,
+        dragPan: true | false,
+        keyboard: true | false,
+        doubleClickZoom: true | false,
+        touchZoomRotate: true | false
+      }
+    */
+
+    controller.getMap().then(function (map) {
+      mapboxglScope.$watch('glHandlers', function (handlers) {
+        if (angular.isDefined(handlers) && Object.prototype.toString.call(handlers) === Object.prototype.toString.call({})) {
+          for (var attribute in handlers) {
+            var functionToExecute = handlers[attribute] ? 'enable' : 'disable';
+            map[attribute][functionToExecute]();
+          }
+        }
+      }, true);
+    });
+  }
+
+  var directive = {
+    restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlHandlersDirectiveLink
   };
 
   return directive;

@@ -31,6 +31,10 @@
       }
     };
 
+    $scope.glHandlers = {
+      scrollZoom: false
+    };
+
     $scope.glGeojson = [
       {
         type: 'circle',
