@@ -20,13 +20,13 @@
 
     $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
 
-    $timeout(function () {
+    /*$timeout(function () {
       $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
     }, 6000, true);
 
     $timeout(function () {
       $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
-    }, 12000, true);
+    }, 12000, true);*/
 
     $scope.glCenter = {
       autodiscover: true
@@ -94,6 +94,10 @@
             "line-color": "green",
             "line-width": 8
           }
+        }
+      }, {
+        source: {
+          data: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_ports.geojson'
         }
       }
     ];

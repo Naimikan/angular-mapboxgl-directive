@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglUtils', function (mapboxglUtils) {
+angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
   function createGeojsonByObject (map, object) {
     if (angular.isUndefined(map) || map === null) {
       throw new Error('Map is undefined');
@@ -8,33 +8,54 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
       throw new Error('Object definition is undefined');
     }
 
-    if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
-      throw new Error('Object coordinates are undefined');
-    }
-
     object.id = object.type + '_' + Date.now();
 
-    if (object.type === 'line') {
-      object.geometryType = 'LineString';
-    } else if (object.type === 'polygon') {
-      object.geometryType = 'Polygon';
-    } else if (object.type === 'circle') {
-      object.geometryType = 'Point';
-    } else {
-      throw new Error('Invalid geojson type');
-    }
+    var sourceData;
 
-    map.addSource(object.id, {
-      type: 'geojson',
-      data: {
+    if (angular.isDefined(object.source) && angular.isDefined(object.source.data)) {
+      sourceData = object.source.data;
+    } else {
+      if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
+        throw new Error('Object coordinates are undefined');
+      }
+
+      if (object.type === 'line') {
+        object.geometryType = 'LineString';
+      } else if (object.type === 'polygon') {
+        object.geometryType = 'Polygon';
+      } else if (object.type === 'circle') {
+        object.geometryType = 'Point';
+      } else {
+        throw new Error('Invalid geojson type');
+      }
+
+      sourceData = {
         type: 'Feature',
         properties: object.properties || {},
         geometry: {
           type: object.geometryType,
           coordinates: object.coordinates
         }
-      }
-    });
+      };
+    }
+
+    var sourceOptions = {
+      type: 'geojson',
+      data: sourceData,
+      maxzoom: angular.isDefined(object.maxzoom) ? object.maxzoom : mapboxglConstants.source.defaultMaxZoom,
+      buffer: angular.isDefined(object.buffer) ? object.buffer : mapboxglConstants.source.defaultBuffer,
+      tolerance: angular.isDefined(object.tolerance) ? object.tolerance : mapboxglConstants.source.defaultTolerance,
+      cluster: angular.isDefined(object.cluster) ? object.cluster : mapboxglConstants.source.defaultCluster,
+      clusterRadius: angular.isDefined(object.clusterRadius) ? object.clusterRadius : mapboxglConstants.source.defaultClusterRadius
+    };
+
+    if (angular.isDefined(object.clusterMaxZoom) && angular.isNumber(object.clusterMaxZoom)) {
+      sourceOptions.clusterMaxZoom = object.clusterMaxZoom;
+    }
+
+    map.addSource(object.id, sourceOptions);
+
+    var before = angular.isDefined(object.layer) && angular.isDefined(object.layer.before) ? object.layer.before : undefined;
 
     map.addLayer({
       id: object.id,
@@ -44,9 +65,9 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
         type: 'mapboxgl:geojson',
         popup: object.popup
       },
-      layout: object.layer.layout || {},
-      paint: object.layer.paint || {}
-    }, object.layer.before);
+      layout: angular.isDefined(object.layer) && angular.isDefined(object.layer.layout) ? object.layer.layout : {},
+      paint: angular.isDefined(object.layer) && angular.isDefined(object.layer.paint) ? object.layer.paint : {}
+    }, before);
   }
 
   var mapboxglGeojsonUtils = {

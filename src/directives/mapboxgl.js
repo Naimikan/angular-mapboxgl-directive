@@ -2,7 +2,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
   function mapboxGlDirectiveController ($scope) {
     this._mapboxGlMap = $q.defer();
     this._geojsonObjects = [];
-    this._persistentGeojson = mapboxglConstants.defaultPersistentGeojson;
+    this._persistentGeojson = mapboxglConstants.map.defaultPersistentGeojson;
 
     this.getMap = function () {
       return this._mapboxGlMap.promise;
@@ -114,13 +114,13 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
     var mapboxGlMap = new mapboxgl.Map({
       container: scope.mapboxglMapId,
-      style: mapboxglConstants.defaultStyle,
-      center: mapboxglConstants.defaultCenter,
-      hash: angular.isDefined(attrs.hash) && typeof(attrs.hash) === 'boolean' ? attrs.hash : mapboxglConstants.defaultHash,
-      bearingSnap: angular.isDefined(attrs.bearingSnap) && angular.isNumber(attrs.bearingSnap) ? attrs.bearingSnap : mapboxglConstants.defaultBearingSnap,
-      failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) && typeof(attrs.failIfMajorPerformanceCaveat) === 'boolean' ? attrs.failIfMajorPerformanceCaveat : mapboxglConstants.defaultFailIfMajorPerformanceCaveat,
-      preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) && typeof(attrs.preserveDrawingBuffer) === 'boolean' ? attrs.preserveDrawingBuffer : mapboxglConstants.defaultPreserveDrawingBuffer,
-      trackResize: angular.isDefined(attrs.trackResize) && typeof(attrs.trackResize) === 'boolean' ? attrs.trackResize : mapboxglConstants.defaultTrackResize,
+      style: mapboxglConstants.map.defaultStyle,
+      center: mapboxglConstants.map.defaultCenter,
+      hash: angular.isDefined(attrs.hash) && typeof(attrs.hash) === 'boolean' ? attrs.hash : mapboxglConstants.map.defaultHash,
+      bearingSnap: angular.isDefined(attrs.bearingSnap) && angular.isNumber(attrs.bearingSnap) ? attrs.bearingSnap : mapboxglConstants.map.defaultBearingSnap,
+      failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) && typeof(attrs.failIfMajorPerformanceCaveat) === 'boolean' ? attrs.failIfMajorPerformanceCaveat : mapboxglConstants.map.defaultFailIfMajorPerformanceCaveat,
+      preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) && typeof(attrs.preserveDrawingBuffer) === 'boolean' ? attrs.preserveDrawingBuffer : mapboxglConstants.map.defaultPreserveDrawingBuffer,
+      trackResize: angular.isDefined(attrs.trackResize) && typeof(attrs.trackResize) === 'boolean' ? attrs.trackResize : mapboxglConstants.map.defaultTrackResize,
       attributionControl: false
     });
 

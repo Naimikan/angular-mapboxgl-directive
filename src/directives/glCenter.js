@@ -15,7 +15,7 @@ angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', 'ma
 						throw new Error('Invalid center');
 					}
 				}).catch(function (error) {
-					map.panTo(mapboxglConstants.defaultCenter);
+					map.panTo(mapboxglConstants.map.defaultCenter);
 
 					throw new Error(error.code + ' / ' + error.message);
 				});

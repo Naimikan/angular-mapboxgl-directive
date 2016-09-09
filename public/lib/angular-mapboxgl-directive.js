@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.7.0 2016-09-09
+*  angular-mapboxgl-directive 0.8.0 2016-09-09
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -9,7 +9,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
   function mapboxGlDirectiveController ($scope) {
     this._mapboxGlMap = $q.defer();
     this._geojsonObjects = [];
-    this._persistentGeojson = mapboxglConstants.defaultPersistentGeojson;
+    this._persistentGeojson = mapboxglConstants.map.defaultPersistentGeojson;
 
     this.getMap = function () {
       return this._mapboxGlMap.promise;
@@ -121,13 +121,13 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
     var mapboxGlMap = new mapboxgl.Map({
       container: scope.mapboxglMapId,
-      style: mapboxglConstants.defaultStyle,
-      center: mapboxglConstants.defaultCenter,
-      hash: angular.isDefined(attrs.hash) && typeof(attrs.hash) === 'boolean' ? attrs.hash : mapboxglConstants.defaultHash,
-      bearingSnap: angular.isDefined(attrs.bearingSnap) && angular.isNumber(attrs.bearingSnap) ? attrs.bearingSnap : mapboxglConstants.defaultBearingSnap,
-      failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) && typeof(attrs.failIfMajorPerformanceCaveat) === 'boolean' ? attrs.failIfMajorPerformanceCaveat : mapboxglConstants.defaultFailIfMajorPerformanceCaveat,
-      preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) && typeof(attrs.preserveDrawingBuffer) === 'boolean' ? attrs.preserveDrawingBuffer : mapboxglConstants.defaultPreserveDrawingBuffer,
-      trackResize: angular.isDefined(attrs.trackResize) && typeof(attrs.trackResize) === 'boolean' ? attrs.trackResize : mapboxglConstants.defaultTrackResize,
+      style: mapboxglConstants.map.defaultStyle,
+      center: mapboxglConstants.map.defaultCenter,
+      hash: angular.isDefined(attrs.hash) && typeof(attrs.hash) === 'boolean' ? attrs.hash : mapboxglConstants.map.defaultHash,
+      bearingSnap: angular.isDefined(attrs.bearingSnap) && angular.isNumber(attrs.bearingSnap) ? attrs.bearingSnap : mapboxglConstants.map.defaultBearingSnap,
+      failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) && typeof(attrs.failIfMajorPerformanceCaveat) === 'boolean' ? attrs.failIfMajorPerformanceCaveat : mapboxglConstants.map.defaultFailIfMajorPerformanceCaveat,
+      preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) && typeof(attrs.preserveDrawingBuffer) === 'boolean' ? attrs.preserveDrawingBuffer : mapboxglConstants.map.defaultPreserveDrawingBuffer,
+      trackResize: angular.isDefined(attrs.trackResize) && typeof(attrs.trackResize) === 'boolean' ? attrs.trackResize : mapboxglConstants.map.defaultTrackResize,
       attributionControl: false
     });
 
@@ -279,7 +279,7 @@ angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope
 	return mapboxglEventsUtils;
 }]);
 
-angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglUtils', function (mapboxglUtils) {
+angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
   function createGeojsonByObject (map, object) {
     if (angular.isUndefined(map) || map === null) {
       throw new Error('Map is undefined');
@@ -289,33 +289,54 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
       throw new Error('Object definition is undefined');
     }
 
-    if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
-      throw new Error('Object coordinates are undefined');
-    }
-
     object.id = object.type + '_' + Date.now();
 
-    if (object.type === 'line') {
-      object.geometryType = 'LineString';
-    } else if (object.type === 'polygon') {
-      object.geometryType = 'Polygon';
-    } else if (object.type === 'circle') {
-      object.geometryType = 'Point';
-    } else {
-      throw new Error('Invalid geojson type');
-    }
+    var sourceData;
 
-    map.addSource(object.id, {
-      type: 'geojson',
-      data: {
+    if (angular.isDefined(object.source) && angular.isDefined(object.source.data)) {
+      sourceData = object.source.data;
+    } else {
+      if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
+        throw new Error('Object coordinates are undefined');
+      }
+
+      if (object.type === 'line') {
+        object.geometryType = 'LineString';
+      } else if (object.type === 'polygon') {
+        object.geometryType = 'Polygon';
+      } else if (object.type === 'circle') {
+        object.geometryType = 'Point';
+      } else {
+        throw new Error('Invalid geojson type');
+      }
+
+      sourceData = {
         type: 'Feature',
         properties: object.properties || {},
         geometry: {
           type: object.geometryType,
           coordinates: object.coordinates
         }
-      }
-    });
+      };
+    }
+
+    var sourceOptions = {
+      type: 'geojson',
+      data: sourceData,
+      maxzoom: angular.isDefined(object.maxzoom) ? object.maxzoom : mapboxglConstants.source.defaultMaxZoom,
+      buffer: angular.isDefined(object.buffer) ? object.buffer : mapboxglConstants.source.defaultBuffer,
+      tolerance: angular.isDefined(object.tolerance) ? object.tolerance : mapboxglConstants.source.defaultTolerance,
+      cluster: angular.isDefined(object.cluster) ? object.cluster : mapboxglConstants.source.defaultCluster,
+      clusterRadius: angular.isDefined(object.clusterRadius) ? object.clusterRadius : mapboxglConstants.source.defaultClusterRadius
+    };
+
+    if (angular.isDefined(object.clusterMaxZoom) && angular.isNumber(object.clusterMaxZoom)) {
+      sourceOptions.clusterMaxZoom = object.clusterMaxZoom;
+    }
+
+    map.addSource(object.id, sourceOptions);
+
+    var before = angular.isDefined(object.layer) && angular.isDefined(object.layer.before) ? object.layer.before : undefined;
 
     map.addLayer({
       id: object.id,
@@ -325,9 +346,9 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
         type: 'mapboxgl:geojson',
         popup: object.popup
       },
-      layout: object.layer.layout || {},
-      paint: object.layer.paint || {}
-    }, object.layer.before);
+      layout: angular.isDefined(object.layer) && angular.isDefined(object.layer.layout) ? object.layer.layout : {},
+      paint: angular.isDefined(object.layer) && angular.isDefined(object.layer.paint) ? object.layer.paint : {}
+    }, before);
   }
 
   var mapboxglGeojsonUtils = {
@@ -390,15 +411,24 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 }]);
 
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
-	defaultStyle: 'mapbox://styles/mapbox/streets-v9',
-	defaultCenter: [0, 0],
-	defaultHash: false,
-	defaultBearingSnap: 7,
-	defaultFailIfMajorPerformanceCaveat: false,
-	defaultPreserveDrawingBuffer: false,
-	defaultTrackResize: true,
+	map: {
+		defaultStyle: 'mapbox://styles/mapbox/streets-v9',
+		defaultCenter: [0, 0],
+		defaultHash: false,
+		defaultBearingSnap: 7,
+		defaultFailIfMajorPerformanceCaveat: false,
+		defaultPreserveDrawingBuffer: false,
+		defaultTrackResize: true,
 
-	defaultPersistentGeojson: true
+		defaultPersistentGeojson: true
+	},
+	source: {
+		defaultMaxZoom: 18,
+		defaultBuffer: 128,
+		defaultTolerance: 0.375,
+		defaultCluster: false,
+		defaultClusterRadius: 50
+	}
 });
 
 angular.module('mapboxgl-directive').directive('glBearing', [function () {
@@ -447,7 +477,7 @@ angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', 'ma
 						throw new Error('Invalid center');
 					}
 				}).catch(function (error) {
-					map.panTo(mapboxglConstants.defaultCenter);
+					map.panTo(mapboxglConstants.map.defaultCenter);
 
 					throw new Error(error.code + ' / ' + error.message);
 				});
