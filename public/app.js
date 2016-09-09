@@ -16,6 +16,18 @@
       });
     };
 
+    $scope.persistentGeojson = true;
+
+    $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
+
+    $timeout(function () {
+      $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
+    }, 6000, true);
+
+    $timeout(function () {
+      $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
+    }, 12000, true);
+
     $scope.glCenter = {
       autodiscover: true
     };
@@ -45,6 +57,10 @@
             "circle-color": "red",
             "circle-opacity": 0.6
           }
+        },
+        popup: {
+          enabled: true,
+          message: 'ioashiasf'
         }
       }, {
         type: 'circle',
@@ -55,6 +71,10 @@
             "circle-color": "blue",
             "circle-opacity": 0.6
           }
+        },
+        popup: {
+          enabled: true,
+          message: 'xcmlxncbknxcbn'
         }
       }, {
         type: 'line',

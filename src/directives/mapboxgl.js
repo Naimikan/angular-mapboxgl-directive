@@ -1,6 +1,8 @@
 angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', 'mapboxglConstants', 'mapboxglEventsUtils', function ($q, mapboxglUtils, mapboxglConstants, mapboxglEventsUtils) {
   function mapboxGlDirectiveController ($scope) {
     this._mapboxGlMap = $q.defer();
+    this._geojsonObjects = [];
+    this._persistentGeojson = mapboxglConstants.defaultPersistentGeojson;
 
     this.getMap = function () {
       return this._mapboxGlMap.promise;
@@ -8,6 +10,28 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
     this.getMapboxGlScope = function () {
       return $scope;
+    };
+
+    /* Geojson */
+    this.getGeojsonObjects = function () {
+      return this._geojsonObjects;
+    };
+
+    this.addGeojsonObject = function (geojsonObject) {
+      this._geojsonObjects.push(geojsonObject);
+    };
+
+    this.removeGeojsonObjects = function () {
+      this._geojsonObjects = [];
+    };
+
+    /* Persistent Geojson */
+    this.isGeojsonPersistent = function () {
+      return this._persistentGeojson;
+    };
+
+    this.setPersistentGeojson = function (persistentGeojson) {
+      this._persistentGeojson = persistentGeojson;
     };
   }
 
@@ -74,6 +98,20 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       });
     }
 
+    if (angular.isDefined(scope.persistentGeojson) && typeof(scope.persistentGeojson) === 'boolean') {
+      controller.setPersistentGeojson(scope.persistentGeojson);
+
+      scope.$watch(function () {
+        return scope.persistentGeojson;
+      }, function () {
+        if (typeof(scope.persistentGeojson) === 'boolean') {
+          controller.setPersistentGeojson(scope.persistentGeojson);
+        } else {
+          throw new Error('Invalid parameter');
+        }
+      });
+    }
+
     var mapboxGlMap = new mapboxgl.Map({
       container: scope.mapboxglMapId,
       style: mapboxglConstants.defaultStyle,
@@ -102,6 +140,12 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
             updateLanguage(map);
           });
         }
+      });
+    });
+
+    scope.$on('mapboxglMap:styleChanged', function () {
+      controller.getMap().then(function (map) {
+        updateLanguage(map);
       });
     });
 
@@ -162,7 +206,9 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glClasses: '=',
       glGeojson: '=',
       glInteractive: '=',
-      glHandlers: '='
+      glHandlers: '=',
+
+      persistentGeojson: '='
     },
     transclude: true,
     template: '<div class="angular-mapboxgl-map"><div ng-transclude></div></div>',

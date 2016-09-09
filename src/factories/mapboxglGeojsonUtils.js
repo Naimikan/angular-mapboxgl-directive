@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', [function () {
+angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglUtils', function (mapboxglUtils) {
   function createGeojsonByObject (map, object) {
     if (angular.isUndefined(map) || map === null) {
       throw new Error('Map is undefined');
@@ -40,6 +40,10 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', [function (
       id: object.id,
       type: object.type,
       source: object.id,
+      metadata: {
+        type: 'mapboxgl:geojson',
+        popup: object.popup
+      },
       layout: object.layer.layout || {},
       paint: object.layer.paint || {}
     }, object.layer.before);

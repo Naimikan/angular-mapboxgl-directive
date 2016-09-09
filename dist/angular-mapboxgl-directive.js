@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.7.0 2016-09-07
+*  angular-mapboxgl-directive 0.7.0 2016-09-09
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -8,6 +8,8 @@
 angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', 'mapboxglConstants', 'mapboxglEventsUtils', function ($q, mapboxglUtils, mapboxglConstants, mapboxglEventsUtils) {
   function mapboxGlDirectiveController ($scope) {
     this._mapboxGlMap = $q.defer();
+    this._geojsonObjects = [];
+    this._persistentGeojson = mapboxglConstants.defaultPersistentGeojson;
 
     this.getMap = function () {
       return this._mapboxGlMap.promise;
@@ -15,6 +17,28 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
     this.getMapboxGlScope = function () {
       return $scope;
+    };
+
+    /* Geojson */
+    this.getGeojsonObjects = function () {
+      return this._geojsonObjects;
+    };
+
+    this.addGeojsonObject = function (geojsonObject) {
+      this._geojsonObjects.push(geojsonObject);
+    };
+
+    this.removeGeojsonObjects = function () {
+      this._geojsonObjects = [];
+    };
+
+    /* Persistent Geojson */
+    this.isGeojsonPersistent = function () {
+      return this._persistentGeojson;
+    };
+
+    this.setPersistentGeojson = function (persistentGeojson) {
+      this._persistentGeojson = persistentGeojson;
     };
   }
 
@@ -81,6 +105,20 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       });
     }
 
+    if (angular.isDefined(scope.persistentGeojson) && typeof(scope.persistentGeojson) === 'boolean') {
+      controller.setPersistentGeojson(scope.persistentGeojson);
+
+      scope.$watch(function () {
+        return scope.persistentGeojson;
+      }, function () {
+        if (typeof(scope.persistentGeojson) === 'boolean') {
+          controller.setPersistentGeojson(scope.persistentGeojson);
+        } else {
+          throw new Error('Invalid parameter');
+        }
+      });
+    }
+
     var mapboxGlMap = new mapboxgl.Map({
       container: scope.mapboxglMapId,
       style: mapboxglConstants.defaultStyle,
@@ -109,6 +147,12 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
             updateLanguage(map);
           });
         }
+      });
+    });
+
+    scope.$on('mapboxglMap:styleChanged', function () {
+      controller.getMap().then(function (map) {
+        updateLanguage(map);
       });
     });
 
@@ -169,7 +213,9 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glClasses: '=',
       glGeojson: '=',
       glInteractive: '=',
-      glHandlers: '='
+      glHandlers: '=',
+
+      persistentGeojson: '='
     },
     transclude: true,
     template: '<div class="angular-mapboxgl-map"><div ng-transclude></div></div>',
@@ -233,7 +279,7 @@ angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope
 	return mapboxglEventsUtils;
 }]);
 
-angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', [function () {
+angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglUtils', function (mapboxglUtils) {
   function createGeojsonByObject (map, object) {
     if (angular.isUndefined(map) || map === null) {
       throw new Error('Map is undefined');
@@ -275,6 +321,10 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', [function (
       id: object.id,
       type: object.type,
       source: object.id,
+      metadata: {
+        type: 'mapboxgl:geojson',
+        popup: object.popup
+      },
       layout: object.layer.layout || {},
       paint: object.layer.paint || {}
     }, object.layer.before);
@@ -346,7 +396,9 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 	defaultBearingSnap: 7,
 	defaultFailIfMajorPerformanceCaveat: false,
 	defaultPreserveDrawingBuffer: false,
-	defaultTrackResize: true
+	defaultTrackResize: true,
+
+	defaultPersistentGeojson: true
 });
 
 angular.module('mapboxgl-directive').directive('glBearing', [function () {
@@ -710,35 +762,110 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 
 		var mapboxglScope = controller.getMapboxGlScope();
 
-    var geojsonWatched = function (map, geojson) {
+    var disableGeojsonEvents = function (map) {
+      map.off('click');
+      map.off('mousemove');
+    };
+
+    var enableGeojsonEvents = function (map) {
+      map.on('click', function (event) {
+        var style = map.getStyle();
+        var allLayers = style.layers.filter(function (eachLayer) {
+          if (angular.isDefined(eachLayer.metadata) && angular.isDefined(eachLayer.metadata.type)) {
+            return eachLayer.metadata.type === 'mapboxgl:geojson' && angular.isDefined(eachLayer.metadata.popup) && angular.isDefined(eachLayer.metadata.popup.enabled) && eachLayer.metadata.popup.enabled;
+          }
+        }).map(function (eachLayer) {
+          return eachLayer.id;
+        });
+
+        var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
+
+        if (features.length > 0) {
+          var feature = features[0];
+
+          var popupOptions = feature.layer.metadata.popup.options;
+          var popupMessage = feature.layer.metadata.popup.message;
+
+          var popup = new mapboxgl.Popup(popupOptions)
+            .setLngLat(map.unproject(event.point))
+            .setHTML(popupMessage)
+            .addTo(map);
+        }
+      });
+
+      map.on('mousemove', function (event) {
+        var style = map.getStyle();
+        var allLayers = style.layers.filter(function (eachLayer) {
+          if (angular.isDefined(eachLayer.metadata) && angular.isDefined(eachLayer.metadata.type)) {
+            return eachLayer.metadata.type === 'mapboxgl:geojson';
+          }
+        }).map(function (eachLayer) {
+          return eachLayer.id;
+        });
+
+        var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
+        map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+      });
+    };
+
+    var geojsonWatched = function (map, controller, geojson) {
       if (angular.isDefined(geojson)) {
+        disableGeojsonEvents(map);
+
         if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call({})) {
           mapboxglGeojsonUtils.createGeojsonByObject(map, geojson);
+          controller.addGeojsonObject(geojson);
         } else if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call([])) {
           geojson.map(function (eachGeojson) {
             mapboxglGeojsonUtils.createGeojsonByObject(map, eachGeojson);
+            controller.addGeojsonObject(eachGeojson);
           });
         } else {
           throw new Error('Invalid geojson parameter');
         }
+
+        enableGeojsonEvents(map);
       }
     };
+
+    scope.$on('mapboxglMap:styleChanged', function () {
+      if (controller.isGeojsonPersistent()) {
+        var allGeojsonObjects = angular.copy(controller.getGeojsonObjects());
+        controller.removeGeojsonObjects();
+
+        controller.getMap().then(function (map) {
+          geojsonWatched(map, controller, allGeojsonObjects);
+        });
+      } else {
+        controller.removeGeojsonObjects();
+      }
+    });
 
     /*
       geojson: <Object | Array<Object>>
 
       obj: {
-        type: line | polygon | circle
+        type: line | polygon | circle,
+        coordinates: LngLatLike | Object,
+        layer: {
+          layout: Object,
+          paint: Object
+        },
+        popup: {
+          enabled: true | false,
+          options: Object,
+          message: String
+        }
       }
     */
 
 		controller.getMap().then(function (map) {
       mapboxglScope.$watchCollection('glGeojson', function (geojson) {
-        if (map.loaded()) {
-          geojsonWatched(map, geojson);
+        if (map.style.loaded()) {
+          geojsonWatched(map, controller, geojson);
         } else {
-          map.on('load', function () {
-            geojsonWatched(map, geojson);
+          map.style.on('load', function () {
+            geojsonWatched(map, controller, geojson);
           });
         }
       });
@@ -957,7 +1084,7 @@ angular.module('mapboxgl-directive').directive('glPitch', [function () {
 
 	return directive;
 }]);
-angular.module('mapboxgl-directive').directive('glStyle', [function () {
+angular.module('mapboxgl-directive').directive('glStyle', ['$rootScope', function ($rootScope) {
 	function mapboxGlStyleDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -977,6 +1104,10 @@ angular.module('mapboxgl-directive').directive('glStyle', [function () {
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glStyle', function (style) {
 				map.setStyle(style);
+
+				map.style.on('load', function () {
+					$rootScope.$broadcast('mapboxglMap:styleChanged');
+				});
 			}, true);
 		});
 	}
@@ -1021,4 +1152,5 @@ angular.module('mapboxgl-directive').directive('glZoom', [function () {
 
 	return directive;
 }]);
+
 }(angular, mapboxgl));
