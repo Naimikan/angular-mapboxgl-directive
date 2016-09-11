@@ -9,7 +9,11 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
   function mapboxGlDirectiveController ($scope) {
     this._mapboxGlMap = $q.defer();
     this._geojsonObjects = [];
+    this._imageObjects = [];
+    this._videoObjects = [];
     this._persistentGeojson = mapboxglConstants.map.defaultPersistentGeojson;
+    this._persistentImage = mapboxglConstants.map.defaultPersistentImage;
+    this._persistentVideo = mapboxglConstants.map.defaultPersistentVideo;
 
     this.getMap = function () {
       return this._mapboxGlMap.promise;
@@ -32,6 +36,32 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       this._geojsonObjects = [];
     };
 
+    /* Image */
+    this.getImageObjects = function () {
+      return this._imageObjects;
+    };
+
+    this.addImageObject = function (imageObject) {
+      this._imageObjects.push(imageObject);
+    };
+
+    this.removeImageObjects = function () {
+      this._imageObjects = [];
+    };
+
+    /* Video */
+    this.getVideoObjects = function () {
+      return this._videoObjects;
+    };
+
+    this.addVideoObject = function (videoObject) {
+      this._videoObjects.push(videoObject);
+    };
+
+    this.removeVideoObjects = function () {
+      this._videoObjects = [];
+    };
+
     /* Persistent Geojson */
     this.isGeojsonPersistent = function () {
       return this._persistentGeojson;
@@ -39,6 +69,24 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
     this.setPersistentGeojson = function (persistentGeojson) {
       this._persistentGeojson = persistentGeojson;
+    };
+
+    /* Persistent Image */
+    this.isImagePersistent = function () {
+      return this._persistentImage;
+    };
+
+    this.setPersistentImage = function (persistentImage) {
+      this._persistentImage = persistentImage;
+    };
+
+    /* Persistent Video */
+    this.isVideoPersistent = function () {
+      return this._persistentVideo;
+    };
+
+    this.setPersistentVideo = function (persistentVideo) {
+      this._persistentVideo = persistentVideo;
     };
   }
 
@@ -113,6 +161,34 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       }, function () {
         if (typeof(scope.persistentGeojson) === 'boolean') {
           controller.setPersistentGeojson(scope.persistentGeojson);
+        } else {
+          throw new Error('Invalid parameter');
+        }
+      });
+    }
+
+    if (angular.isDefined(scope.persistentImage) && typeof(scope.persistentImage) === 'boolean') {
+      controller.setPersistentImage(scope.persistentImage);
+
+      scope.$watch(function () {
+        return scope.persistentImage;
+      }, function () {
+        if (typeof(scope.persistentImage) === 'boolean') {
+          controller.setPersistentImage(scope.persistentImage);
+        } else {
+          throw new Error('Invalid parameter');
+        }
+      });
+    }
+
+    if (angular.isDefined(scope.persistentVideo) && typeof(scope.persistentVideo) === 'boolean') {
+      controller.setPersistentVideo(scope.persistentVideo);
+
+      scope.$watch(function () {
+        return scope.persistentVideo;
+      }, function () {
+        if (typeof(scope.persistentVideo) === 'boolean') {
+          controller.setPersistentVideo(scope.persistentVideo);
         } else {
           throw new Error('Invalid parameter');
         }
@@ -214,8 +290,12 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glGeojson: '=',
       glInteractive: '=',
       glHandlers: '=',
+      glImage: '=',
+      glVideo: '=',
 
-      persistentGeojson: '='
+      persistentGeojson: '=',
+      persistentImage: '=',
+      persistentVideo: '='
     },
     transclude: true,
     template: '<div class="angular-mapboxgl-map"><div ng-transclude></div></div>',
@@ -358,6 +438,39 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
 	return mapboxglGeojsonUtils;
 }]);
 
+angular.module('mapboxgl-directive').factory('mapboxglImageUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+	function createImageByObject (map, object) {
+		if (angular.isUndefined(map) || map === null) {
+      throw new Error('Map is undefined');
+    }
+
+    if (angular.isUndefined(object) || object === null) {
+      throw new Error('Object definition is undefined');
+    }
+
+    if (angular.isUndefined(object.url) || object.url === null) {
+			throw new Error('Object url is undefined');
+		}
+
+    if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
+			throw new Error('Object coordinates are undefined');
+		}
+
+    object.id = object.type + '_' + Date.now();
+
+    map.addSource(object.id, {
+    	type: 'image',
+    	url: object.url,
+    	coordinates: object.coordinates
+    });
+	}
+
+	var mapboxglImageUtils = {
+		createImageByObject: createImageByObject
+	};
+
+	return mapboxglImageUtils;
+}]);
 angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', function ($window, $q) {
 	/*
 		Generate Map ID by Date timestamp
@@ -410,6 +523,39 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 	return mapboxglUtils;
 }]);
 
+angular.module('mapboxgl-directive').factory('mapboxglVideoUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+  function createVideoByObject (map, object) {
+    if (angular.isUndefined(map) || map === null) {
+      throw new Error('Map is undefined');
+    }
+
+    if (angular.isUndefined(object) || object === null) {
+      throw new Error('Object definition is undefined');
+    }
+
+    if (angular.isUndefined(object.urls) || !angular.isArray(object.urls) || object.urls === null) {
+      throw new Error('Object urls is undefined');
+    }
+
+    if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
+      throw new Error('Object coordinates are undefined');
+    }
+
+    object.id = object.type + '_' + Date.now();
+
+    map.addSource(object.id, {
+      type: 'video',
+      urls: object.url,
+      coordinates: object.coordinates
+    });
+  }
+
+  var mapboxglVideoUtils = {
+    createVideoByObject: createVideoByObject
+  };
+
+  return mapboxglVideoUtils;
+}]);
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 	map: {
 		defaultStyle: 'mapbox://styles/mapbox/streets-v9',
@@ -420,7 +566,9 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 		defaultPreserveDrawingBuffer: false,
 		defaultTrackResize: true,
 
-		defaultPersistentGeojson: true
+		defaultPersistentGeojson: true,
+		defaultPersistentImage: true,
+		defaultPersistentVideo: true
 	},
 	source: {
 		defaultMaxZoom: 18,
@@ -956,6 +1104,66 @@ angular.module('mapboxgl-directive').directive('glHandlers', [function () {
   return directive;
 }]);
 
+angular.module('mapboxgl-directive').directive('glImage', ['mapboxglImageUtils', function (mapboxglImageUtils) {
+	function mapboxGlImageDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+		var imagenWatched = function (map, controller, image) {
+      if (angular.isDefined(image)) {
+        if (Object.prototype.toString.call(image) === Object.prototype.toString.call({})) {
+          mapboxglImageUtils.createImageByObject(map, image);
+          controller.addImageObject(image);
+        } else if (Object.prototype.toString.call(image) === Object.prototype.toString.call([])) {
+          image.map(function (eachImage) {
+            mapboxglImageUtils.createImageByObject(map, eachImage);
+            controller.addImageObject(eachImage);
+          });
+        } else {
+          throw new Error('Invalid image parameter');
+        }
+      }
+    };
+
+    scope.$on('mapboxglMap:styleChanged', function () {
+      if (controller.isImagePersistent()) {
+        var allImageObjects = angular.copy(controller.getImageObjects());
+        controller.removeImageObjects();
+
+        controller.getMap().then(function (map) {
+          imagenWatched(map, controller, allImageObjects);
+        });
+      } else {
+        controller.removeImageObjects();
+      }
+    });
+
+		controller.getMap().then(function (map) {
+      mapboxglScope.$watchCollection('glImage', function (image) {
+        if (map.style.loaded()) {
+          imagenWatched(map, controller, image);
+        } else {
+          map.style.on('load', function () {
+            imagenWatched(map, controller, image);
+          });
+        }
+      });
+    });
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlImageDirectiveLink
+	};
+
+	return directive;
+}]);
 angular.module('mapboxgl-directive').directive('glInteractive', [function () {
   function mapboxGlInteractiveDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
@@ -1153,6 +1361,66 @@ angular.module('mapboxgl-directive').directive('glStyle', ['$rootScope', functio
 	return directive;
 }]);
 
+angular.module('mapboxgl-directive').directive('glVideo', ['mapboxglVideoUtils', function (mapboxglVideoUtils) {
+	function mapboxGlVideoDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+		var videoWatched = function (map, controller, video) {
+      if (angular.isDefined(video)) {
+        if (Object.prototype.toString.call(video) === Object.prototype.toString.call({})) {
+          mapboxglVideoUtils.createVideoByObject(map, video);
+          controller.addVideoObject(video);
+        } else if (Object.prototype.toString.call(video) === Object.prototype.toString.call([])) {
+          video.map(function (eachVideo) {
+            mapboxglVideoUtils.createVideoByObject(map, eachVideo);
+            controller.addVideoObject(eachVideo);
+          });
+        } else {
+          throw new Error('Invalid video parameter');
+        }
+      }
+    };
+
+    scope.$on('mapboxglMap:styleChanged', function () {
+      if (controller.isVideoPersistent()) {
+        var allVideoObjects = angular.copy(controller.getVideoObjects());
+        controller.removeVideoObjects();
+
+        controller.getMap().then(function (map) {
+          videoWatched(map, controller, allVideoObjects);
+        });
+      } else {
+        controller.removeVideoObjects();
+      }
+    });
+
+		controller.getMap().then(function (map) {
+      mapboxglScope.$watchCollection('glVideo', function (video) {
+        if (map.style.loaded()) {
+          videoWatched(map, controller, video);
+        } else {
+          map.style.on('load', function () {
+            videoWatched(map, controller, video);
+          });
+        }
+      });
+    });
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlVideoDirectiveLink
+	};
+
+	return directive;
+}]);
 angular.module('mapboxgl-directive').directive('glZoom', [function () {
 	function mapboxGlZoomDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {

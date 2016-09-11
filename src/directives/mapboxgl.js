@@ -2,7 +2,11 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
   function mapboxGlDirectiveController ($scope) {
     this._mapboxGlMap = $q.defer();
     this._geojsonObjects = [];
+    this._imageObjects = [];
+    this._videoObjects = [];
     this._persistentGeojson = mapboxglConstants.map.defaultPersistentGeojson;
+    this._persistentImage = mapboxglConstants.map.defaultPersistentImage;
+    this._persistentVideo = mapboxglConstants.map.defaultPersistentVideo;
 
     this.getMap = function () {
       return this._mapboxGlMap.promise;
@@ -25,6 +29,32 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       this._geojsonObjects = [];
     };
 
+    /* Image */
+    this.getImageObjects = function () {
+      return this._imageObjects;
+    };
+
+    this.addImageObject = function (imageObject) {
+      this._imageObjects.push(imageObject);
+    };
+
+    this.removeImageObjects = function () {
+      this._imageObjects = [];
+    };
+
+    /* Video */
+    this.getVideoObjects = function () {
+      return this._videoObjects;
+    };
+
+    this.addVideoObject = function (videoObject) {
+      this._videoObjects.push(videoObject);
+    };
+
+    this.removeVideoObjects = function () {
+      this._videoObjects = [];
+    };
+
     /* Persistent Geojson */
     this.isGeojsonPersistent = function () {
       return this._persistentGeojson;
@@ -32,6 +62,24 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
     this.setPersistentGeojson = function (persistentGeojson) {
       this._persistentGeojson = persistentGeojson;
+    };
+
+    /* Persistent Image */
+    this.isImagePersistent = function () {
+      return this._persistentImage;
+    };
+
+    this.setPersistentImage = function (persistentImage) {
+      this._persistentImage = persistentImage;
+    };
+
+    /* Persistent Video */
+    this.isVideoPersistent = function () {
+      return this._persistentVideo;
+    };
+
+    this.setPersistentVideo = function (persistentVideo) {
+      this._persistentVideo = persistentVideo;
     };
   }
 
@@ -106,6 +154,34 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       }, function () {
         if (typeof(scope.persistentGeojson) === 'boolean') {
           controller.setPersistentGeojson(scope.persistentGeojson);
+        } else {
+          throw new Error('Invalid parameter');
+        }
+      });
+    }
+
+    if (angular.isDefined(scope.persistentImage) && typeof(scope.persistentImage) === 'boolean') {
+      controller.setPersistentImage(scope.persistentImage);
+
+      scope.$watch(function () {
+        return scope.persistentImage;
+      }, function () {
+        if (typeof(scope.persistentImage) === 'boolean') {
+          controller.setPersistentImage(scope.persistentImage);
+        } else {
+          throw new Error('Invalid parameter');
+        }
+      });
+    }
+
+    if (angular.isDefined(scope.persistentVideo) && typeof(scope.persistentVideo) === 'boolean') {
+      controller.setPersistentVideo(scope.persistentVideo);
+
+      scope.$watch(function () {
+        return scope.persistentVideo;
+      }, function () {
+        if (typeof(scope.persistentVideo) === 'boolean') {
+          controller.setPersistentVideo(scope.persistentVideo);
         } else {
           throw new Error('Invalid parameter');
         }
@@ -207,8 +283,12 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glGeojson: '=',
       glInteractive: '=',
       glHandlers: '=',
+      glImage: '=',
+      glVideo: '=',
 
-      persistentGeojson: '='
+      persistentGeojson: '=',
+      persistentImage: '=',
+      persistentVideo: '='
     },
     transclude: true,
     template: '<div class="angular-mapboxgl-map"><div ng-transclude></div></div>',

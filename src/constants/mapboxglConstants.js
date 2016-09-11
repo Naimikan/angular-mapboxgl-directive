@@ -8,7 +8,9 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 		defaultPreserveDrawingBuffer: false,
 		defaultTrackResize: true,
 
-		defaultPersistentGeojson: true
+		defaultPersistentGeojson: true,
+		defaultPersistentImage: true,
+		defaultPersistentVideo: true
 	},
 	source: {
 		defaultMaxZoom: 18,

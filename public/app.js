@@ -47,6 +47,33 @@
       scrollZoom: false
     };
 
+    $scope.glImage = [
+      {
+        url: 'https://www.mapbox.com/mapbox-gl-js/assets/radar.gif',
+        coordinates: [
+          [-80.425, 46.437],
+          [-71.516, 46.437],
+          [-71.516, 37.936],
+          [-80.425, 37.936]
+        ]
+      }
+    ];
+
+    $scope.glVideo = [
+      {
+        urls: [
+          'https://www.mapbox.com/drone/video/drone.mp4', 
+          'https://www.mapbox.com/drone/video/drone.webm'
+        ],
+        coordinates: [
+          [-122.51596391201019, 37.56238816766053],
+          [-122.51467645168304, 37.56410183312965],
+          [-122.51309394836426, 37.563391708549425],
+          [-122.51423120498657, 37.56161849366671]
+        ]
+      }
+    ];
+
     $scope.glGeojson = [
       {
         type: 'circle',
