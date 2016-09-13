@@ -105,6 +105,8 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 
 		controller.getMap().then(function (map) {
       mapboxglScope.$watchCollection('glGeojson', function (geojson) {
+        //geojsonWatched(map, controller, geojson);
+
         if (map.style.loaded()) {
           geojsonWatched(map, controller, geojson);
         } else {

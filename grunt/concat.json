@@ -5,8 +5,8 @@
 			"footer": "\n}(angular, mapboxgl));"
 		},
 		"files": {
-			"dist/angular-mapboxgl-directive.js": ["src/directives/mapboxgl.js", "src/factories/*.js", "src/**/*.js"],
-			"public/lib/angular-mapboxgl-directive.js": ["src/directives/mapboxgl.js", "src/factories/*.js", "src/**/*.js"]
+			"dist/<%= package.name %>.js": ["src/directives/mapboxgl.js", "src/factories/*.js", "src/**/*.js"],
+			"public/lib/<%= package.name %>.js": ["src/directives/mapboxgl.js", "src/factories/*.js", "src/**/*.js"]
 		}
 	}
 }

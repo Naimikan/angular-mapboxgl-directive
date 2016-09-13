@@ -3,6 +3,7 @@
     <title>Test Server - angular-mapboxgl-directive</title>
 
     <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.23.0/mapbox-gl.css" rel="stylesheet" />
+    <link href="css/angular-mapboxgl-directive.css" rel="stylesheet" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.23.0/mapbox-gl.js"></script>
@@ -17,10 +18,11 @@
       gl-handlers="glHandlers"
       gl-style="glStyle"
       gl-center="glCenter"
-      gl-zoom="2"
+      gl-zoom="glZoom"
       gl-controls="glControls"
       gl-geojson="glGeojson"
       persistent-geojson="persistentGeojson"
+      persistent-image="persistentImage"
       gl-image="glImage"
       gl-video="glVideo"
       height="{{glHeight}}"

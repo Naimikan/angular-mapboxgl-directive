@@ -10,12 +10,14 @@ angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', 'ma
 			mapboxglScope.$watch('glCenter', function (center) {
 				mapboxglUtils.validateAndFormatCenter(center).then(function (newCenter) {
 					if (newCenter) {
-						map.panTo(newCenter);
+						//map.panTo(newCenter);
+						map.flyTo({ center: newCenter });
 					} else {
 						throw new Error('Invalid center');
 					}
 				}).catch(function (error) {
-					map.panTo(mapboxglConstants.map.defaultCenter);
+					//map.panTo(mapboxglConstants.map.defaultCenter);
+					map.flyTo({ center: mapboxglConstants.map.defaultCenter });
 
 					throw new Error(error.code + ' / ' + error.message);
 				});

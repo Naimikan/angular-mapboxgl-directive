@@ -4,9 +4,12 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     this._geojsonObjects = [];
     this._imageObjects = [];
     this._videoObjects = [];
+    this._markerObjects = [];
     this._persistentGeojson = mapboxglConstants.map.defaultPersistentGeojson;
     this._persistentImage = mapboxglConstants.map.defaultPersistentImage;
     this._persistentVideo = mapboxglConstants.map.defaultPersistentVideo;
+
+    this._elementDOM = null;
 
     this.getMap = function () {
       return this._mapboxGlMap.promise;
@@ -14,6 +17,14 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
     this.getMapboxGlScope = function () {
       return $scope;
+    };
+
+    this.getDOMElement = function () {
+      return this._elementDOM;
+    };
+
+    this.setDOMElement = function (elementDOM) {
+      this._elementDOM = elementDOM;
     };
 
     /* Geojson */
@@ -55,6 +66,19 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       this._videoObjects = [];
     };
 
+    /* Markers */
+    this.getMarkerObjects = function () {
+      return this._markerObjects;
+    };
+
+    this.addMarkerObject = function (markerObject) {
+      this._markerObjects.push(markerObject);
+    };
+
+    this.removeMarkerObjects = function () {
+      this._markerObjects = [];
+    };
+
     /* Persistent Geojson */
     this.isGeojsonPersistent = function () {
       return this._persistentGeojson;
@@ -81,6 +105,27 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     this.setPersistentVideo = function (persistentVideo) {
       this._persistentVideo = persistentVideo;
     };
+
+    /* Loading Overlay */
+    this.changeLoadingMap = function (newValue) {
+      if (newValue) {
+        if (!this._elementDOM.hasClass('angular-mapboxgl-map-loading')) {
+          this.getMap().then(function (map) {
+            map.getCanvas().style.opacity = 0.25;
+          });
+
+          this._elementDOM.addClass('angular-mapboxgl-map-loading');
+        }
+      } else {
+        if (this._elementDOM.hasClass('angular-mapboxgl-map-loading')) {
+          this.getMap().then(function (map) {
+            map.getCanvas().style.opacity = 1;
+          });
+
+          this._elementDOM.removeClass('angular-mapboxgl-map-loading');
+        }
+      }
+    };
   }
 
   function mapboxGlDirectiveLink (scope, element, attrs, controller) {
@@ -99,6 +144,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     if (!mapboxgl.supported()) {
       throw new Error('Your browser does not support Mapbox GL');
     }
+
+    controller.setDOMElement(element);
 
     scope.mapboxglMapId = attrs.id ? attrs.id : mapboxglUtils.generateMapId();
 
@@ -190,7 +237,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
     var mapboxGlMap = new mapboxgl.Map({
       container: scope.mapboxglMapId,
-      style: mapboxglConstants.map.defaultStyle,
+      style: scope.glStyle || mapboxglConstants.map.defaultStyle,
       center: mapboxglConstants.map.defaultCenter,
       hash: angular.isDefined(attrs.hash) && typeof(attrs.hash) === 'boolean' ? attrs.hash : mapboxglConstants.map.defaultHash,
       bearingSnap: angular.isDefined(attrs.bearingSnap) && angular.isNumber(attrs.bearingSnap) ? attrs.bearingSnap : mapboxglConstants.map.defaultBearingSnap,
@@ -200,9 +247,17 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       attributionControl: false
     });
 
-    controller._mapboxGlMap.resolve(mapboxGlMap);
+    //scope.isLoading = true;
+    //controller.changeLoadingMap(scope.isLoading);
 
-    mapboxglEventsUtils.exposeMapEvents(mapboxGlMap);
+    //mapboxGlMap.on('load', function (map) {
+      controller._mapboxGlMap.resolve(mapboxGlMap);
+
+      mapboxglEventsUtils.exposeMapEvents(mapboxGlMap);
+
+      //scope.isLoading = false;
+      //controller.changeLoadingMap(scope.isLoading);
+    //});
 
     controller.getMap().then(function (map) {
       // Language
@@ -291,7 +346,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       persistentVideo: '='
     },
     transclude: true,
-    template: '<div class="angular-mapboxgl-map"><div ng-transclude></div></div>',
+    template: '<div class="angular-mapboxgl-map"><div class="loader" ng-if="isLoading"></div><div ng-transclude></div></div>',
     controller: mapboxGlDirectiveController,
     link: mapboxGlDirectiveLink
   };

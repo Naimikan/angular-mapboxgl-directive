@@ -23,6 +23,14 @@ angular.module('mapboxgl-directive').factory('mapboxglVideoUtils', ['mapboxglUti
       urls: object.url,
       coordinates: object.coordinates
     });
+
+    map.addLayer({
+      id: object.id,
+      source: object.id,
+      type: 'raster',
+      layout: angular.isDefined(object.layer) && angular.isDefined(object.layer.layout) ? object.layer.layout : {},
+      paint: angular.isDefined(object.layer) && angular.isDefined(object.layer.paint) ? object.layer.paint : {}
+    });
   }
 
   var mapboxglVideoUtils = {

@@ -16,7 +16,7 @@ angular.module('mapboxgl-directive').directive('glStyle', ['$rootScope', functio
 		var mapboxglScope = controller.getMapboxGlScope();
 
 		controller.getMap().then(function (map) {
-			mapboxglScope.$watch('glStyle', function (style) {
+			mapboxglScope.$watch('glStyle', function (style, oldStyle) {
 				map.setStyle(style);
 
 				map.style.on('load', function () {

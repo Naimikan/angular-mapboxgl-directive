@@ -1,0 +1,8 @@
+{
+  "dist": {
+    "files": {
+      "dist/<%= package.name %>.css": "src/less/*.less",
+      "public/css/<%= package.name %>.css": "src/less/*.less"
+    }
+  }
+}

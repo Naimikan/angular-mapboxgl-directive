@@ -1,4 +1,6 @@
 angular.module('mapboxgl-directive').directive('glVideo', ['mapboxglVideoUtils', function (mapboxglVideoUtils) {
+	// ToDo: Check
+
 	function mapboxGlVideoDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -22,28 +24,28 @@ angular.module('mapboxgl-directive').directive('glVideo', ['mapboxglVideoUtils',
       }
     };
 
-    scope.$on('mapboxglMap:styleChanged', function () {
+    /*scope.$on('mapboxglMap:styleChanged', function () {
       if (controller.isVideoPersistent()) {
         var allVideoObjects = angular.copy(controller.getVideoObjects());
         controller.removeVideoObjects();
 
         controller.getMap().then(function (map) {
-          videoWatched(map, controller, allVideoObjects);
+					videoWatched(map, controller, allVideoObjects);
         });
       } else {
         controller.removeVideoObjects();
       }
-    });
+    });*/
 
 		controller.getMap().then(function (map) {
       mapboxglScope.$watchCollection('glVideo', function (video) {
-        if (map.style.loaded()) {
-          videoWatched(map, controller, video);
-        } else {
-          map.style.on('load', function () {
-            videoWatched(map, controller, video);
-          });
-        }
+				if (map.loaded()) {
+					videoWatched(map, controller, video);
+				} else {
+					map.on('load', function () {
+						videoWatched(map, controller, video);
+					});
+				}
       });
     });
 	}

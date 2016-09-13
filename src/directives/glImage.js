@@ -1,4 +1,6 @@
 angular.module('mapboxgl-directive').directive('glImage', ['mapboxglImageUtils', function (mapboxglImageUtils) {
+	// ToDo: Check
+
 	function mapboxGlImageDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -28,7 +30,7 @@ angular.module('mapboxgl-directive').directive('glImage', ['mapboxglImageUtils',
         controller.removeImageObjects();
 
         controller.getMap().then(function (map) {
-          imagenWatched(map, controller, allImageObjects);
+					imagenWatched(map, controller, allImageObjects);
         });
       } else {
         controller.removeImageObjects();
@@ -40,7 +42,7 @@ angular.module('mapboxgl-directive').directive('glImage', ['mapboxglImageUtils',
         if (map.style.loaded()) {
           imagenWatched(map, controller, image);
         } else {
-          map.style.on('load', function () {
+          map.once('style.load', function () {
             imagenWatched(map, controller, image);
           });
         }

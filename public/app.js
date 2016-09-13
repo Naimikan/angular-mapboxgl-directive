@@ -17,19 +17,32 @@
     };
 
     $scope.persistentGeojson = true;
+    $scope.persistentImage = true;
 
     $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
 
-    /*$timeout(function () {
-      $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
+    $timeout(function () {
+      //$scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
+
+      $scope.glCenter = {
+        lat: 41,
+        lng: -2
+      };
     }, 6000, true);
 
     $timeout(function () {
-      $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
-    }, 12000, true);*/
+      $scope.glCenter = {
+        lat: 37.562984,
+        lng: -122.514426
+      };
+
+      //$scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
+    }, 12000, true);
 
     $scope.glCenter = {
-      autodiscover: true
+      lat: 37.562984,
+      lng: -122.514426
+      //autodiscover: true
     };
 
     $scope.glControls = {
@@ -44,8 +57,10 @@
     };
 
     $scope.glHandlers = {
-      scrollZoom: false
+      scrollZoom: true
     };
+
+    $scope.glZoom = 2;
 
     $scope.glImage = [
       {
@@ -62,7 +77,7 @@
     $scope.glVideo = [
       {
         urls: [
-          'https://www.mapbox.com/drone/video/drone.mp4', 
+          'https://www.mapbox.com/drone/video/drone.mp4',
           'https://www.mapbox.com/drone/video/drone.webm'
         ],
         coordinates: [

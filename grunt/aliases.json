@@ -6,6 +6,7 @@
 		"clean:dist",
 		"jshint",
 		"concat:dist",
+		"less:dist",
 		"uglify"
 	],
 	"preview": [
