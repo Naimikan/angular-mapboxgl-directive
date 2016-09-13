@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.8.1 2016-09-13
+*  angular-mapboxgl-directive 0.10.0 2016-09-13
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -347,6 +347,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glHandlers: '=',
       glImage: '=',
       glVideo: '=',
+      glPopups: '=',
 
       persistentGeojson: '=',
       persistentImage: '=',
@@ -533,6 +534,41 @@ angular.module('mapboxgl-directive').factory('mapboxglImageUtils', ['mapboxglUti
 	};
 
 	return mapboxglImageUtils;
+}]);
+
+angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+	function createPopupByObject (map, object) {
+    if (angular.isUndefined(map) || map === null) {
+      throw new Error('Map is undefined');
+    }
+
+    if (angular.isUndefined(object) || object === null) {
+      throw new Error('Object definition is undefined');
+    }
+
+    if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
+      throw new Error('Object coordinates are undefined');
+    }
+
+    if (angular.isUndefined(object.html) || object.html === null) {
+      throw new Error('Object html is undefined');
+    }
+
+    var popupOptions = object.options || {};
+
+    var popup = new mapboxgl.Popup(popupOptions)
+      .setLngLat(object.coordinates)
+      .setHTML(object.html)
+      .addTo(map);
+
+    return popup;
+	}
+
+	var mapboxglPopupUtils = {
+		createPopupByObject: createPopupByObject
+	};
+
+	return mapboxglPopupUtils;
 }]);
 
 angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', function ($window, $q) {
@@ -1402,6 +1438,60 @@ angular.module('mapboxgl-directive').directive('glPitch', [function () {
 
 	return directive;
 }]);
+angular.module('mapboxgl-directive').directive('glPopups', ['mapboxglPopupUtils', function (mapboxglPopupUtils) {
+  function mapboxGlPopupDirectiveLink (scope, element, attrs, controller) {
+    if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+    var _popupsCreated = [];
+
+    var removeAllPopupsCreated = function () {
+      _popupsCreated.map(function (eachPopup) {
+        eachPopup.remove();
+      });
+
+      _popupsCreated = [];
+    };
+
+    var popupsWatched = function (map, popups) {
+      if (angular.isDefined(popups)) {
+        removeAllPopupsCreated();
+
+        if (Object.prototype.toString.call(popups) === Object.prototype.toString.call({})) {
+          var popupCreated = mapboxglPopupUtils.createPopupByObject(map, popups);
+          _popupsCreated.push(popupCreated);
+        } else if (Object.prototype.toString.call(popups) === Object.prototype.toString.call([])) {
+          popups.map(function (eachPopup) {
+            var eachPopupCreated = mapboxglPopupUtils.createPopupByObject(map, eachPopup);
+            _popupsCreated.push(eachPopupCreated);
+          });
+        } else {
+          throw new Error('Invalid popup parameter');
+        }
+      }
+    };
+
+    controller.getMap().then(function (map) {
+      mapboxglScope.$watchCollection('glPopups', function (popups) {
+        popupsWatched(map, popups);
+      });
+    });
+  }
+
+  var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlPopupDirectiveLink
+	};
+
+	return directive;
+}]);
+
 angular.module('mapboxgl-directive').directive('glStyle', ['$rootScope', function ($rootScope) {
 	function mapboxGlStyleDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {

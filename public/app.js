@@ -21,13 +21,36 @@
 
     $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
 
+    $scope.glPopups = [
+      {
+        coordinates: [0, 0],
+        html: '<h1>lakshfashfg</h1>'
+      }, {
+        coordinates: [-2, 41],
+        html: '<h1>Hello World</h1>'
+      }
+    ];
+
     $timeout(function () {
-      //$scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
+      $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
 
       $scope.glCenter = {
         lat: 41,
         lng: -2
       };
+
+      $scope.glPopups = [
+        {
+          coordinates: [0, 0],
+          html: '<h1>lakshfashfg</h1>'
+        }, {
+          coordinates: [-2, 41],
+          html: '<h1>Hello World</h1>'
+        }, {
+          coordinates: [-5, 41],
+          html: '<h1>Hello World 2</h1>'
+        }
+      ];
     }, 6000, true);
 
     $timeout(function () {
@@ -36,7 +59,7 @@
         lng: -122.514426
       };
 
-      //$scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
+      $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
     }, 12000, true);
 
     $scope.glCenter = {
