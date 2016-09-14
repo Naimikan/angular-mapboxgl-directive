@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').directive('glControls', [function () {
+angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', function ($rootScope) {
 	function mapboxGlControlsDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -97,6 +97,10 @@ angular.module('mapboxgl-directive').directive('glControls', [function () {
           enabled: true | false,
           position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
         },
+				directions: {
+					enabled: true | false,
+					position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+				},
 				draw: {
 					enabled: true | false,
 					position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
@@ -151,6 +155,33 @@ angular.module('mapboxgl-directive').directive('glControls', [function () {
 						addNewControlCreated('geolocate', geolocateControl);
 
             map.addControl(geolocateControl);
+          }
+
+					// Directions Control
+					if (angular.isDefined(controls.directions) && angular.isDefined(controls.directions.enabled) && controls.directions.enabled) {
+						var directionsEventsAvailables = [
+							'clear',
+							'loading',
+							'profile',
+							'origin',
+							'destination',
+							'route',
+							'error'
+						];
+
+						var directionsControl = new mapboxgl.Directions({
+              position: controls.directions.position || 'top-left'
+            });
+
+						addNewControlCreated('directions', directionsControl);
+
+            map.addControl(directionsControl);
+
+						directionsEventsAvailables.map(function (eachDirectionsEvent) {
+							directionsControl.on(eachDirectionsEvent, function (event) {
+								$rootScope.$broadcast('mapboxglDirections:' + eachDirectionsEvent, event);
+							});
+						});
           }
 
 					// Draw Control

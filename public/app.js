@@ -76,6 +76,10 @@
       scale: {
         enabled: true,
         position: 'bottom-left'
+      },
+      directions: {
+        enabled: true,
+        position: 'bottom-right'
       }
     };
 
