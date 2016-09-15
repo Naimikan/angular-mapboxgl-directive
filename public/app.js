@@ -31,6 +31,10 @@
       }
     ];
 
+    $scope.$on('mapboxglDirections:route', function (event, mapboxglDirectionsEvent) {
+      console.log(event, mapboxglDirectionsEvent);
+    });
+
     $timeout(function () {
       $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
 
@@ -71,15 +75,21 @@
     $scope.glControls = {
       navigation: {
         enabled: true,
-        position: 'top-left'
+        options: {
+          position: 'top-left'
+        }
       },
       scale: {
         enabled: true,
-        position: 'bottom-left'
+        options: {
+          position: 'bottom-left'
+        }
       },
       directions: {
         enabled: true,
-        position: 'bottom-right'
+        options: {
+          unit: 'metric'
+        }
       }
     };
 
