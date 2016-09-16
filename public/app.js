@@ -72,6 +72,32 @@
       //autodiscover: true
     };
 
+    var el = document.createElement('div');
+    el.className = 'marker';
+    el.style.backgroundImage = 'url(https://placekitten.com/g/60/60/)';
+    el.style.width = '60px';
+    el.style.height = '60px';
+
+    var el2 = document.createElement('div');
+    el2.className = 'marker';
+    el2.style.backgroundImage = 'url(https://placekitten.com/g/50/50/)';
+    el2.style.width = '50px';
+    el2.style.height = '50px';
+
+    $scope.glMarkers = [
+      {
+        coordinates: [-3, 45],
+        element: el
+      }, {
+        coordinates: [-2, 37],
+        element: el2,
+        popup: {
+          coordinates: [-2, 37],
+          html: '<h1>Marker with popup</h1>'
+        }
+      }
+    ];
+
     $scope.glControls = {
       navigation: {
         enabled: true,

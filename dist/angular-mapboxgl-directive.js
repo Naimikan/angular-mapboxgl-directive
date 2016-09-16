@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.10.2 2016-09-15
+*  angular-mapboxgl-directive 0.10.2 2016-09-16
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -348,6 +348,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glImage: '=',
       glVideo: '=',
       glPopups: '=',
+      glMarkers: '=',
 
       persistentGeojson: '=',
       persistentImage: '=',
@@ -557,6 +558,46 @@ angular.module('mapboxgl-directive').factory('mapboxglImageUtils', ['mapboxglUti
 	};
 
 	return mapboxglImageUtils;
+}]);
+
+angular.module('mapboxgl-directive').factory('mapboxglMarkerUtils', ['mapboxglUtils', 'mapboxglConstants', 'mapboxglPopupUtils', function (mapboxglUtils, mapboxglConstants, mapboxglPopupUtils) {
+	function createMarkerByObject (map, object) {
+    if (angular.isUndefined(map) || map === null) {
+      throw new Error('Map is undefined');
+    }
+
+    if (angular.isUndefined(object) || object === null) {
+      throw new Error('Object definition is undefined');
+    }
+
+    if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
+      throw new Error('Object coordinates are undefined');
+    }
+
+    if (angular.isUndefined(object.element) || object.element === null) {
+      throw new Error('Object element is undefined');
+    }
+
+    var markerOptions = object.options || {};
+
+    var marker = new mapboxgl.Marker(object.element, markerOptions)
+      .setLngLat(object.coordinates);
+
+    if (angular.isDefined(object.popup)) {
+      var popup = mapboxglPopupUtils.createPopupByObject(map, object.popup);
+      marker.setPopup(popup);
+    }
+
+    marker.addTo(map);
+
+    return marker;
+	}
+
+	var mapboxglMarkerUtils = {
+		createMarkerByObject: createMarkerByObject
+	};
+
+	return mapboxglMarkerUtils;
 }]);
 
 angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
@@ -1404,6 +1445,60 @@ angular.module('mapboxgl-directive').directive('glInteractive', [function () {
   };
 
   return directive;
+}]);
+
+angular.module('mapboxgl-directive').directive('glMarkers', ['mapboxglMarkerUtils', function (mapboxglMarkerUtils) {
+  function mapboxGlMarkersDirectiveLink (scope, element, attrs, controller) {
+    if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+    var _markersCreated = [];
+
+    var removeAllMarkersCreated = function () {
+      _markersCreated.map(function (eachMarker) {
+        eachMarker.remove();
+      });
+
+      _markersCreated = [];
+    };
+
+    var markersWatched = function (map, markers) {
+      if (angular.isDefined(markers)) {
+        removeAllMarkersCreated();
+
+        if (Object.prototype.toString.call(markers) === Object.prototype.toString.call({})) {
+          var markerCreated = mapboxglMarkerUtils.createMarkerByObject(map, markers);
+          _markersCreated.push(markerCreated);
+        } else if (Object.prototype.toString.call(markers) === Object.prototype.toString.call([])) {
+          markers.map(function (eachMarker) {
+            var eachMarkerCreated = mapboxglMarkerUtils.createMarkerByObject(map, eachMarker);
+            _markersCreated.push(eachMarkerCreated);
+          });
+        } else {
+          throw new Error('Invalid marker parameter');
+        }
+      }
+    };
+
+    controller.getMap().then(function (map) {
+      mapboxglScope.$watchCollection('glMarkers', function (markers) {
+        markersWatched(map, markers);
+      });
+    });
+  }
+
+  var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlMarkersDirectiveLink
+	};
+
+	return directive;
 }]);
 
 angular.module('mapboxgl-directive').directive('glMaxBounds', [function () {

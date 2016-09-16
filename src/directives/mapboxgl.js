@@ -341,6 +341,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glImage: '=',
       glVideo: '=',
       glPopups: '=',
+      glMarkers: '=',
 
       persistentGeojson: '=',
       persistentImage: '=',
