@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.10.2 2016-09-16
+*  angular-mapboxgl-directive 0.11.0 2016-09-19
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -367,7 +367,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
 angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope', function ($rootScope) {
   var eventsAvailables = [
-    'webglcontextlost ',
+    'webglcontextlost',
     'webglcontextrestored',
     'error',
     'render',
@@ -536,7 +536,7 @@ angular.module('mapboxgl-directive').factory('mapboxglImageUtils', ['mapboxglUti
 			throw new Error('Object coordinates are undefined');
 		}
 
-    object.id = object.type + '_' + Date.now();
+    object.id = 'image_' + Date.now();
 
     map.addSource(object.id, {
     	type: 'image',
@@ -705,7 +705,7 @@ angular.module('mapboxgl-directive').factory('mapboxglVideoUtils', ['mapboxglUti
       throw new Error('Object coordinates are undefined');
     }
 
-    object.id = object.type + '_' + Date.now();
+    object.id = 'video_' + Date.now();
 
     map.addSource(object.id, {
       type: 'video',
@@ -1343,8 +1343,6 @@ angular.module('mapboxgl-directive').directive('glHandlers', [function () {
 }]);
 
 angular.module('mapboxgl-directive').directive('glImage', ['mapboxglImageUtils', function (mapboxglImageUtils) {
-	// ToDo: Check
-
 	function mapboxGlImageDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');

@@ -1,4 +1,9 @@
-## Installation
+# angular-mapboxgl-directive
+AngularJS directive for Mapbox GL
+
+[![Circle CI](https://circleci.com/gh/Naimikan/angular-mapboxgl-directive/tree/master.svg?style=svg)](https://circleci.com/gh/Naimikan/angular-mapboxgl-directive/tree/master)
+
+### Installation
 
 NPM
 ```shell
@@ -10,7 +15,7 @@ Bower
 bower install angular-mapboxgl-directive --save
 ```
 
-## Get Started
+### Get Started
 
 Include files in your `index.html`:
 ```html
@@ -22,7 +27,7 @@ Add `mapboxgl-directive` module in your AngularJS project:
 var app = angular.module('YourProject', ['mapboxgl-directive']);
 ```
 
-## Usage
+### Usage
 
 ```html
 <mapboxgl></mapboxgl>
@@ -30,4 +35,15 @@ var app = angular.module('YourProject', ['mapboxgl-directive']);
 or
 ```html
 <div mapboxgl></div>
+```
+
+### See [Wiki](https://github.com/Naimikan/angular-mapboxgl-directive/wiki) for complete reference.
+
+### Developing
+Install dependencies, build the source files and preview
+
+```shell
+git clone https://github.com/Naimikan/angular-mapboxgl-directive.git
+npm install & bower install
+grunt & grunt preview
 ```

@@ -1,6 +1,6 @@
 angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope', function ($rootScope) {
   var eventsAvailables = [
-    'webglcontextlost ',
+    'webglcontextlost',
     'webglcontextrestored',
     'error',
     'render',

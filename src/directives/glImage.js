@@ -1,6 +1,4 @@
 angular.module('mapboxgl-directive').directive('glImage', ['mapboxglImageUtils', function (mapboxglImageUtils) {
-	// ToDo: Check
-
 	function mapboxGlImageDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');

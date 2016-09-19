@@ -16,7 +16,7 @@ angular.module('mapboxgl-directive').factory('mapboxglVideoUtils', ['mapboxglUti
       throw new Error('Object coordinates are undefined');
     }
 
-    object.id = object.type + '_' + Date.now();
+    object.id = 'video_' + Date.now();
 
     map.addSource(object.id, {
       type: 'video',

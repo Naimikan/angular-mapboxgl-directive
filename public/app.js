@@ -102,7 +102,7 @@
       navigation: {
         enabled: true,
         options: {
-          position: 'top-left'
+          position: 'top-right'
         }
       },
       scale: {
