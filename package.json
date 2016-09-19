@@ -3,9 +3,6 @@
   "version": "0.11.1",
   "description": "An AngularJS directive for Mapbox GL",
   "main": "Gruntfile.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Naimikan/angular-mapboxgl-directive.git"
