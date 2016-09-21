@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.11.0 2016-09-19
+*  angular-mapboxgl-directive 0.12.0 2016-09-21
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -277,6 +277,33 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
           map.on('load', function () {
             updateLanguage(map);
           });
+        }
+      });
+
+      // showCollisionBoxes
+      scope.$watch(function () {
+        return attrs.showCollisionBoxes;
+      }, function () {
+        if (typeof(attrs.showCollisionBoxes) === 'boolean') {
+          map.showCollisionBoxes = attrs.showCollisionBoxes;
+        }
+      });
+
+      // showTileBoundaries
+      scope.$watch(function () {
+        return attrs.showTileBoundaries;
+      }, function () {
+        if (typeof(attrs.showTileBoundaries) === 'boolean') {
+          map.showTileBoundaries = attrs.showTileBoundaries;
+        }
+      });
+
+      // repaint
+      scope.$watch(function () {
+        return attrs.repaint;
+      }, function () {
+        if (typeof(attrs.repaint) === 'boolean') {
+          map.repaint = attrs.repaint;
         }
       });
     });

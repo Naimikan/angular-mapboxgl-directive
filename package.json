@@ -1,15 +1,21 @@
 {
   "name": "angular-mapboxgl-directive",
-  "version": "0.11.1",
+  "version": "0.12.0",
   "description": "An AngularJS directive for Mapbox GL",
   "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Naimikan/angular-mapboxgl-directive.git"
   },
   "keywords": [
+    "webgl",
     "angularjs",
+    "mapbox",
     "mapboxgl",
+    "javascript",
     "cli"
   ],
   "author": "https://github.com/Naimikan/angular-mapboxgl-directive/graphs/contributors",

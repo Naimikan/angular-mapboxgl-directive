@@ -1,7 +1,6 @@
 # angular-mapboxgl-directive
 AngularJS directive for Mapbox GL
 
-[![Circle CI](https://circleci.com/gh/Naimikan/angular-mapboxgl-directive/tree/master.svg?style=svg)](https://circleci.com/gh/Naimikan/angular-mapboxgl-directive/tree/master)
 
 ### Installation
 

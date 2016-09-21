@@ -272,6 +272,33 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
           });
         }
       });
+
+      // showCollisionBoxes
+      scope.$watch(function () {
+        return attrs.showCollisionBoxes;
+      }, function () {
+        if (typeof(attrs.showCollisionBoxes) === 'boolean') {
+          map.showCollisionBoxes = attrs.showCollisionBoxes;
+        }
+      });
+
+      // showTileBoundaries
+      scope.$watch(function () {
+        return attrs.showTileBoundaries;
+      }, function () {
+        if (typeof(attrs.showTileBoundaries) === 'boolean') {
+          map.showTileBoundaries = attrs.showTileBoundaries;
+        }
+      });
+
+      // repaint
+      scope.$watch(function () {
+        return attrs.repaint;
+      }, function () {
+        if (typeof(attrs.repaint) === 'boolean') {
+          map.repaint = attrs.repaint;
+        }
+      });
     });
 
     scope.$on('mapboxglMap:styleChanged', function () {
