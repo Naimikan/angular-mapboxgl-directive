@@ -19,6 +19,8 @@ bower install angular-mapboxgl-directive --save
 Include files in your `index.html`:
 ```html
 <script src="angular-mapboxgl-directive.min.js"></script>
+
+<link href="angular-mapboxgl-directive.css" rel="stylesheet" />
 ```
 
 Add `mapboxgl-directive` module in your AngularJS project:

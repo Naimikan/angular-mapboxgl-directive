@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.12.0 2016-09-21
+*  angular-mapboxgl-directive 0.12.1 2016-09-22
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -1045,10 +1045,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
           // Geolocate Control
           if (angular.isDefined(controls.geolocate) && angular.isDefined(controls.geolocate.enabled) && controls.geolocate.enabled) {
 						var geolocateEventsAvailables = [
-							'clear',
-							'loading',
-							'results',
-							'result',
+							'geolocate',
 							'error'
 						];
 
@@ -1129,6 +1126,16 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 									addNewControlCreated(eachCustomControl.name, customControl, true);
 
 	                map.addControl(customControl);
+
+									if (angular.isDefined(eachCustomControl.events) && angular.isArray(eachCustomControl.events)) {
+										eachCustomControl.events.map(function (eachCustomControlEvent) {
+											customControl.on(eachCustomControlEvent, function (event) {
+												var eventName = 'mapboxgl:' + eachCustomControl.name + ':' + eachCustomControlEvent;
+
+												$rootScope.$broadcast(eventName, event);
+											});
+										});
+									}
 	              }
 	            });
 						} else {

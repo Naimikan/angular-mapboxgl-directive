@@ -35,6 +35,10 @@
       console.log(event, mapboxglDirectionsEvent);
     });
 
+    $scope.$on('mapboxglGeolocate:geolocate', function (event, mapboxglGeolocateEvent) {
+      console.log(event, mapboxglGeolocateEvent);
+    });
+
     $timeout(function () {
       $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
 
@@ -110,6 +114,9 @@
         options: {
           position: 'bottom-left'
         }
+      },
+      geolocate: {
+        enabled: true
       },
       directions: {
         enabled: true,
