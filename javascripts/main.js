@@ -3,7 +3,9 @@
 
   angular.module('app', [
     'ui.router',
-    'mapboxgl-directive'
+    'mapboxgl-directive',
+
+    'app.Home'
   ])
 
   .config(['$compileProvider', '$urlRouterProvider', function ($compileProvider, $urlRouterProvider) {
