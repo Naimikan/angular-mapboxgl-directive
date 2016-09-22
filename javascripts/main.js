@@ -1,26 +1,22 @@
 (function (angular, mapboxgl, undefined) {
   'use strict';
 
-  angular.module('app', ['mapboxgl-directive'])
+  angular.module('app', [
+    'ui.router',
+    'mapboxgl-directive'
+  ])
 
-  .run([function () {
-    mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
+  .config(['$compileProvider', '$urlRouterProvider', function ($compileProvider, $urlRouterProvider) {
+    // Needed for routing to work
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|tel):/);
+
+    $urlRouterProvider.otherwise('/');
   }])
 
-  .controller('IndexController', ['$scope', function ($scope) {
-    $scope.glCenter = {
-      autodiscover: true
-    };
+  .run(['$rootScope', '$state', '$stateParams', function ($rootScope, $state, $stateParams) {
+    $rootScope.$state = $state;
+    $rootScope.$stateParams = $stateParams;
 
-    $scope.glControls = {
-      navigation: {
-        enabled: true,
-        position: 'top-left'
-      },
-      scale: {
-        enabled: true,
-        position: 'bottom-left'
-      }
-    };
+    mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
   }]);
 })(window.angular, window.mapboxgl);
