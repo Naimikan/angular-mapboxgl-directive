@@ -2,7 +2,7 @@
 AngularJS directive for Mapbox GL
 
 [![NPM version][npm-image]][npm-url]
-[![License][license-image]](LICENSE.md)
+[![License][license-image]](LICENSE)
 
 ### Installation
 
