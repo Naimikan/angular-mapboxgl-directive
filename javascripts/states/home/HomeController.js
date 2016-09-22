@@ -4,6 +4,23 @@
   angular.module('app.Home')
 
   .controller('HomeController', ['$scope', function ($scope) {
-    console.log('Hola');
+    $scope.glCenter = {
+      autodiscover: true
+    };
+
+    $scope.glControls = {
+      navigation: {
+        enabled: true,
+        options: {
+          position: 'top-left'
+        }
+      },
+      scale: {
+        enabled: true,
+        options: {
+          position: 'bottom-left'
+        }
+      }
+    };
   }]);
 })(window.angular);
