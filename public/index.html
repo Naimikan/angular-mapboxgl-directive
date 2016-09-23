@@ -4,10 +4,12 @@
 
     <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.24.0/mapbox-gl.css" rel="stylesheet" />
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v2.2.0/mapbox-gl-directions.css' type='text/css' />
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.0.1/mapbox-gl-compare.css' type='text/css' />
     <link href="css/angular-mapboxgl-directive.css" rel="stylesheet" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.24.0/mapbox-gl.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.0.1/mapbox-gl-compare.js'></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v2.2.0/mapbox-gl-directions.js'></script>
 
     <script src="lib/angular-mapboxgl-directive.js"></script>
@@ -17,6 +19,7 @@
   <body ng-controller="IndexController" style="margin: 0;">
     <div
       mapboxgl
+      id="map1"
       gl-handlers="glHandlers"
       gl-style="glStyle"
       gl-center="glCenter"
@@ -32,5 +35,24 @@
       height="{{glHeight}}"
       width="{{glWidth}}"
       language="es"></div>
+
+      <div
+        mapboxgl
+        id="map2"
+        gl-handlers="glHandlers"
+        gl-style="glStyle2"
+        gl-center="glCenter"
+        gl-zoom="glZoom"
+        gl-controls="glControls"
+        gl-geojson="glGeojson"
+        gl-popups="glPopups"
+        gl-markers="glMarkers"
+        persistent-geojson="persistentGeojson"
+        persistent-image="persistentImage"
+        gl-image="glImage"
+        gl-video="glVideo"
+        height="{{glHeight}}"
+        width="{{glWidth}}"
+        language="es"></div>
   </body>
 </html>

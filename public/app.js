@@ -7,7 +7,7 @@
     mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
   }])
 
-  .controller('IndexController', ['$scope', '$window', '$timeout', function ($scope, $window, $timeout) {
+  .controller('IndexController', ['$scope', '$window', '$timeout', 'mapboxglMapsData', function ($scope, $window, $timeout, mapboxglMapsData) {
     $scope.glHeight = $window.innerHeight;
 
     $window.onresize = function (event) {
@@ -20,6 +20,7 @@
     $scope.persistentImage = true;
 
     $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
+    $scope.glStyle2 = 'mapbox://styles/mapbox/dark-v9'
 
     $scope.glPopups = [
       {
@@ -39,7 +40,16 @@
       console.log(event, mapboxglGeolocateEvent);
     });
 
-    $timeout(function () {
+    angular.element(document).ready(function () {
+      var map1 = mapboxglMapsData.getMapById('map1');
+      var map2 = mapboxglMapsData.getMapById('map2');
+
+      console.log(map1, map2);
+
+      var map = new mapboxgl.Compare(map1, map2);
+    });
+
+    /*$timeout(function () {
       $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
 
       $scope.glCenter = {
@@ -68,7 +78,7 @@
       };
 
       $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
-    }, 12000, true);
+    }, 12000, true);*/
 
     $scope.glCenter = {
       lat: 37.562984,

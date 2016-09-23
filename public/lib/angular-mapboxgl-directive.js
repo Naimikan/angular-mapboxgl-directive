@@ -1,11 +1,11 @@
 /*!
-*  angular-mapboxgl-directive 0.12.1 2016-09-22
+*  angular-mapboxgl-directive 0.12.1 2016-09-23
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
 (function (angular, mapboxgl, undefined) {
 'use strict';
-angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', 'mapboxglConstants', 'mapboxglEventsUtils', function ($q, mapboxglUtils, mapboxglConstants, mapboxglEventsUtils) {
+angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', 'mapboxglConstants', 'mapboxglEventsUtils', 'mapboxglMapsData', function ($q, mapboxglUtils, mapboxglConstants, mapboxglEventsUtils, mapboxglMapsData) {
   function mapboxGlDirectiveController ($scope) {
     this._mapboxGlMap = $q.defer();
     this._geojsonObjects = [];
@@ -253,6 +253,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       trackResize: angular.isDefined(attrs.trackResize) && typeof(attrs.trackResize) === 'boolean' ? attrs.trackResize : mapboxglConstants.map.defaultTrackResize,
       attributionControl: false
     });
+
+    mapboxglMapsData.addMap(scope.mapboxglMapId, mapboxGlMap);
 
     //scope.isLoading = true;
     //controller.changeLoadingMap(scope.isLoading);
@@ -587,6 +589,60 @@ angular.module('mapboxgl-directive').factory('mapboxglImageUtils', ['mapboxglUti
 	return mapboxglImageUtils;
 }]);
 
+angular.module('mapboxgl-directive').factory('mapboxglMapsData', ['mapboxglUtils', function (mapboxglUtils) {
+  var _mapInstances = [];
+
+  function addMap (mapId, mapInstance) {
+    _mapInstances.push({
+      id: mapId,
+      mapInstance: mapInstance
+    });
+  }
+
+  function removeMapById (mapId) {
+    var mapIndexOf = mapboxglUtils.arrayObjectIndexOf(_mapInstances, mapId, 'id');
+
+    if (mapIndexOf !== -1) {
+      var mapObject = _mapInstances[mapIndexOf];
+      mapObject.mapInstance.remove();
+
+      _mapInstances.splice(mapIndexOf, 1);
+    }
+  }
+
+  function removeAllMaps () {
+    _mapInstances.map(function (eachMapObject) {
+      eachMapObject.mapInstance.remove();
+    });
+
+    _mapInstances = [];
+  }
+
+  function getMaps () {
+    return _mapInstances;
+  }
+
+  function getMapById (mapId) {
+    var mapIndexOf = mapboxglUtils.arrayObjectIndexOf(_mapInstances, mapId, 'id');
+
+    if (mapIndexOf !== -1) {
+      return _mapInstances[mapIndexOf].mapInstance;
+    } else {
+      return null;
+    }
+  }
+
+  var mapboxglMapsData = {
+    addMap: addMap,
+    removeMapById: removeMapById,
+    removeAllMaps: removeAllMaps,
+    getMaps: getMaps,
+    getMapById: getMapById
+  };
+
+  return mapboxglMapsData;
+}]);
+
 angular.module('mapboxgl-directive').factory('mapboxglMarkerUtils', ['mapboxglUtils', 'mapboxglConstants', 'mapboxglPopupUtils', function (mapboxglUtils, mapboxglConstants, mapboxglPopupUtils) {
 	function createMarkerByObject (map, object) {
     if (angular.isUndefined(map) || map === null) {
@@ -706,9 +762,20 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 		return defer.promise;
 	}
 
+	function arrayObjectIndexOf (array, searchTerm, property) {
+		for (var iterator = 0, length = array.length; iterator < length; iterator++) {
+	    if (array[iterator][property] === searchTerm) {
+	      return iterator;
+	    }
+	  }
+
+	  return -1;
+	}
+
 	var mapboxglUtils = {
 		generateMapId: generateMapId,
-		validateAndFormatCenter: validateAndFormatCenter
+		validateAndFormatCenter: validateAndFormatCenter,
+		arrayObjectIndexOf: arrayObjectIndexOf
 	};
 
 	return mapboxglUtils;

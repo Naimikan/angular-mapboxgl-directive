@@ -42,9 +42,20 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 		return defer.promise;
 	}
 
+	function arrayObjectIndexOf (array, searchTerm, property) {
+		for (var iterator = 0, length = array.length; iterator < length; iterator++) {
+	    if (array[iterator][property] === searchTerm) {
+	      return iterator;
+	    }
+	  }
+
+	  return -1;
+	}
+
 	var mapboxglUtils = {
 		generateMapId: generateMapId,
-		validateAndFormatCenter: validateAndFormatCenter
+		validateAndFormatCenter: validateAndFormatCenter,
+		arrayObjectIndexOf: arrayObjectIndexOf
 	};
 
 	return mapboxglUtils;
