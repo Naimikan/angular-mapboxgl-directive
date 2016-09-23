@@ -3,6 +3,7 @@
 
   angular.module('app', [
     'ui.router',
+    'hljs',
     'mapboxgl-directive',
 
     'app.Home'
