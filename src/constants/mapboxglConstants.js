@@ -1,5 +1,6 @@
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 	map: {
+		defaultHeight: '450px',
 		defaultStyle: 'mapbox://styles/mapbox/streets-v9',
 		defaultCenter: [0, 0],
 		defaultHash: false,

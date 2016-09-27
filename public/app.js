@@ -40,14 +40,14 @@
       console.log(event, mapboxglGeolocateEvent);
     });
 
-    angular.element(document).ready(function () {
+    /*angular.element(document).ready(function () {
       var map1 = mapboxglMapsData.getMapById('map1');
       var map2 = mapboxglMapsData.getMapById('map2');
 
       console.log(map1, map2);
 
       var map = new mapboxgl.Compare(map1, map2);
-    });
+    });*/
 
     /*$timeout(function () {
       $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';

@@ -157,6 +157,10 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       } else {
         element.css('width', attrs.width + 'px');
       }
+
+      controller.getMap().then(function (map) {
+        map.resize();
+      });
     };
 
     var updateHeight = function () {
@@ -165,6 +169,10 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       } else {
         element.css('height', attrs.height + 'px');
       }
+
+      controller.getMap().then(function (map) {
+        map.resize();
+      });
     };
 
     var updateLanguage = function (map) {
@@ -191,6 +199,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       }, function () {
         updateHeight();
       });
+    } else {
+      element.css('height', mapboxglConstants.defaultHeight);
     }
 
     if (angular.isDefined(scope.persistentGeojson) && typeof(scope.persistentGeojson) === 'boolean') {

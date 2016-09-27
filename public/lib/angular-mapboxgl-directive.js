@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.12.1 2016-09-23
+*  angular-mapboxgl-directive 0.13.1 2016-09-27
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -164,6 +164,10 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       } else {
         element.css('width', attrs.width + 'px');
       }
+
+      controller.getMap().then(function (map) {
+        map.resize();
+      });
     };
 
     var updateHeight = function () {
@@ -172,6 +176,10 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       } else {
         element.css('height', attrs.height + 'px');
       }
+
+      controller.getMap().then(function (map) {
+        map.resize();
+      });
     };
 
     var updateLanguage = function (map) {
@@ -198,6 +206,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       }, function () {
         updateHeight();
       });
+    } else {
+      element.css('height', mapboxglConstants.defaultHeight);
     }
 
     if (angular.isDefined(scope.persistentGeojson) && typeof(scope.persistentGeojson) === 'boolean') {
@@ -825,6 +835,7 @@ angular.module('mapboxgl-directive').factory('mapboxglVideoUtils', ['mapboxglUti
 
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 	map: {
+		defaultHeight: '450px',
 		defaultStyle: 'mapbox://styles/mapbox/streets-v9',
 		defaultCenter: [0, 0],
 		defaultHash: false,
