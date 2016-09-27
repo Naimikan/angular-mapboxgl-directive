@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.13.1 2016-09-27
+*  angular-mapboxgl-directive 0.13.3 2016-09-27
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -207,7 +207,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
         updateHeight();
       });
     } else {
-      element.css('height', mapboxglConstants.defaultHeight);
+      element.css('height', mapboxglConstants.map.defaultHeight);
     }
 
     if (angular.isDefined(scope.persistentGeojson) && typeof(scope.persistentGeojson) === 'boolean') {
