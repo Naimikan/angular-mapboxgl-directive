@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.13.3 2016-09-27
+*  angular-mapboxgl-directive 0.13.4 2016-09-27
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -158,28 +158,24 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
     element.attr('id', scope.mapboxglMapId);
 
-    var updateWidth = function () {
+    var updateWidth = function (map) {
       if (isNaN(attrs.width)) {
         element.css('width', attrs.width);
       } else {
         element.css('width', attrs.width + 'px');
       }
 
-      controller.getMap().then(function (map) {
-        map.resize();
-      });
+      map.resize();
     };
 
-    var updateHeight = function () {
+    var updateHeight = function (map) {
       if (isNaN(attrs.height)) {
         element.css('height', attrs.height);
       } else {
         element.css('height', attrs.height + 'px');
       }
 
-      controller.getMap().then(function (map) {
-        map.resize();
-      });
+      map.resize();
     };
 
     var updateLanguage = function (map) {
@@ -187,28 +183,6 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
         map.setLayoutProperty('country-label-lg', 'text-field', '{name_' + attrs.language + '}');
       }
     };
-
-    if (angular.isDefined(attrs.width)) {
-      updateWidth();
-
-      scope.$watch(function () {
-        return element[0].getAttribute('width');
-      }, function () {
-        updateWidth();
-      });
-    }
-
-    if (angular.isDefined(attrs.height)) {
-      updateHeight();
-
-      scope.$watch(function () {
-        return element[0].getAttribute('height');
-      }, function () {
-        updateHeight();
-      });
-    } else {
-      element.css('height', mapboxglConstants.map.defaultHeight);
-    }
 
     if (angular.isDefined(scope.persistentGeojson) && typeof(scope.persistentGeojson) === 'boolean') {
       controller.setPersistentGeojson(scope.persistentGeojson);
@@ -318,6 +292,32 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
           map.repaint = attrs.repaint;
         }
       });
+
+      // Width
+      if (angular.isDefined(attrs.width)) {
+        updateWidth(map);
+
+        scope.$watch(function () {
+          return element[0].getAttribute('width');
+        }, function () {
+          updateWidth(map);
+        });
+      }
+
+      // Height
+      if (angular.isDefined(attrs.height)) {
+        updateHeight(map);
+
+        scope.$watch(function () {
+          return element[0].getAttribute('height');
+        }, function () {
+          updateHeight(map);
+        });
+      } else {
+        element.css('height', mapboxglConstants.map.defaultHeight);
+
+        map.resize();
+      }
     });
 
     scope.$on('mapboxglMap:styleChanged', function () {
@@ -1800,11 +1800,13 @@ angular.module('mapboxgl-directive').directive('glStyle', ['$rootScope', functio
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glStyle', function (style, oldStyle) {
-				map.setStyle(style);
+				if (angular.isDefined(style) && style !== null) {
+					map.setStyle(style);
 
-				map.style.on('load', function () {
-					$rootScope.$broadcast('mapboxglMap:styleChanged');
-				});
+					map.style.on('load', function () {
+						$rootScope.$broadcast('mapboxglMap:styleChanged');
+					});
+				}
 			}, true);
 		});
 	}
