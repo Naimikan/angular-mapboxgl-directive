@@ -200,7 +200,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
         updateHeight();
       });
     } else {
-      element.css('height', mapboxglConstants.defaultHeight);
+      element.css('height', mapboxglConstants.map.defaultHeight);
     }
 
     if (angular.isDefined(scope.persistentGeojson) && typeof(scope.persistentGeojson) === 'boolean') {
