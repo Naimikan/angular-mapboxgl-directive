@@ -40,6 +40,10 @@
       console.log(event, mapboxglGeolocateEvent);
     });
 
+    $scope.$on('mapboxglDraw:draw.create', function (event, mapboxglDrawEvent) {
+      console.log(event, mapboxglDrawEvent);
+    });
+
     /*angular.element(document).ready(function () {
       var map1 = mapboxglMapsData.getMapById('map1');
       var map2 = mapboxglMapsData.getMapById('map2');
@@ -128,10 +132,10 @@
       geolocate: {
         enabled: true
       },
-      directions: {
+      draw: {
         enabled: true,
         options: {
-          unit: 'metric'
+          position: 'top-left'
         }
       }
     };
