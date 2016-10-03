@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.13.5 2016-09-28
+*  angular-mapboxgl-directive 0.13.6 2016-10-03
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -980,33 +980,41 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 	    _controlsCreated = newControlsCreated;
 	  };
 
-	  var addNewControlCreated = function (controlName, newControl, isCustomControl, controlEvents) {
+	  var addNewControlCreated = function (controlName, newControl, isCustomControl, controlEvents, isEventsListenedByMap) {
 	    if (isCustomControl) {
 	      _controlsCreated.custom.push({
 	        name: controlName || 'customControl_' + Date.now(),
 	        control: newControl,
+					isEventsListenedByMap: angular.isDefined(isEventsListenedByMap) ? isEventsListenedByMap : false,
 					events: angular.isDefined(controlEvents) && angular.isArray(controlEvents) ? controlEvents : []
 	      });
 	    } else {
 	      _controlsCreated[controlName] = {
 					control: newControl,
+					isEventsListenedByMap: angular.isDefined(isEventsListenedByMap) ? isEventsListenedByMap : false,
 					events: angular.isDefined(controlEvents) && angular.isArray(controlEvents) ? controlEvents : []
 				};
 	    }
 	  };
 
-		var removeEventsFromControl = function (control, events) {
-			events.map(function (eachEvent) {
-				control.off(eachEvent);
-			});
+		var removeEventsFromControl = function (control, events, isEventsListenedByMap, map) {
+			if (isEventsListenedByMap) {
+				events.map(function (eachEvent) {
+					map.off(eachEvent);
+				});
+			} else {
+				events.map(function (eachEvent) {
+					control.off(eachEvent);
+				});
+			}
 		};
 
-	  var removeAllControlsCreated = function () {
+	  var removeAllControlsCreated = function (map) {
 	    for (var attribute in _controlsCreated) {
 	      if (attribute !== 'custom') {
 	        var controlToRemove = _controlsCreated[attribute];
 
-					removeEventsFromControl(controlToRemove.control, controlToRemove.events);
+					removeEventsFromControl(controlToRemove.control, controlToRemove.events, controlToRemove.isEventsListenedByMap, map);
 
 	        controlToRemove.control.remove();
 	      } else {
@@ -1015,7 +1023,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 					for (var iterator = 0, length = customControls.length; iterator < length; iterator++) {
 						var eachCustomControl = customControls[iterator];
 
-						removeEventsFromControl(eachCustomControl.control, eachCustomControl.events);
+						removeEventsFromControl(eachCustomControl.control, eachCustomControl.events, eachCustomControl.isEventsListenedByMap, map);
 
 	          eachCustomControl.control.remove();
 					}
@@ -1028,7 +1036,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 	    };
 	  };
 
-	  var removeControlCreatedByName = function (controlName) {
+	  var removeControlCreatedByName = function (map, controlName) {
 			var found = false, removed = false;
 
 			for (var attribute in _controlsCreated) {
@@ -1047,7 +1055,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 			if (found) {
 				try {
-					removeEventsFromControl(found.control, found.events);
+					removeEventsFromControl(found.control, found.events, found.isEventsListenedByMap, map);
 
 					found.control.remove();
 					removed = true;
@@ -1058,6 +1066,43 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 			return removed;
 	  };
+
+		scope.$on('mapboxglMap:styleChanged', function (event, args) {
+			var map = args.map;
+
+			map.on('style.load', function () {
+				var drawControl = _controlsCreated.draw;
+				var drawControlInstance = drawControl.control;
+
+				var coldSource = map.getSource('mapbox-gl-draw-cold');
+				var hotSource = map.getSource('mapbox-gl-draw-hot');
+
+				if (!coldSource && !hotSource) {
+					map.addSource('mapbox-gl-draw-cold', {
+						type: 'geojson',
+						data: {
+							type: 'FeatureCollection',
+							features: []
+						}
+					});
+
+					map.addSource('mapbox-gl-draw-hot', {
+						type: 'geojson',
+						data: {
+							type: 'FeatureCollection',
+							features: []
+						}
+					});
+
+					console.log(drawControlInstance);
+
+					drawControlInstance.options.styles.map(function (eachStyle) {
+						map.addLayer(eachStyle);
+					});
+				}
+			});
+		});
+
 
     /*
       controls: {
@@ -1145,7 +1190,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 			mapboxglScope.$watch('glControls', function (controls) {
         if (angular.isDefined(controls)) {
 					// Remove all created controls
-					removeAllControlsCreated();
+					removeAllControlsCreated(map);
 
 					controlsAvailables.map(function (eachControlAvailable) {
 						if (angular.isDefined(controls[eachControlAvailable.name]) && angular.isDefined(controls[eachControlAvailable.name].enabled) && controls[eachControlAvailable.name].enabled) {
@@ -1153,7 +1198,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 								var ControlConstructor = eachControlAvailable.constructor.bind.apply(eachControlAvailable.constructor, controls[eachControlAvailable.name].options);
 								var control = new ControlConstructor(controls[eachControlAvailable.name].options);
 
-								addNewControlCreated(eachControlAvailable.name, control, false, eachControlAvailable.eventsAvailables);
+								addNewControlCreated(eachControlAvailable.name, control, false, eachControlAvailable.eventsAvailables, eachControlAvailable.listenInMap);
 
 		            map.addControl(control);
 
@@ -1782,8 +1827,12 @@ angular.module('mapboxgl-directive').directive('glStyle', ['$rootScope', functio
 				if (angular.isDefined(style) && style !== null) {
 					map.setStyle(style);
 
-					map.style.on('load', function () {
-						$rootScope.$broadcast('mapboxglMap:styleChanged');
+					map.on('style.load', function () {
+						$rootScope.$broadcast('mapboxglMap:styleChanged', {
+							map: map,
+							newStyle: style,
+							oldStyle: oldStyle
+						});
 					});
 				}
 			}, true);

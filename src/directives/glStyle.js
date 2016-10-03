@@ -20,8 +20,12 @@ angular.module('mapboxgl-directive').directive('glStyle', ['$rootScope', functio
 				if (angular.isDefined(style) && style !== null) {
 					map.setStyle(style);
 
-					map.style.on('load', function () {
-						$rootScope.$broadcast('mapboxglMap:styleChanged');
+					map.on('style.load', function () {
+						$rootScope.$broadcast('mapboxglMap:styleChanged', {
+							map: map,
+							newStyle: style,
+							oldStyle: oldStyle
+						});
 					});
 				}
 			}, true);
