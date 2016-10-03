@@ -105,7 +105,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 			return removed;
 	  };
 
-		scope.$on('mapboxglMap:styleChanged', function (event, args) {
+		/*scope.$on('mapboxglMap:styleChanged', function (event, args) {
 			var map = args.map;
 
 			map.on('style.load', function () {
@@ -139,7 +139,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 					});
 				}
 			});
-		});
+		});*/
 
 
     /*

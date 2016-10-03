@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.13.6 2016-10-03
+*  angular-mapboxgl-directive 0.13.7 2016-10-03
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -1067,7 +1067,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 			return removed;
 	  };
 
-		scope.$on('mapboxglMap:styleChanged', function (event, args) {
+		/*scope.$on('mapboxglMap:styleChanged', function (event, args) {
 			var map = args.map;
 
 			map.on('style.load', function () {
@@ -1101,7 +1101,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 					});
 				}
 			});
-		});
+		});*/
 
 
     /*
