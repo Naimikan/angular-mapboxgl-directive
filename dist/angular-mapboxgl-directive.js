@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.13.8 2016-10-07
+*  angular-mapboxgl-directive 0.13.9 2016-10-07
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -1233,7 +1233,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 	                map.addControl(customControl);
 
-									var listener = eachCustomControl.listenInMap ? map : eachCustomControl;
+									var listener = eachCustomControl.listenInMap ? map : customControl;
 
 									customControlEvents.map(function (eachCustomControlEvent) {
 										listener.on(eachCustomControlEvent, function (event) {

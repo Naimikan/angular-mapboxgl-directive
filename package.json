@@ -1,6 +1,6 @@
 {
   "name": "angular-mapboxgl-directive",
-  "version": "0.13.8",
+  "version": "0.13.9",
   "description": "An AngularJS directive for Mapbox GL",
   "main": "Gruntfile.js",
   "scripts": {

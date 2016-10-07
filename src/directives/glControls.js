@@ -271,7 +271,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 	                map.addControl(customControl);
 
-									var listener = eachCustomControl.listenInMap ? map : eachCustomControl;
+									var listener = eachCustomControl.listenInMap ? map : customControl;
 
 									customControlEvents.map(function (eachCustomControlEvent) {
 										listener.on(eachCustomControlEvent, function (event) {
