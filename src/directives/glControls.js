@@ -245,7 +245,9 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 									eachControlAvailable.eventsAvailables.map(function (eachControlEvent) {
 										listener.on(eachControlEvent, function (event) {
-											$rootScope.$broadcast(eachControlAvailable.eventsExposedName + ':' + eachControlEvent, event);
+											var eventName = eachControlAvailable.eventsExposedName + ':' + eachControlEvent;
+
+											$rootScope.$broadcast(eventName, event);
 										});
 									});
 								}
@@ -265,12 +267,14 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 									var customControlEvents = angular.isArray(eachCustomControl.events) ? eachCustomControl.events : [];
 
-									addNewControlCreated(eachCustomControl.name, customControl, true, customControlEvents);
+									addNewControlCreated(eachCustomControl.name, customControl, true, customControlEvents, eachCustomControl.listenInMap);
 
 	                map.addControl(customControl);
 
+									var listener = eachCustomControl.listenInMap ? map : eachCustomControl;
+
 									customControlEvents.map(function (eachCustomControlEvent) {
-										customControl.on(eachCustomControlEvent, function (event) {
+										listener.on(eachCustomControlEvent, function (event) {
 											var eventName = 'mapboxgl:' + eachCustomControl.name + ':' + eachCustomControlEvent;
 
 											$rootScope.$broadcast(eventName, event);
