@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.13.9 2016-10-07
+*  angular-mapboxgl-directive 0.13.10 2016-10-11
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -499,10 +499,13 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
 
       if (object.type === 'line') {
         object.geometryType = 'LineString';
+        object.layerType = object.type;
       } else if (object.type === 'polygon') {
         object.geometryType = 'Polygon';
+        object.layerType = 'fill';
       } else if (object.type === 'circle') {
         object.geometryType = 'Point';
+        object.layerType = object.type;
       } else {
         throw new Error('Invalid geojson type');
       }
@@ -537,7 +540,7 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
 
     var layerToAdd = {
       id: object.id,
-      type: object.type,
+      type: object.layerType,
       source: object.id,
       metadata: {
         type: 'mapboxgl:geojson',
@@ -1200,8 +1203,6 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 								addNewControlCreated(eachControlAvailable.name, control, false, eachControlAvailable.eventsAvailables, eachControlAvailable.listenInMap);
 
-		            map.addControl(control);
-
 								if (angular.isDefined(eachControlAvailable.eventsAvailables) && angular.isDefined(eachControlAvailable.eventsExposedName)) {
 									var listener = eachControlAvailable.listenInMap ? map : control;
 
@@ -1213,6 +1214,8 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 										});
 									});
 								}
+
+								map.addControl(control);
 							} else {
 								throw new Error(eachControlAvailable.pluginName + ' plugin is not included.');
 							}
@@ -1231,8 +1234,6 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 									addNewControlCreated(eachCustomControl.name, customControl, true, customControlEvents, eachCustomControl.listenInMap);
 
-	                map.addControl(customControl);
-
 									var listener = eachCustomControl.listenInMap ? map : customControl;
 
 									customControlEvents.map(function (eachCustomControlEvent) {
@@ -1242,6 +1243,8 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 											$rootScope.$broadcast(eventName, event);
 										});
 									});
+
+									map.addControl(customControl);
 	              }
 	            });
 						} else {
@@ -1308,7 +1311,7 @@ angular.module('mapboxgl-directive').directive('glFilter', [function () {
 	return directive;
 }]);
 
-angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUtils', function (mapboxglGeojsonUtils) {
+angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUtils', '$timeout', function (mapboxglGeojsonUtils, $timeout) {
   function mapboxGlGeojsonDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -1415,14 +1418,24 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 
 		controller.getMap().then(function (map) {
       mapboxglScope.$watchCollection('glGeojson', function (geojson) {
-        //geojsonWatched(map, controller, geojson);
-
-        if (map.style.loaded()) {
-          geojsonWatched(map, controller, geojson);
-        } else {
-          map.style.on('load', function () {
+        if (angular.isDefined(geojson) && geojson !== null) {
+          $timeout(function () {
             geojsonWatched(map, controller, geojson);
-          });
+          }, 500, true);
+
+          /*map.on('style.load', function () {
+            geojsonWatched(map, controller, geojson);
+          });*/
+
+          //geojsonWatched(map, controller, geojson);
+
+          /*if (map.style.loaded()) {
+            geojsonWatched(map, controller, geojson);
+          } else {
+            map.style.on('load', function () {
+              geojsonWatched(map, controller, geojson);
+            });
+          }*/
         }
       });
     });

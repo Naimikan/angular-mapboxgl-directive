@@ -501,6 +501,24 @@
           message: 'xcmlxncbknxcbn'
         }
       }, {
+        type: 'polygon',
+        coordinates: [
+          [
+            [-2, 40],
+            [-2.5, 41],
+            [-3, 42],
+            [-3.5, 39],
+            [-4, 38],
+            [-2, 40]
+          ]
+        ],
+        layer: {
+          paint: {
+            "fill-color": "#FF0000",
+            "fill-opacity": 0.75
+          }
+        }
+      }, {
         type: 'line',
         coordinates: [
           [-2, 41],

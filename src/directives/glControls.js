@@ -238,8 +238,6 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 								addNewControlCreated(eachControlAvailable.name, control, false, eachControlAvailable.eventsAvailables, eachControlAvailable.listenInMap);
 
-		            map.addControl(control);
-
 								if (angular.isDefined(eachControlAvailable.eventsAvailables) && angular.isDefined(eachControlAvailable.eventsExposedName)) {
 									var listener = eachControlAvailable.listenInMap ? map : control;
 
@@ -251,6 +249,8 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 										});
 									});
 								}
+
+								map.addControl(control);
 							} else {
 								throw new Error(eachControlAvailable.pluginName + ' plugin is not included.');
 							}
@@ -269,8 +269,6 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 									addNewControlCreated(eachCustomControl.name, customControl, true, customControlEvents, eachCustomControl.listenInMap);
 
-	                map.addControl(customControl);
-
 									var listener = eachCustomControl.listenInMap ? map : customControl;
 
 									customControlEvents.map(function (eachCustomControlEvent) {
@@ -280,6 +278,8 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 											$rootScope.$broadcast(eventName, event);
 										});
 									});
+
+									map.addControl(customControl);
 	              }
 	            });
 						} else {

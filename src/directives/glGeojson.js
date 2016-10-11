@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUtils', function (mapboxglGeojsonUtils) {
+angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUtils', '$timeout', function (mapboxglGeojsonUtils, $timeout) {
   function mapboxGlGeojsonDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -105,14 +105,24 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 
 		controller.getMap().then(function (map) {
       mapboxglScope.$watchCollection('glGeojson', function (geojson) {
-        //geojsonWatched(map, controller, geojson);
-
-        if (map.style.loaded()) {
-          geojsonWatched(map, controller, geojson);
-        } else {
-          map.style.on('load', function () {
+        if (angular.isDefined(geojson) && geojson !== null) {
+          $timeout(function () {
             geojsonWatched(map, controller, geojson);
-          });
+          }, 500, true);
+
+          /*map.on('style.load', function () {
+            geojsonWatched(map, controller, geojson);
+          });*/
+
+          //geojsonWatched(map, controller, geojson);
+
+          /*if (map.style.loaded()) {
+            geojsonWatched(map, controller, geojson);
+          } else {
+            map.style.on('load', function () {
+              geojsonWatched(map, controller, geojson);
+            });
+          }*/
         }
       });
     });

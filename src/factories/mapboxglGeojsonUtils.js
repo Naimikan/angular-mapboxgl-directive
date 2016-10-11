@@ -42,10 +42,13 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
 
       if (object.type === 'line') {
         object.geometryType = 'LineString';
+        object.layerType = object.type;
       } else if (object.type === 'polygon') {
         object.geometryType = 'Polygon';
+        object.layerType = 'fill';
       } else if (object.type === 'circle') {
         object.geometryType = 'Point';
+        object.layerType = object.type;
       } else {
         throw new Error('Invalid geojson type');
       }
@@ -80,7 +83,7 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
 
     var layerToAdd = {
       id: object.id,
-      type: object.type,
+      type: object.layerType,
       source: object.id,
       metadata: {
         type: 'mapboxgl:geojson',
