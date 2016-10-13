@@ -74,14 +74,9 @@
       };
     }, 6000, true);
 
-    /*$timeout(function () {
-      $scope.glCenter = {
-        lat: 37.562984,
-        lng: -122.514426
-      };
-
-      $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
-    }, 12000, true);*/
+    $timeout(function () {
+      $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
+    }, 18000, true);
 
     $scope.glCenter = {
       lat: 37.562984,
@@ -181,7 +176,10 @@
         },
         popup: {
           enabled: true,
-          message: compiledHtml[0]
+          message: htmlButton,
+          getScope: function () {
+            return $scope;
+          }
         }
       }, {
         type: 'circle',

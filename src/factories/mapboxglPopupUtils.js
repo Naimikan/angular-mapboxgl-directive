@@ -22,12 +22,16 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
 		// If HTML Element
 		if (object.html instanceof HTMLElement) {
-			var templateScope = angular.isDefined(object.getScope) && angular.isFunction(object.getScope) ? object.getScope() : $rootScope;
-			var templateHtmlElement = $compile(object.html)(templateScope)[0];
-
-			popup.setDOMContent(templateHtmlElement);
+			popup.setDOMContent(object.html);
 		} else {
-			popup.setHTML(object.html);
+			var templateScope = angular.isDefined(object.getScope) && angular.isFunction(object.getScope) ? object.getScope() : $rootScope;
+			try {
+				var templateHtmlElement = $compile(object.html)(templateScope)[0];
+
+				popup.setDOMContent(templateHtmlElement);
+			} catch (error) {
+				popup.setHTML(object.html);
+			}
 		}
 
 		popup.addTo(map);

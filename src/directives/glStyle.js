@@ -18,15 +18,17 @@ angular.module('mapboxgl-directive').directive('glStyle', ['$rootScope', functio
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glStyle', function (style, oldStyle) {
 				if (angular.isDefined(style) && style !== null) {
-					map.setStyle(style);
+					if (style !== oldStyle) {
+						map.setStyle(style);
 
-					map.on('style.load', function () {
-						$rootScope.$broadcast('mapboxglMap:styleChanged', {
-							map: map,
-							newStyle: style,
-							oldStyle: oldStyle
+						map.on('style.load', function () {
+							$rootScope.$broadcast('mapboxglMap:styleChanged', {
+								map: map,
+								newStyle: style,
+								oldStyle: oldStyle
+							});
 						});
-					});
+					}
 				}
 			}, true);
 		});

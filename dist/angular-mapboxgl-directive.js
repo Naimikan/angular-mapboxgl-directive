@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.13.12 2016-10-13
+*  angular-mapboxgl-directive 0.13.13 2016-10-13
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -745,12 +745,16 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
 		// If HTML Element
 		if (object.html instanceof HTMLElement) {
-			var templateScope = angular.isDefined(object.getScope) && angular.isFunction(object.getScope) ? object.getScope() : $rootScope;
-			var templateHtmlElement = $compile(object.html)(templateScope)[0];
-
-			popup.setDOMContent(templateHtmlElement);
+			popup.setDOMContent(object.html);
 		} else {
-			popup.setHTML(object.html);
+			var templateScope = angular.isDefined(object.getScope) && angular.isFunction(object.getScope) ? object.getScope() : $rootScope;
+			try {
+				var templateHtmlElement = $compile(object.html)(templateScope)[0];
+
+				popup.setDOMContent(templateHtmlElement);
+			} catch (error) {
+				popup.setHTML(object.html);
+			}
 		}
 
 		popup.addTo(map);
@@ -1389,27 +1393,6 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
             html: popupObject.message,
             getScope: popupObject.getScope
           });
-
-          /*var popupOptions = angular.isDefined(popupObject.options) ? popupObject.options : undefined;
-          var popupMessage = angular.isDefined(popupObject.message) ? popupObject.message : undefined;
-
-          var popup = new mapboxgl.Popup(popupOptions).setLngLat(map.unproject(event.point));
-
-          if (angular.isDefined(popupMessage)) {
-            // If HTML Element
-            if (popupMessage instanceof HTMLElement) {
-              var templateScope = angular.isDefined(popupObject.getScope) && angular.isFunction(popupObject.getScope) ? popupObject.getScope() : $rootScope;
-              var templateHtmlElement = $compile(popupMessage)(templateScope)[0];
-
-              popup.setDOMContent(templateHtmlElement);
-            } else {
-              popup.setHTML(popupMessage);
-            }
-
-            //if (Object.prototype.toString.call(popupMessage) === Object.prototype.toString.call(String())) {}
-          }
-
-          popup.addTo(map);*/
         }
       });
 
@@ -1906,15 +1889,17 @@ angular.module('mapboxgl-directive').directive('glStyle', ['$rootScope', functio
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glStyle', function (style, oldStyle) {
 				if (angular.isDefined(style) && style !== null) {
-					map.setStyle(style);
+					if (style !== oldStyle) {
+						map.setStyle(style);
 
-					map.on('style.load', function () {
-						$rootScope.$broadcast('mapboxglMap:styleChanged', {
-							map: map,
-							newStyle: style,
-							oldStyle: oldStyle
+						map.on('style.load', function () {
+							$rootScope.$broadcast('mapboxglMap:styleChanged', {
+								map: map,
+								newStyle: style,
+								oldStyle: oldStyle
+							});
 						});
-					});
+					}
 				}
 			}, true);
 		});

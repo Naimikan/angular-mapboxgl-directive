@@ -35,27 +35,6 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
             html: popupObject.message,
             getScope: popupObject.getScope
           });
-
-          /*var popupOptions = angular.isDefined(popupObject.options) ? popupObject.options : undefined;
-          var popupMessage = angular.isDefined(popupObject.message) ? popupObject.message : undefined;
-
-          var popup = new mapboxgl.Popup(popupOptions).setLngLat(map.unproject(event.point));
-
-          if (angular.isDefined(popupMessage)) {
-            // If HTML Element
-            if (popupMessage instanceof HTMLElement) {
-              var templateScope = angular.isDefined(popupObject.getScope) && angular.isFunction(popupObject.getScope) ? popupObject.getScope() : $rootScope;
-              var templateHtmlElement = $compile(popupMessage)(templateScope)[0];
-
-              popup.setDOMContent(templateHtmlElement);
-            } else {
-              popup.setHTML(popupMessage);
-            }
-
-            //if (Object.prototype.toString.call(popupMessage) === Object.prototype.toString.call(String())) {}
-          }
-
-          popup.addTo(map);*/
         }
       });
 
