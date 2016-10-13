@@ -1,4 +1,22 @@
 angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+  var _relationLayersPopups = [];
+
+  function removeAllRelations () {
+    _relationLayersPopups = [];
+  }
+
+  function getPopupByLayerId (layerId) {
+    var relationArray = _relationLayersPopups.filter(function (each) {
+      return each.layerId === layerId;
+    });
+
+    if (relationArray.length > 0) {
+      return relationArray[0].popup;
+    } else {
+      return false;
+    }
+  }
+
   function createGeojsonByObject (map, object) {
     if (angular.isUndefined(map) || map === null) {
       throw new Error('Map is undefined');
@@ -87,9 +105,14 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
       source: object.id,
       metadata: {
         type: 'mapboxgl:geojson',
-        popup: object.popup
+        popup: angular.isDefined(object.popup) && angular.isDefined(object.popup.enabled) && object.popup.enabled ? object.popup.enabled : false
       }
     };
+
+    _relationLayersPopups.push({
+      layerId: object.id,
+      popup: object.popup
+    });
 
     checkOptionalLayerAttributes(layerToAdd, object.layer);
 
@@ -97,7 +120,9 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
   }
 
   var mapboxglGeojsonUtils = {
-		createGeojsonByObject: createGeojsonByObject
+		createGeojsonByObject: createGeojsonByObject,
+    getPopupByLayerId: getPopupByLayerId,
+    removeAllRelations: removeAllRelations
 	};
 
 	return mapboxglGeojsonUtils;

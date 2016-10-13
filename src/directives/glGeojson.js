@@ -16,7 +16,7 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
         var style = map.getStyle();
         var allLayers = style.layers.filter(function (eachLayer) {
           if (angular.isDefined(eachLayer.metadata) && angular.isDefined(eachLayer.metadata.type)) {
-            return eachLayer.metadata.type === 'mapboxgl:geojson' && angular.isDefined(eachLayer.metadata.popup) && angular.isDefined(eachLayer.metadata.popup.enabled) && eachLayer.metadata.popup.enabled;
+            return eachLayer.metadata.type === 'mapboxgl:geojson' && angular.isDefined(eachLayer.metadata.popup) && eachLayer.metadata.popup;
           }
         }).map(function (eachLayer) {
           return eachLayer.id;
@@ -27,13 +27,25 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
         if (features.length > 0) {
           var feature = features[0];
 
-          var popupOptions = feature.layer.metadata.popup.options;
-          var popupMessage = feature.layer.metadata.popup.message;
+          var popupObject = mapboxglGeojsonUtils.getPopupByLayerId(feature.layer.id);
 
-          var popup = new mapboxgl.Popup(popupOptions)
-            .setLngLat(map.unproject(event.point))
-            .setHTML(popupMessage)
-            .addTo(map);
+          var popupOptions = angular.isDefined(popupObject.options) ? popupObject.options : undefined;
+          var popupMessage = angular.isDefined(popupObject.message) ? popupObject.message : undefined;
+
+          var popup = new mapboxgl.Popup(popupOptions).setLngLat(map.unproject(event.point));
+
+          if (angular.isDefined(popupMessage)) {
+            // If HTML Element
+            if (popupMessage instanceof HTMLElement) {
+              popup.setDOMContent(popupMessage);
+            } else {
+              popup.setHTML(popupMessage);
+            }
+
+            //if (Object.prototype.toString.call(popupMessage) === Object.prototype.toString.call(String())) {}
+          }
+
+          popup.addTo(map);
         }
       });
 
@@ -55,6 +67,7 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
     var geojsonWatched = function (map, controller, geojson) {
       if (angular.isDefined(geojson)) {
         disableGeojsonEvents(map);
+        mapboxglGeojsonUtils.removeAllRelations();
 
         if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call({})) {
           mapboxglGeojsonUtils.createGeojsonByObject(map, geojson);

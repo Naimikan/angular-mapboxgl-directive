@@ -7,7 +7,20 @@
     mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
   }])
 
-  .controller('IndexController', ['$scope', '$window', '$timeout', 'mapboxglMapsData', function ($scope, $window, $timeout, mapboxglMapsData) {
+  .directive('testDirective', [function () {
+    var directive = {
+      restrict: 'EA',
+      scope: true,
+      template: '<div>Hola</div>',
+      link: function ($scope, $element, $attrs) {
+        console.log($scope, $element, $attrs);
+      }
+    };
+
+    return directive;
+  }])
+
+  .controller('IndexController', ['$scope', '$window', '$timeout', 'mapboxglMapsData', '$compile', function ($scope, $window, $timeout, mapboxglMapsData, $compile) {
     $scope.glHeight = $window.innerHeight;
 
     $scope.changeStyle = function () {
@@ -320,13 +333,17 @@
     $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
     $scope.glStyle2 = 'mapbox://styles/mapbox/dark-v9'
 
+    $scope.deleteButtonClick = function (event) {
+      console.log(event);
+    };
+
+    var htmlButton = '<button class="btn btn-primary" ng-click="deleteButtonClick($event);">aasgioagg</button>';
+    var compiledHtml = $compile(htmlButton)($scope);
+
     $scope.glPopups = [
       {
-        coordinates: [0, 0],
-        html: '<h1>lakshfashfg</h1>'
-      }, {
         coordinates: [-2, 41],
-        html: '<h1>Hello World</h1>'
+        html: compiledHtml[0]
       }
     ];
 
@@ -406,11 +423,7 @@
         element: el
       }, {
         coordinates: [-2, 37],
-        element: el2,
-        popup: {
-          coordinates: [-2, 37],
-          html: '<h1>Marker with popup</h1>'
-        }
+        element: el2
       }
     ];
 
@@ -484,7 +497,7 @@
         },
         popup: {
           enabled: true,
-          message: 'ioashiasf'
+          message: compiledHtml[0]
         }
       }, {
         type: 'circle',

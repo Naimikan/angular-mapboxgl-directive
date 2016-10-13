@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.13.10 2016-10-11
+*  angular-mapboxgl-directive 0.13.11 2016-10-13
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -456,6 +456,24 @@ angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope
 }]);
 
 angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+  var _relationLayersPopups = [];
+
+  function removeAllRelations () {
+    _relationLayersPopups = [];
+  }
+
+  function getPopupByLayerId (layerId) {
+    var relationArray = _relationLayersPopups.filter(function (each) {
+      return each.layerId === layerId;
+    });
+
+    if (relationArray.length > 0) {
+      return relationArray[0].popup;
+    } else {
+      return false;
+    }
+  }
+
   function createGeojsonByObject (map, object) {
     if (angular.isUndefined(map) || map === null) {
       throw new Error('Map is undefined');
@@ -544,9 +562,14 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
       source: object.id,
       metadata: {
         type: 'mapboxgl:geojson',
-        popup: object.popup
+        popup: angular.isDefined(object.popup) && angular.isDefined(object.popup.enabled) && object.popup.enabled ? object.popup.enabled : false
       }
     };
+
+    _relationLayersPopups.push({
+      layerId: object.id,
+      popup: object.popup
+    });
 
     checkOptionalLayerAttributes(layerToAdd, object.layer);
 
@@ -554,7 +577,9 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
   }
 
   var mapboxglGeojsonUtils = {
-		createGeojsonByObject: createGeojsonByObject
+		createGeojsonByObject: createGeojsonByObject,
+    getPopupByLayerId: getPopupByLayerId,
+    removeAllRelations: removeAllRelations
 	};
 
 	return mapboxglGeojsonUtils;
@@ -716,10 +741,18 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
     var popupOptions = object.options || {};
 
-    var popup = new mapboxgl.Popup(popupOptions)
-      .setLngLat(object.coordinates)
-      .setHTML(object.html)
-      .addTo(map);
+		var popup = new mapboxgl.Popup(popupOptions).setLngLat(object.coordinates);
+
+		// If HTML Element
+		if (object.html instanceof HTMLElement) {
+			popup.setDOMContent(object.html);
+		} else {
+			popup.setHTML(object.html);
+		}
+
+		//if (Object.prototype.toString.call(popupMessage) === Object.prototype.toString.call(String())) {}
+
+		popup.addTo(map);
 
     return popup;
 	}
@@ -1329,7 +1362,7 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
         var style = map.getStyle();
         var allLayers = style.layers.filter(function (eachLayer) {
           if (angular.isDefined(eachLayer.metadata) && angular.isDefined(eachLayer.metadata.type)) {
-            return eachLayer.metadata.type === 'mapboxgl:geojson' && angular.isDefined(eachLayer.metadata.popup) && angular.isDefined(eachLayer.metadata.popup.enabled) && eachLayer.metadata.popup.enabled;
+            return eachLayer.metadata.type === 'mapboxgl:geojson' && angular.isDefined(eachLayer.metadata.popup) && eachLayer.metadata.popup;
           }
         }).map(function (eachLayer) {
           return eachLayer.id;
@@ -1340,13 +1373,25 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
         if (features.length > 0) {
           var feature = features[0];
 
-          var popupOptions = feature.layer.metadata.popup.options;
-          var popupMessage = feature.layer.metadata.popup.message;
+          var popupObject = mapboxglGeojsonUtils.getPopupByLayerId(feature.layer.id);
 
-          var popup = new mapboxgl.Popup(popupOptions)
-            .setLngLat(map.unproject(event.point))
-            .setHTML(popupMessage)
-            .addTo(map);
+          var popupOptions = angular.isDefined(popupObject.options) ? popupObject.options : undefined;
+          var popupMessage = angular.isDefined(popupObject.message) ? popupObject.message : undefined;
+
+          var popup = new mapboxgl.Popup(popupOptions).setLngLat(map.unproject(event.point));
+
+          if (angular.isDefined(popupMessage)) {
+            // If HTML Element
+            if (popupMessage instanceof HTMLElement) {
+              popup.setDOMContent(popupMessage);
+            } else {
+              popup.setHTML(popupMessage);
+            }
+
+            //if (Object.prototype.toString.call(popupMessage) === Object.prototype.toString.call(String())) {}
+          }
+
+          popup.addTo(map);
         }
       });
 
@@ -1368,6 +1413,7 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
     var geojsonWatched = function (map, controller, geojson) {
       if (angular.isDefined(geojson)) {
         disableGeojsonEvents(map);
+        mapboxglGeojsonUtils.removeAllRelations();
 
         if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call({})) {
           mapboxglGeojsonUtils.createGeojsonByObject(map, geojson);

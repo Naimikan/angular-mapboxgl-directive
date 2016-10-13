@@ -18,10 +18,18 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
     var popupOptions = object.options || {};
 
-    var popup = new mapboxgl.Popup(popupOptions)
-      .setLngLat(object.coordinates)
-      .setHTML(object.html)
-      .addTo(map);
+		var popup = new mapboxgl.Popup(popupOptions).setLngLat(object.coordinates);
+
+		// If HTML Element
+		if (object.html instanceof HTMLElement) {
+			popup.setDOMContent(object.html);
+		} else {
+			popup.setHTML(object.html);
+		}
+
+		//if (Object.prototype.toString.call(popupMessage) === Object.prototype.toString.call(String())) {}
+
+		popup.addTo(map);
 
     return popup;
 	}
