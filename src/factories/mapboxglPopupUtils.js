@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUtils', 'mapboxglConstants', '$rootScope', '$compile', function (mapboxglUtils, mapboxglConstants, $rootScope, $compile) {
 	function createPopupByObject (map, object) {
     if (angular.isUndefined(map) || map === null) {
       throw new Error('Map is undefined');
@@ -18,16 +18,17 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
     var popupOptions = object.options || {};
 
-		var popup = new mapboxgl.Popup(popupOptions).setLngLat(object.coordinates);
+		var popup = new mapboxgl.Popup(popupOptions).setLngLat(map.unproject(object.coordinates));
 
 		// If HTML Element
 		if (object.html instanceof HTMLElement) {
-			popup.setDOMContent(object.html);
+			var templateScope = angular.isDefined(object.getScope) && angular.isFunction(object.getScope) ? object.getScope() : $rootScope;
+			var templateHtmlElement = $compile(object.html)(templateScope)[0];
+
+			popup.setDOMContent(templateHtmlElement);
 		} else {
 			popup.setHTML(object.html);
 		}
-
-		//if (Object.prototype.toString.call(popupMessage) === Object.prototype.toString.call(String())) {}
 
 		popup.addTo(map);
 

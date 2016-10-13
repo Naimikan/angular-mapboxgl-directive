@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.13.11 2016-10-13
+*  angular-mapboxgl-directive 0.13.12 2016-10-13
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -721,7 +721,7 @@ angular.module('mapboxgl-directive').factory('mapboxglMarkerUtils', ['mapboxglUt
 	return mapboxglMarkerUtils;
 }]);
 
-angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUtils', 'mapboxglConstants', '$rootScope', '$compile', function (mapboxglUtils, mapboxglConstants, $rootScope, $compile) {
 	function createPopupByObject (map, object) {
     if (angular.isUndefined(map) || map === null) {
       throw new Error('Map is undefined');
@@ -741,16 +741,17 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
     var popupOptions = object.options || {};
 
-		var popup = new mapboxgl.Popup(popupOptions).setLngLat(object.coordinates);
+		var popup = new mapboxgl.Popup(popupOptions).setLngLat(map.unproject(object.coordinates));
 
 		// If HTML Element
 		if (object.html instanceof HTMLElement) {
-			popup.setDOMContent(object.html);
+			var templateScope = angular.isDefined(object.getScope) && angular.isFunction(object.getScope) ? object.getScope() : $rootScope;
+			var templateHtmlElement = $compile(object.html)(templateScope)[0];
+
+			popup.setDOMContent(templateHtmlElement);
 		} else {
 			popup.setHTML(object.html);
 		}
-
-		//if (Object.prototype.toString.call(popupMessage) === Object.prototype.toString.call(String())) {}
 
 		popup.addTo(map);
 
@@ -931,17 +932,24 @@ angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', 'ma
 		var mapboxglScope = controller.getMapboxGlScope();
 
 		controller.getMap().then(function (map) {
-			mapboxglScope.$watch('glCenter', function (center) {
+			mapboxglScope.$watch('glCenter', function (center, oldCenter) {
 				mapboxglUtils.validateAndFormatCenter(center).then(function (newCenter) {
 					if (newCenter) {
 						//map.panTo(newCenter);
-						map.flyTo({ center: newCenter });
+						//map.flyTo({ center: newCenter });
+
+						if (angular.isDefined(oldCenter) && center !== oldCenter) {
+							map.flyTo({ center: newCenter });
+						} else {
+							map.setCenter(newCenter);
+						}
 					} else {
 						throw new Error('Invalid center');
 					}
 				}).catch(function (error) {
 					//map.panTo(mapboxglConstants.map.defaultCenter);
-					map.flyTo({ center: mapboxglConstants.map.defaultCenter });
+					//map.flyTo({ center: mapboxglConstants.map.defaultCenter });
+					map.setCenter(mapboxglConstants.map.defaultCenter);
 
 					throw new Error(error.code + ' / ' + error.message);
 				});
@@ -1344,7 +1352,7 @@ angular.module('mapboxgl-directive').directive('glFilter', [function () {
 	return directive;
 }]);
 
-angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUtils', '$timeout', function (mapboxglGeojsonUtils, $timeout) {
+angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUtils', 'mapboxglPopupUtils', '$timeout', function (mapboxglGeojsonUtils, mapboxglPopupUtils, $timeout) {
   function mapboxGlGeojsonDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -1375,7 +1383,14 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 
           var popupObject = mapboxglGeojsonUtils.getPopupByLayerId(feature.layer.id);
 
-          var popupOptions = angular.isDefined(popupObject.options) ? popupObject.options : undefined;
+          mapboxglPopupUtils.createPopupByObject(map, {
+            coordinates: event.point,
+            options: popupObject.options,
+            html: popupObject.message,
+            getScope: popupObject.getScope
+          });
+
+          /*var popupOptions = angular.isDefined(popupObject.options) ? popupObject.options : undefined;
           var popupMessage = angular.isDefined(popupObject.message) ? popupObject.message : undefined;
 
           var popup = new mapboxgl.Popup(popupOptions).setLngLat(map.unproject(event.point));
@@ -1383,7 +1398,10 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
           if (angular.isDefined(popupMessage)) {
             // If HTML Element
             if (popupMessage instanceof HTMLElement) {
-              popup.setDOMContent(popupMessage);
+              var templateScope = angular.isDefined(popupObject.getScope) && angular.isFunction(popupObject.getScope) ? popupObject.getScope() : $rootScope;
+              var templateHtmlElement = $compile(popupMessage)(templateScope)[0];
+
+              popup.setDOMContent(templateHtmlElement);
             } else {
               popup.setHTML(popupMessage);
             }
@@ -1391,7 +1409,7 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
             //if (Object.prototype.toString.call(popupMessage) === Object.prototype.toString.call(String())) {}
           }
 
-          popup.addTo(map);
+          popup.addTo(map);*/
         }
       });
 

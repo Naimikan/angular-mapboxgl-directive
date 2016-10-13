@@ -23,300 +23,6 @@
   .controller('IndexController', ['$scope', '$window', '$timeout', 'mapboxglMapsData', '$compile', function ($scope, $window, $timeout, mapboxglMapsData, $compile) {
     $scope.glHeight = $window.innerHeight;
 
-    $scope.changeStyle = function () {
-      $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
-
-      $scope.$on('mapboxglMap:styleChanged', function (event, args) {
-        var layers = [
-          {
-            'id': 'gl-draw-polygon-fill-inactive',
-            'type': 'fill',
-            'filter': ['all',
-              ['==', 'active', 'false'],
-              ['==', '$type', 'Polygon'],
-              ['!=', 'mode', 'static']
-            ],
-            'paint': {
-              'fill-color': '#3bb2d0',
-              'fill-outline-color': '#3bb2d0',
-              'fill-opacity': 0.1
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-polygon-fill-active',
-            'type': 'fill',
-            'filter': ['all', ['==', 'active', 'true'], ['==', '$type', 'Polygon']],
-            'paint': {
-              'fill-color': '#fbb03b',
-              'fill-outline-color': '#fbb03b',
-              'fill-opacity': 0.1
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-polygon-midpoint',
-            'type': 'circle',
-            'filter': ['all',
-              ['==', '$type', 'Point'],
-              ['==', 'meta', 'midpoint']],
-            'paint': {
-              'circle-radius': 3,
-              'circle-color': '#fbb03b'
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-polygon-stroke-inactive',
-            'type': 'line',
-            'filter': ['all',
-              ['==', 'active', 'false'],
-              ['==', '$type', 'Polygon'],
-              ['!=', 'mode', 'static']
-            ],
-            'layout': {
-              'line-cap': 'round',
-              'line-join': 'round'
-            },
-            'paint': {
-              'line-color': '#3bb2d0',
-              'line-width': 2
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-polygon-stroke-active',
-            'type': 'line',
-            'filter': ['all', ['==', 'active', 'true'], ['==', '$type', 'Polygon']],
-            'layout': {
-              'line-cap': 'round',
-              'line-join': 'round'
-            },
-            'paint': {
-              'line-color': '#fbb03b',
-              'line-dasharray': [0.2, 2],
-              'line-width': 2
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-line-inactive',
-            'type': 'line',
-            'filter': ['all',
-              ['==', 'active', 'false'],
-              ['==', '$type', 'LineString'],
-              ['!=', 'mode', 'static']
-            ],
-            'layout': {
-              'line-cap': 'round',
-              'line-join': 'round'
-            },
-            'paint': {
-              'line-color': '#3bb2d0',
-              'line-width': 2
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-line-active',
-            'type': 'line',
-            'filter': ['all',
-              ['==', '$type', 'LineString'],
-              ['==', 'active', 'true']
-            ],
-            'layout': {
-              'line-cap': 'round',
-              'line-join': 'round'
-            },
-            'paint': {
-              'line-color': '#fbb03b',
-              'line-dasharray': [0.2, 2],
-              'line-width': 2
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-polygon-and-line-vertex-stroke-inactive',
-            'type': 'circle',
-            'filter': ['all',
-              ['==', 'meta', 'vertex'],
-              ['==', '$type', 'Point'],
-              ['!=', 'mode', 'static']
-            ],
-            'paint': {
-              'circle-radius': 5,
-              'circle-color': '#fff'
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-polygon-and-line-vertex-inactive',
-            'type': 'circle',
-            'filter': ['all',
-              ['==', 'meta', 'vertex'],
-              ['==', '$type', 'Point'],
-              ['!=', 'mode', 'static']
-            ],
-            'paint': {
-              'circle-radius': 3,
-              'circle-color': '#fbb03b'
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-point-point-stroke-inactive',
-            'type': 'circle',
-            'filter': ['all',
-              ['==', 'active', 'false'],
-              ['==', '$type', 'Point'],
-              ['==', 'meta', 'feature'],
-              ['!=', 'mode', 'static']
-            ],
-            'paint': {
-              'circle-radius': 5,
-              'circle-opacity': 1,
-              'circle-color': '#fff'
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-point-inactive',
-            'type': 'circle',
-            'filter': ['all',
-              ['==', 'active', 'false'],
-              ['==', '$type', 'Point'],
-              ['==', 'meta', 'feature'],
-              ['!=', 'mode', 'static']
-            ],
-            'paint': {
-              'circle-radius': 3,
-              'circle-color': '#3bb2d0'
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-point-stroke-active',
-            'type': 'circle',
-            'filter': ['all',
-              ['==', '$type', 'Point'],
-              ['==', 'active', 'true'],
-              ['!=', 'meta', 'midpoint']
-            ],
-            'paint': {
-              'circle-radius': 7,
-              'circle-color': '#fff'
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-point-active',
-            'type': 'circle',
-            'filter': ['all',
-              ['==', '$type', 'Point'],
-              ['!=', 'meta', 'midpoint'],
-              ['==', 'active', 'true']],
-            'paint': {
-              'circle-radius': 5,
-              'circle-color': '#fbb03b'
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-polygon-fill-static',
-            'type': 'fill',
-            'filter': ['all', ['==', 'mode', 'static'], ['==', '$type', 'Polygon']],
-            'paint': {
-              'fill-color': '#404040',
-              'fill-outline-color': '#404040',
-              'fill-opacity': 0.1
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-polygon-stroke-static',
-            'type': 'line',
-            'filter': ['all', ['==', 'mode', 'static'], ['==', '$type', 'Polygon']],
-            'layout': {
-              'line-cap': 'round',
-              'line-join': 'round'
-            },
-            'paint': {
-              'line-color': '#404040',
-              'line-width': 2
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-line-static',
-            'type': 'line',
-            'filter': ['all', ['==', 'mode', 'static'], ['==', '$type', 'LineString']],
-            'layout': {
-              'line-cap': 'round',
-              'line-join': 'round'
-            },
-            'paint': {
-              'line-color': '#404040',
-              'line-width': 2
-            },
-            'interactive': true
-          },
-          {
-            'id': 'gl-draw-point-static',
-            'type': 'circle',
-            'filter': ['all', ['==', 'mode', 'static'], ['==', '$type', 'Point']],
-            'paint': {
-              'circle-radius': 5,
-              'circle-color': '#404040'
-            },
-            'interactive': true
-          }
-        ];
-
-        var map = args.map;
-
-        var coldSource = map.getSource('mapbox-gl-draw-cold');
-        var hotSource = map.getSource('mapbox-gl-draw-hot');
-
-        if (!coldSource && !hotSource) {
-          map.addSource('mapbox-gl-draw-cold', {
-            type: 'geojson',
-            data: {
-              type: 'FeatureCollection'
-            }
-          });
-
-          map.addSource('mapbox-gl-draw-hot', {
-            type: 'geojson',
-            data: {
-              type: 'FeatureCollection'
-            }
-          });
-
-          var hotLayers = angular.copy(layers).map(function (eachLayer) {
-            eachLayer.id = eachLayer.id + '.hot';
-            eachLayer.source = 'mapbox-gl-draw-hot';
-
-            return eachLayer;
-          });
-
-          var coldLayers = angular.copy(layers).map(function (eachLayer) {
-            eachLayer.id = eachLayer.id + '.cold';
-            eachLayer.source = 'mapbox-gl-draw-cold';
-
-            return eachLayer;
-          });
-
-          hotLayers.map(function (eachHotLayer) {
-            map.addLayer(eachHotLayer);
-          });
-
-          coldLayers.map(function (eachColdLayer) {
-            map.addLayer(eachColdLayer);
-          });
-        }
-      });
-    };
-
     $scope.$on('mapboxglMap:load', function (event, mapboxglEvent) {
       console.log(mapboxglEvent);
     });
@@ -340,13 +46,6 @@
     var htmlButton = '<button class="btn btn-primary" ng-click="deleteButtonClick($event);">aasgioagg</button>';
     var compiledHtml = $compile(htmlButton)($scope);
 
-    $scope.glPopups = [
-      {
-        coordinates: [-2, 41],
-        html: compiledHtml[0]
-      }
-    ];
-
     $scope.$on('mapboxglDirections:route', function (event, mapboxglDirectionsEvent) {
       console.log(event, mapboxglDirectionsEvent);
     });
@@ -368,29 +67,14 @@
       var map = new mapboxgl.Compare(map1, map2);
     });*/
 
-    /*$timeout(function () {
-      $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
-
+    $timeout(function () {
       $scope.glCenter = {
         lat: 41,
         lng: -2
       };
-
-      $scope.glPopups = [
-        {
-          coordinates: [0, 0],
-          html: '<h1>lakshfashfg</h1>'
-        }, {
-          coordinates: [-2, 41],
-          html: '<h1>Hello World</h1>'
-        }, {
-          coordinates: [-5, 41],
-          html: '<h1>Hello World 2</h1>'
-        }
-      ];
     }, 6000, true);
 
-    $timeout(function () {
+    /*$timeout(function () {
       $scope.glCenter = {
         lat: 37.562984,
         lng: -122.514426
@@ -404,6 +88,8 @@
       lng: -122.514426
       //autodiscover: true
     };
+
+    $scope.glZoom = 19;
 
     var el = document.createElement('div');
     el.className = 'marker';
@@ -454,8 +140,6 @@
     $scope.glHandlers = {
       scrollZoom: true
     };
-
-    $scope.glZoom = 2;
 
     $scope.glImage = [
       {

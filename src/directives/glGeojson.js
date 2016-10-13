@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUtils', '$timeout', function (mapboxglGeojsonUtils, $timeout) {
+angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUtils', 'mapboxglPopupUtils', '$timeout', function (mapboxglGeojsonUtils, mapboxglPopupUtils, $timeout) {
   function mapboxGlGeojsonDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -29,7 +29,14 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 
           var popupObject = mapboxglGeojsonUtils.getPopupByLayerId(feature.layer.id);
 
-          var popupOptions = angular.isDefined(popupObject.options) ? popupObject.options : undefined;
+          mapboxglPopupUtils.createPopupByObject(map, {
+            coordinates: event.point,
+            options: popupObject.options,
+            html: popupObject.message,
+            getScope: popupObject.getScope
+          });
+
+          /*var popupOptions = angular.isDefined(popupObject.options) ? popupObject.options : undefined;
           var popupMessage = angular.isDefined(popupObject.message) ? popupObject.message : undefined;
 
           var popup = new mapboxgl.Popup(popupOptions).setLngLat(map.unproject(event.point));
@@ -37,7 +44,10 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
           if (angular.isDefined(popupMessage)) {
             // If HTML Element
             if (popupMessage instanceof HTMLElement) {
-              popup.setDOMContent(popupMessage);
+              var templateScope = angular.isDefined(popupObject.getScope) && angular.isFunction(popupObject.getScope) ? popupObject.getScope() : $rootScope;
+              var templateHtmlElement = $compile(popupMessage)(templateScope)[0];
+
+              popup.setDOMContent(templateHtmlElement);
             } else {
               popup.setHTML(popupMessage);
             }
@@ -45,7 +55,7 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
             //if (Object.prototype.toString.call(popupMessage) === Object.prototype.toString.call(String())) {}
           }
 
-          popup.addTo(map);
+          popup.addTo(map);*/
         }
       });
 
