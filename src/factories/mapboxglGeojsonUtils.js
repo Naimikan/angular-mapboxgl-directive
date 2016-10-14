@@ -26,7 +26,7 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
       throw new Error('Object definition is undefined');
     }
 
-    var checkOptionalLayerAttributes = function (layerObject, layerAttributes) {
+    var checkOptionalLayerAttributes = function (layerObject, object) {
       var layerAttributesAvailables = [
         'ref',
         'source-layer',
@@ -35,16 +35,26 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
         'interactive',
         'filter',
         'layout',
-        'paint'
+        'paint',
+        'metadata'
       ];
 
-      if (angular.isDefined(layerAttributes)) {
+      var defaultMetadata = {
+        type: 'mapboxgl:geojson',
+        popup: angular.isDefined(object.popup) && angular.isDefined(object.popup.enabled) && object.popup.enabled ? object.popup.enabled : false
+      };
+
+      if (angular.isDefined(object.layer)) {
         layerAttributesAvailables.map(function (eachAttributeAvailable) {
-          if (angular.isDefined(layerAttributes[eachAttributeAvailable]) && layerAttributes[eachAttributeAvailable] !== null) {
-            layerObject[eachAttributeAvailable] = layerAttributes[eachAttributeAvailable];
+          if (angular.isDefined(object.layer[eachAttributeAvailable]) && object.layer[eachAttributeAvailable] !== null) {
+            layerObject[eachAttributeAvailable] = object.layer[eachAttributeAvailable];
           }
         });
       }
+
+      layerObject.metadata = angular.isDefined(layerObject.metadata) ? layerObject.metadata : {};
+
+      angular.extend(layerObject.metadata, defaultMetadata);
     };
 
     object.id = object.type + '_' + Date.now();
@@ -102,11 +112,7 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
     var layerToAdd = {
       id: object.id,
       type: object.layerType,
-      source: object.id,
-      metadata: {
-        type: 'mapboxgl:geojson',
-        popup: angular.isDefined(object.popup) && angular.isDefined(object.popup.enabled) && object.popup.enabled ? object.popup.enabled : false
-      }
+      source: object.id
     };
 
     _relationLayersPopups.push({
@@ -114,7 +120,7 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
       popup: object.popup
     });
 
-    checkOptionalLayerAttributes(layerToAdd, object.layer);
+    checkOptionalLayerAttributes(layerToAdd, object);
 
     map.addLayer(layerToAdd, before);
   }

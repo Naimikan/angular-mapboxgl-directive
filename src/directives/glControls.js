@@ -105,43 +105,6 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 			return removed;
 	  };
 
-		/*scope.$on('mapboxglMap:styleChanged', function (event, args) {
-			var map = args.map;
-
-			map.on('style.load', function () {
-				var drawControl = _controlsCreated.draw;
-				var drawControlInstance = drawControl.control;
-
-				var coldSource = map.getSource('mapbox-gl-draw-cold');
-				var hotSource = map.getSource('mapbox-gl-draw-hot');
-
-				if (!coldSource && !hotSource) {
-					map.addSource('mapbox-gl-draw-cold', {
-						type: 'geojson',
-						data: {
-							type: 'FeatureCollection',
-							features: []
-						}
-					});
-
-					map.addSource('mapbox-gl-draw-hot', {
-						type: 'geojson',
-						data: {
-							type: 'FeatureCollection',
-							features: []
-						}
-					});
-
-					console.log(drawControlInstance);
-
-					drawControlInstance.options.styles.map(function (eachStyle) {
-						map.addLayer(eachStyle);
-					});
-				}
-			});
-		});*/
-
-
     /*
       controls: {
         navigation: {

@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.13.13 2016-10-13
+*  angular-mapboxgl-directive 0.14.0 2016-10-14
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -388,6 +388,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glVideo: '=',
       glPopups: '=',
       glMarkers: '=',
+      glLights: '=',
 
       persistentGeojson: '=',
       persistentImage: '=',
@@ -406,12 +407,16 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
 angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope', function ($rootScope) {
   var eventsAvailables = [
+    'resize',
     'webglcontextlost',
     'webglcontextrestored',
-    'error',
+    'remove',
+    'dataloading',
     'render',
     'mouseout',
     'mousedown',
+    'load',
+    'data',
     'mouseup',
     'mousemove',
     'touchstart',
@@ -421,22 +426,22 @@ angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope
     'click',
     'dblclick',
     'contextmenu',
-    'load',
+    'error',
     'movestart',
-    'moveend',
     'move',
-    'zoomend',
+    'moveend',
     'zoomstart',
+    'zoomend',
     'zoom',
-    'boxzoomend',
     'boxzoomcancel',
+    'boxzoomend',
     'boxzoomstart',
     'rotatestart',
-    'rotateend',
     'rotate',
+    'rotateend',
     'dragstart',
-    'drag',
     'dragend',
+    'drag',
     'pitch'
   ];
 
@@ -483,7 +488,7 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
       throw new Error('Object definition is undefined');
     }
 
-    var checkOptionalLayerAttributes = function (layerObject, layerAttributes) {
+    var checkOptionalLayerAttributes = function (layerObject, object) {
       var layerAttributesAvailables = [
         'ref',
         'source-layer',
@@ -492,16 +497,26 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
         'interactive',
         'filter',
         'layout',
-        'paint'
+        'paint',
+        'metadata'
       ];
 
-      if (angular.isDefined(layerAttributes)) {
+      var defaultMetadata = {
+        type: 'mapboxgl:geojson',
+        popup: angular.isDefined(object.popup) && angular.isDefined(object.popup.enabled) && object.popup.enabled ? object.popup.enabled : false
+      };
+
+      if (angular.isDefined(object.layer)) {
         layerAttributesAvailables.map(function (eachAttributeAvailable) {
-          if (angular.isDefined(layerAttributes[eachAttributeAvailable]) && layerAttributes[eachAttributeAvailable] !== null) {
-            layerObject[eachAttributeAvailable] = layerAttributes[eachAttributeAvailable];
+          if (angular.isDefined(object.layer[eachAttributeAvailable]) && object.layer[eachAttributeAvailable] !== null) {
+            layerObject[eachAttributeAvailable] = object.layer[eachAttributeAvailable];
           }
         });
       }
+
+      layerObject.metadata = angular.isDefined(layerObject.metadata) ? layerObject.metadata : {};
+
+      angular.extend(layerObject.metadata, defaultMetadata);
     };
 
     object.id = object.type + '_' + Date.now();
@@ -559,11 +574,7 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
     var layerToAdd = {
       id: object.id,
       type: object.layerType,
-      source: object.id,
-      metadata: {
-        type: 'mapboxgl:geojson',
-        popup: angular.isDefined(object.popup) && angular.isDefined(object.popup.enabled) && object.popup.enabled ? object.popup.enabled : false
-      }
+      source: object.id
     };
 
     _relationLayersPopups.push({
@@ -571,7 +582,7 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
       popup: object.popup
     });
 
-    checkOptionalLayerAttributes(layerToAdd, object.layer);
+    checkOptionalLayerAttributes(layerToAdd, object);
 
     map.addLayer(layerToAdd, before);
   }
@@ -1115,43 +1126,6 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 			return removed;
 	  };
 
-		/*scope.$on('mapboxglMap:styleChanged', function (event, args) {
-			var map = args.map;
-
-			map.on('style.load', function () {
-				var drawControl = _controlsCreated.draw;
-				var drawControlInstance = drawControl.control;
-
-				var coldSource = map.getSource('mapbox-gl-draw-cold');
-				var hotSource = map.getSource('mapbox-gl-draw-hot');
-
-				if (!coldSource && !hotSource) {
-					map.addSource('mapbox-gl-draw-cold', {
-						type: 'geojson',
-						data: {
-							type: 'FeatureCollection',
-							features: []
-						}
-					});
-
-					map.addSource('mapbox-gl-draw-hot', {
-						type: 'geojson',
-						data: {
-							type: 'FeatureCollection',
-							features: []
-						}
-					});
-
-					console.log(drawControlInstance);
-
-					drawControlInstance.options.styles.map(function (eachStyle) {
-						map.addLayer(eachStyle);
-					});
-				}
-			});
-		});*/
-
-
     /*
       controls: {
         navigation: {
@@ -1643,6 +1617,34 @@ angular.module('mapboxgl-directive').directive('glInteractive', [function () {
   };
 
   return directive;
+}]);
+
+angular.module('mapboxgl-directive').directive('glLights', [function () {
+	function mapboxGlLightsDirectiveLink (scope, element, attrs, controller) {
+		if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+		controller.getMap().then(function (map) {
+			mapboxglScope.$watch('glLights', function (lights) {
+        if (angular.isDefined(lights)) {
+          map.setLight(lights);
+        }
+			}, true);
+		});
+	}
+
+	var directive = {
+		restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlLightsDirectiveLink
+	};
+
+	return directive;
 }]);
 
 angular.module('mapboxgl-directive').directive('glMarkers', ['mapboxglMarkerUtils', function (mapboxglMarkerUtils) {
