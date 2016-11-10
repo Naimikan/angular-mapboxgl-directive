@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.14.0 2016-10-14
+*  angular-mapboxgl-directive 0.15.0 2016-11-10
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -1158,20 +1158,20 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 		var controlsAvailables = [
 			{
 				name: 'navigation',
-				constructor: mapboxgl.Navigation,
-				pluginName: 'mapboxgl.Navigation'
+				constructor: mapboxgl.Navigation || mapboxgl.NavigationControl,
+				pluginName: 'mapboxgl.' + (mapboxgl.Navigation ? mapboxgl.Navigation.name : mapboxgl.NavigationControl.name)
 			}, {
 				name: 'scale',
-				constructor: mapboxgl.Scale,
-				pluginName: 'mapboxgl.Scale'
+				constructor: mapboxgl.Scale || mapboxgl.ScaleControl,
+				pluginName: 'mapboxgl.' + (mapboxgl.Scale ? mapboxgl.Scale.name : mapboxgl.ScaleControl.name)
 			}, {
 				name: 'attribution',
-				constructor: mapboxgl.Attribution,
-				pluginName: 'mapboxgl.Attribution'
+				constructor: mapboxgl.Attribution || mapboxgl.AttributionControl,
+				pluginName: 'mapboxgl.' + (mapboxgl.Attribution ? mapboxgl.Attribution.name : mapboxgl.AttributionControl.name)
 			}, {
 				name: 'geolocate',
-				constructor: mapboxgl.Geolocate,
-				pluginName: 'mapboxgl.Geolocate',
+				constructor: mapboxgl.Geolocate || mapboxgl.GeolocateControl,
+				pluginName: 'mapboxgl.' + (mapboxgl.Geolocate ? mapboxgl.Geolocate.name : mapboxgl.GeolocateControl.name),
 				eventsExposedName: 'mapboxglGeolocate',
 				eventsAvailables: [
 					'geolocate',

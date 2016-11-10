@@ -23,10 +23,6 @@
   .controller('IndexController', ['$scope', '$window', '$timeout', 'mapboxglMapsData', '$compile', function ($scope, $window, $timeout, mapboxglMapsData, $compile) {
     $scope.glHeight = $window.innerHeight;
 
-    $scope.$on('mapboxglMap:load', function (event, mapboxglEvent) {
-      console.log(mapboxglEvent);
-    });
-
     $window.onresize = function (event) {
       $scope.$apply(function () {
         $scope.glHeight = event.target.innerHeight;
@@ -46,6 +42,31 @@
     var htmlButton = '<button class="btn btn-primary" ng-click="deleteButtonClick($event);">aasgioagg</button>';
     var compiledHtml = $compile(htmlButton)($scope);
 
+    $scope.$on('mapboxglMap:load', function (event, mapboxglMapEvent) {
+      console.log(event, mapboxglMapEvent);
+
+      mapboxglMapEvent.target.addLayer({
+        'id': '3d-buildings',
+        'source': 'composite',
+        'source-layer': 'building',
+        'filter': ['==', 'extrude', 'true'],
+        'type': 'fill',
+        'minzoom': 15,
+        'paint': {
+          'fill-color': '#aaa',
+          'fill-extrude-height': {
+            'type': 'identity',
+            'property': 'height'
+          },
+          'fill-extrude-base': {
+            'type': 'identity',
+            'property': 'min_height'
+          },
+          'fill-opacity': .6
+        }
+      });
+    });
+
     $scope.$on('mapboxglDirections:route', function (event, mapboxglDirectionsEvent) {
       console.log(event, mapboxglDirectionsEvent);
     });
@@ -58,6 +79,11 @@
       console.log(event, mapboxglDrawEvent);
     });
 
+    $scope.glCenter = {
+      lat: 41,
+      lng: -2
+    };
+
     /*angular.element(document).ready(function () {
       var map1 = mapboxglMapsData.getMapById('map1');
       var map2 = mapboxglMapsData.getMapById('map2');
@@ -67,7 +93,7 @@
       var map = new mapboxgl.Compare(map1, map2);
     });*/
 
-    $timeout(function () {
+    /*$timeout(function () {
       $scope.glCenter = {
         lat: 41,
         lng: -2
@@ -82,9 +108,9 @@
       lat: 37.562984,
       lng: -122.514426
       //autodiscover: true
-    };
+    };*/
 
-    $scope.glZoom = 19;
+    $scope.glZoom = 12;
 
     var el = document.createElement('div');
     el.className = 'marker';
