@@ -91,6 +91,43 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
       geojson: <Object | Array<Object>>
 
       obj: {
+        sources: [
+          {
+            id: String,
+            data: URL String | GeoJSON,
+            maxzoom: Number,
+            buffer: Number,
+            tolerance: Number,
+            cluster: boolean,
+            clusterRadius: Number,
+            clusterMaxZoom: Number
+          }
+        ],
+        layers: [
+          {
+            id: String,
+            type: 'fill' | 'line' | 'symbol' | 'circle' | 'fill-extrusion' | 'raster' | 'background',
+            metadata: Object,
+            ref: String,
+            source: String,
+            source-layer: String,
+            minzoom: Number,
+            maxzoom: Number,
+            filter: FilterObject,
+            layout: LayoutObject,
+            paint: PaintObject,
+            paint.*: PaintObject,
+            before: String,
+            popup: {
+              enabled: true | false,
+              options: PopupOptionsObject,
+              message: String
+            }
+          }
+        ]
+      }
+
+      obj: {
         type: line | polygon | circle,
         coordinates: LngLatLike | Object,
         layer: {

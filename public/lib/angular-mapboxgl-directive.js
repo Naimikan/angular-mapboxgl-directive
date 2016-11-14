@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.15.0 2016-11-10
+*  angular-mapboxgl-directive 0.16.0 2016-11-14
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -463,6 +463,53 @@ angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope
 angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
   var _relationLayersPopups = [];
 
+  function _createSourceByObject (map, sourceObject) {
+    if (angular.isUndefined(sourceObject.id)) {
+      throw new Error('Source ID Required');
+    }
+
+    var tempObject = {};
+
+    for (var attribute in sourceObject) {
+      if (attribute !== 'id') {
+        tempObject[attribute] = sourceObject[attribute];
+      }
+    }
+
+    map.addSource(sourceObject.id, tempObject);
+  }
+
+  function _createLayerByObject (map, layerObject) {
+    if (angular.isUndefined(layerObject.id)) {
+      throw new Error('Layer ID Required');
+    }
+
+    var defaultMetadata = {
+      type: 'mapboxgl:geojson',
+      popup: angular.isDefined(layerObject.popup) && angular.isDefined(layerObject.popup.enabled) && layerObject.popup.enabled ? layerObject.popup.enabled : false
+    };
+
+    var tempObject = {};
+
+    for (var attribute in layerObject) {
+      if (attribute !== 'before' && attribute !== 'popup') {
+        tempObject[attribute] = layerObject[attribute];
+      }
+    }
+
+    tempObject.metadata = angular.isDefined(layerObject.metadata) ? layerObject.metadata : {};
+    angular.extend(tempObject.metadata, defaultMetadata);
+
+    var before = angular.isDefined(layerObject.before) && angular.isDefined(layerObject.before) ? layerObject.before : undefined;
+
+    _relationLayersPopups.push({
+      layerId: layerObject.id,
+      popup: layerObject.popup
+    });
+
+    map.addLayer(tempObject, before);
+  }
+
   function removeAllRelations () {
     _relationLayersPopups = [];
   }
@@ -488,30 +535,44 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
       throw new Error('Object definition is undefined');
     }
 
-    var checkOptionalLayerAttributes = function (layerObject, object) {
-      var layerAttributesAvailables = [
-        'ref',
-        'source-layer',
-        'minzoom',
-        'maxzoom',
-        'interactive',
-        'filter',
-        'layout',
-        'paint',
-        'metadata'
-      ];
+    if (angular.isUndefined(object.sources) || angular.isUndefined(object.layers)) {
+      throw new Error('Object sources and layers must be defined');
+    }
 
+    // Create Sources
+    if (Object.prototype.toString.call(object.sources) === Object.prototype.toString.call([])) {
+      object.sources.map(function (eachSource) {
+        _createSourceByObject(map, eachSource);
+      });
+    } else if (Object.prototype.toString.call(object.sources) === Object.prototype.toString.call({})) {
+      _createSourceByObject(map, object.sources);
+    } else {
+      throw new Error('Invalid sources parameter');
+    }
+
+    // Create Layers
+    if (Object.prototype.toString.call(object.layers) === Object.prototype.toString.call([])) {
+      object.layers.map(function (eachLayer) {
+        _createLayerByObject(map, eachLayer);
+      });
+    } else if (Object.prototype.toString.call(object.layers) === Object.prototype.toString.call({})) {
+      _createLayerByObject(map, object.layers);
+    } else {
+      throw new Error('Invalid layers parameter');
+    }
+
+    /*
+
+    var checkOptionalLayerAttributes = function (layerObject, object) {
       var defaultMetadata = {
         type: 'mapboxgl:geojson',
         popup: angular.isDefined(object.popup) && angular.isDefined(object.popup.enabled) && object.popup.enabled ? object.popup.enabled : false
       };
 
       if (angular.isDefined(object.layer)) {
-        layerAttributesAvailables.map(function (eachAttributeAvailable) {
-          if (angular.isDefined(object.layer[eachAttributeAvailable]) && object.layer[eachAttributeAvailable] !== null) {
-            layerObject[eachAttributeAvailable] = object.layer[eachAttributeAvailable];
-          }
-        });
+        for (var attribute in object.layer) {
+          layerObject[attribute] = object.layer[attribute];
+        }
       }
 
       layerObject.metadata = angular.isDefined(layerObject.metadata) ? layerObject.metadata : {};
@@ -584,7 +645,7 @@ angular.module('mapboxgl-directive').factory('mapboxglGeojsonUtils', ['mapboxglU
 
     checkOptionalLayerAttributes(layerToAdd, object);
 
-    map.addLayer(layerToAdd, before);
+    map.addLayer(layerToAdd, before);*/
   }
 
   var mapboxglGeojsonUtils = {
@@ -1421,6 +1482,43 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 
     /*
       geojson: <Object | Array<Object>>
+
+      obj: {
+        sources: [
+          {
+            id: String,
+            data: URL String | GeoJSON,
+            maxzoom: Number,
+            buffer: Number,
+            tolerance: Number,
+            cluster: boolean,
+            clusterRadius: Number,
+            clusterMaxZoom: Number
+          }
+        ],
+        layers: [
+          {
+            id: String,
+            type: 'fill' | 'line' | 'symbol' | 'circle' | 'fill-extrusion' | 'raster' | 'background',
+            metadata: Object,
+            ref: String,
+            source: String,
+            source-layer: String,
+            minzoom: Number,
+            maxzoom: Number,
+            filter: FilterObject,
+            layout: LayoutObject,
+            paint: PaintObject,
+            paint.*: PaintObject,
+            before: String,
+            popup: {
+              enabled: true | false,
+              options: PopupOptionsObject,
+              message: String
+            }
+          }
+        ]
+      }
 
       obj: {
         type: line | polygon | circle,
