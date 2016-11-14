@@ -61,11 +61,6 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
         if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call({})) {
           mapboxglGeojsonUtils.createGeojsonByObject(map, geojson);
           controller.addGeojsonObject(geojson);
-        } else if (Object.prototype.toString.call(geojson) === Object.prototype.toString.call([])) {
-          geojson.map(function (eachGeojson) {
-            mapboxglGeojsonUtils.createGeojsonByObject(map, eachGeojson);
-            controller.addGeojsonObject(eachGeojson);
-          });
         } else {
           throw new Error('Invalid geojson parameter');
         }
@@ -88,7 +83,7 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
     });
 
     /*
-      geojson: <Object | Array<Object>>
+      geojson: <Object>
 
       obj: {
         sources: [
@@ -125,20 +120,6 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
             }
           }
         ]
-      }
-
-      obj: {
-        type: line | polygon | circle,
-        coordinates: LngLatLike | Object,
-        layer: {
-          layout: Object,
-          paint: Object
-        },
-        popup: {
-          enabled: true | false,
-          options: Object,
-          message: String
-        }
       }
     */
 
