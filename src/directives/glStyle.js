@@ -19,15 +19,29 @@ angular.module('mapboxgl-directive').directive('glStyle', ['$rootScope', functio
 			mapboxglScope.$watch('glStyle', function (style, oldStyle) {
 				if (angular.isDefined(style) && style !== null) {
 					if (style !== oldStyle) {
+						var styleChanged = false;
+
 						map.setStyle(style);
 
-						map.on('style.load', function () {
+						map.on('data', function (event) {
+							if (event.dataType === 'style' && !styleChanged) {
+								$rootScope.$broadcast('mapboxglMap:styleChanged', {
+									map: map,
+									newStyle: style,
+									oldStyle: oldStyle
+								});
+
+								styleChanged = true;
+							}
+						});
+
+						/*map.on('style.load', function () {
 							$rootScope.$broadcast('mapboxglMap:styleChanged', {
 								map: map,
 								newStyle: style,
 								oldStyle: oldStyle
 							});
-						});
+						});*/
 					}
 				}
 			}, true);

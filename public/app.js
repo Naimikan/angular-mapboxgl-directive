@@ -67,12 +67,32 @@
       });
     });
 
+    $scope.$on('mapboxglMap:styleChanged', function (event, mapboxglMapEvent) {
+      console.log(event, mapboxglMapEvent);
+    });
+
     $scope.$on('mapboxglDirections:route', function (event, mapboxglDirectionsEvent) {
       console.log(event, mapboxglDirectionsEvent);
     });
 
     $scope.$on('mapboxglGeolocate:geolocate', function (event, mapboxglGeolocateEvent) {
       console.log(event, mapboxglGeolocateEvent);
+    });
+
+    $scope.$on('mapboxglGeocoder:loading', function (event, mapboxglGeocoderEvent) {
+      console.log(event, mapboxglGeocoderEvent);
+    });
+
+    $scope.$on('mapboxglGeocoder:results', function (event, mapboxglGeocoderEvent) {
+      console.log(event, mapboxglGeocoderEvent);
+    });
+
+    $scope.$on('mapboxglGeocoder:result', function (event, mapboxglGeocoderEvent) {
+      console.log(event, mapboxglGeocoderEvent);
+    });
+
+    $scope.$on('mapboxglGeocoder:error', function (event, mapboxglGeocoderEvent) {
+      console.log(event, mapboxglGeocoderEvent);
     });
 
     $scope.$on('mapboxglDraw:draw.create', function (event, mapboxglDrawEvent) {
@@ -93,22 +113,24 @@
       var map = new mapboxgl.Compare(map1, map2);
     });*/
 
-    /*$timeout(function () {
-      $scope.glCenter = {
-        lat: 41,
-        lng: -2
-      };
-    }, 6000, true);
-
     $timeout(function () {
       $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
-    }, 18000, true);
 
-    $scope.glCenter = {
-      lat: 37.562984,
-      lng: -122.514426
-      //autodiscover: true
-    };*/
+      $scope.glControls = {
+        navigation: {
+          enabled: true,
+          options: {
+            position: 'bottom-left'
+          }
+        },
+        scale: {
+          enabled: true,
+          options: {
+            position: 'top-right'
+          }
+        }
+      };
+    }, 8000, true);
 
     $scope.glZoom = 12;
 
@@ -149,6 +171,12 @@
       },
       geolocate: {
         enabled: true
+      },
+      geocoder: {
+        enabled: true,
+        options: {
+          position: 'top-right'
+        }
       }
     };
 

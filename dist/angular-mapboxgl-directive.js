@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.16.2 2016-11-14
+*  angular-mapboxgl-directive 0.16.2 2016-11-15
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -1136,7 +1136,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 					removeEventsFromControl(controlToRemove.control, controlToRemove.events, controlToRemove.isEventsListenedByMap, map);
 
-	        controlToRemove.control.remove();
+					map.removeControl(controlToRemove.control);
 	      } else {
 	        var customControls = _controlsCreated[attribute];
 
@@ -1145,7 +1145,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 						removeEventsFromControl(eachCustomControl.control, eachCustomControl.events, eachCustomControl.isEventsListenedByMap, map);
 
-	          eachCustomControl.control.remove();
+						map.removeControl(eachCustomControl.control);
 					}
 	      }
 	    }
@@ -1177,7 +1177,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 				try {
 					removeEventsFromControl(found.control, found.events, found.isEventsListenedByMap, map);
 
-					found.control.remove();
+					map.removeControl(found.control);
 					removed = true;
 				} catch (error) {
 					throw new Error('Error removing control \'' + controlName + '\' --> ' + error);
@@ -1204,6 +1204,10 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
         geolocate: {
           enabled: true | false,
           options: {}
+        },
+        geocoder: {
+					enabled: true | false,
+					options: {}
         },
 				directions: {
 					enabled: true | false,
@@ -1236,6 +1240,18 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 				eventsExposedName: 'mapboxglGeolocate',
 				eventsAvailables: [
 					'geolocate',
+					'error'
+				]
+			}, {
+				name: 'geocoder',
+				constructor: mapboxgl.Geocoder,
+				pluginName: 'mapboxgl.Geocoder',
+				eventsExposedName: 'mapboxglGeocoder',
+				eventsAvailables: [
+					'clear',
+					'loading',
+					'results',
+					'result',
 					'error'
 				]
 			}, {
@@ -1975,15 +1991,29 @@ angular.module('mapboxgl-directive').directive('glStyle', ['$rootScope', functio
 			mapboxglScope.$watch('glStyle', function (style, oldStyle) {
 				if (angular.isDefined(style) && style !== null) {
 					if (style !== oldStyle) {
+						var styleChanged = false;
+
 						map.setStyle(style);
 
-						map.on('style.load', function () {
+						map.on('data', function (event) {
+							if (event.dataType === 'style' && !styleChanged) {
+								$rootScope.$broadcast('mapboxglMap:styleChanged', {
+									map: map,
+									newStyle: style,
+									oldStyle: oldStyle
+								});
+
+								styleChanged = true;
+							}
+						});
+
+						/*map.on('style.load', function () {
 							$rootScope.$broadcast('mapboxglMap:styleChanged', {
 								map: map,
 								newStyle: style,
 								oldStyle: oldStyle
 							});
-						});
+						});*/
 					}
 				}
 			}, true);

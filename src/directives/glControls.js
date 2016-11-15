@@ -54,7 +54,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 					removeEventsFromControl(controlToRemove.control, controlToRemove.events, controlToRemove.isEventsListenedByMap, map);
 
-	        controlToRemove.control.remove();
+					map.removeControl(controlToRemove.control);
 	      } else {
 	        var customControls = _controlsCreated[attribute];
 
@@ -63,7 +63,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 
 						removeEventsFromControl(eachCustomControl.control, eachCustomControl.events, eachCustomControl.isEventsListenedByMap, map);
 
-	          eachCustomControl.control.remove();
+						map.removeControl(eachCustomControl.control);
 					}
 	      }
 	    }
@@ -95,7 +95,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 				try {
 					removeEventsFromControl(found.control, found.events, found.isEventsListenedByMap, map);
 
-					found.control.remove();
+					map.removeControl(found.control);
 					removed = true;
 				} catch (error) {
 					throw new Error('Error removing control \'' + controlName + '\' --> ' + error);
@@ -122,6 +122,10 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
         geolocate: {
           enabled: true | false,
           options: {}
+        },
+        geocoder: {
+					enabled: true | false,
+					options: {}
         },
 				directions: {
 					enabled: true | false,
@@ -154,6 +158,18 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 				eventsExposedName: 'mapboxglGeolocate',
 				eventsAvailables: [
 					'geolocate',
+					'error'
+				]
+			}, {
+				name: 'geocoder',
+				constructor: mapboxgl.Geocoder,
+				pluginName: 'mapboxgl.Geocoder',
+				eventsExposedName: 'mapboxglGeocoder',
+				eventsAvailables: [
+					'clear',
+					'loading',
+					'results',
+					'result',
 					'error'
 				]
 			}, {
