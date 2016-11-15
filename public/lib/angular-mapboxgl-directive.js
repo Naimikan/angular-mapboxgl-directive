@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.16.2 2016-11-15
+*  angular-mapboxgl-directive 0.17.0 2016-11-15
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
