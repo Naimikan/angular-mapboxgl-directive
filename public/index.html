@@ -2,40 +2,47 @@
   <head>
     <title>Test Server - angular-mapboxgl-directive</title>
 
-    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.27.0/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.css" rel="stylesheet" />
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v2.2.0/mapbox-gl-directions.css' type='text/css' />
-    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.0.1/mapbox-gl-compare.css' type='text/css' />
-    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v1.3.1/mapbox-gl-geocoder.css' type='text/css' />
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.css' type='text/css' />
     <link href="css/angular-mapboxgl-directive.css" rel="stylesheet" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.27.0/mapbox-gl.js"></script>
-    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.0.1/mapbox-gl-compare.js'></script>
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.28.0/mapbox-gl.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.js'></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v2.2.0/mapbox-gl-directions.js'></script>
-    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v1.3.1/mapbox-gl-geocoder.js'></script>
 
     <script src="lib/angular-mapboxgl-directive.js"></script>
 
     <script src="app.js"></script>
   </head>
   <body ng-controller="IndexController" style="margin: 0;">
-    <div
+    <div mapboxgl-compare compare-settings="{ mousemove: false }">
+      <div
+        mapboxgl
+        gl-style="glStyle"
+        gl-center="glCenter"
+        height="{{glHeight}}"></div>
+
+      <div
+        mapboxgl
+        gl-style="glStyle2"
+        gl-center="glCenter"
+        gl-zoom="glZoom"
+        height="{{glHeight}}"></div>
+    </div>
+
+
+    <!-- <div
       mapboxgl
       id="map1"
-      gl-handlers="glHandlers"
       gl-style="glStyle"
-      gl-controls="glControls"
-      gl-geojson="glGeojson"
-      gl-popups="glPopups"
-      gl-markers="glMarkers"
-      gl-center="glCenter"
-      gl-zoom="glZoom"
-      persistent-geojson="persistentGeojson"
-      persistent-image="persistentImage"
-      gl-image="glImage"
-      gl-video="glVideo"
-      height="{{glHeight}}"
-      width="{{glWidth}}"
-      language="es"></div>
+      height="{{glHeight}}"></div>
+
+    <div
+      mapboxgl
+      id="map2"
+      gl-style="glStyle2"
+      height="{{glHeight}}"></div> -->
   </body>
 </html>

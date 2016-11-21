@@ -387,8 +387,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       persistentImage: '=',
       persistentVideo: '='
     },
-    transclude: true,
-    template: '<div class="angular-mapboxgl-map"><div class="loader" ng-if="isLoading"></div><div ng-transclude></div></div>',
+    template: '<div class="angular-mapboxgl-map"><div class="loader" ng-if="isLoading"></div></div>',
     controller: mapboxGlDirectiveController,
     link: mapboxGlDirectiveLink
   };

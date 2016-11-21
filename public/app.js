@@ -50,19 +50,19 @@
         'source': 'composite',
         'source-layer': 'building',
         'filter': ['==', 'extrude', 'true'],
-        'type': 'fill',
+        'type': 'fill-extrusion',
         'minzoom': 15,
         'paint': {
-          'fill-color': '#aaa',
-          'fill-extrude-height': {
+          'fill-extrusion-color': '#aaa',
+          'fill-extrusion-height': {
             'type': 'identity',
             'property': 'height'
           },
-          'fill-extrude-base': {
+          'fill-extrusion-base': {
             'type': 'identity',
             'property': 'min_height'
           },
-          'fill-opacity': .6
+          'fill-extrusion-opacity': .6
         }
       });
     });
@@ -104,33 +104,10 @@
       lng: -2
     };
 
-    /*angular.element(document).ready(function () {
-      var map1 = mapboxglMapsData.getMapById('map1');
-      var map2 = mapboxglMapsData.getMapById('map2');
-
-      console.log(map1, map2);
-
-      var map = new mapboxgl.Compare(map1, map2);
-    });*/
-
-    $timeout(function () {
+    /*$timeout(function () {
       $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
-
-      $scope.glControls = {
-        navigation: {
-          enabled: true,
-          options: {
-            position: 'bottom-left'
-          }
-        },
-        scale: {
-          enabled: true,
-          options: {
-            position: 'top-right'
-          }
-        }
-      };
-    }, 8000, true);
+      $scope.glStyle2 = 'mapbox://styles/mapbox/streets-v9';
+    }, 6000, true);*/
 
     $scope.glZoom = 12;
 
@@ -183,18 +160,6 @@
     $scope.glHandlers = {
       scrollZoom: true
     };
-
-    $scope.glImage = [
-      {
-        url: 'https://www.mapbox.com/mapbox-gl-js/assets/radar.gif',
-        coordinates: [
-          [-80.425, 46.437],
-          [-71.516, 46.437],
-          [-71.516, 37.936],
-          [-80.425, 37.936]
-        ]
-      }
-    ];
 
     $scope.glVideo = [
       {
