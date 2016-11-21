@@ -1,5 +1,5 @@
 /*!
-*  angular-mapboxgl-directive 0.18.0 2016-11-21
+*  angular-mapboxgl-directive 0.18.1 2016-11-21
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -446,7 +446,15 @@ angular.module('mapboxgl-directive').directive('mapboxglCompare', ['mapboxglMaps
       var mapboxgl1 = mapboxglMapsData.getMapById(children[0].id);
       var mapboxgl2 = mapboxglMapsData.getMapById(children[1].id);
 
-      new mapboxgl.Compare(mapboxgl1, mapboxgl2, scope.compareSettings);
+      var compareMap = new mapboxgl.Compare(mapboxgl1, mapboxgl2, scope.compareSettings);
+
+      element.css('height', map1.css('height'));
+
+      scope.$watch(function () {
+        return map1[0].getAttribute('height');
+      }, function () {
+        element.css('height', map1.css('height'));
+      });
     });
   }
 
