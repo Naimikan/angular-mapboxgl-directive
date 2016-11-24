@@ -19,7 +19,7 @@
       controller: 'ExamplesController'
     });
 
-    for (var iterator = 0, len examplesAvailables.length; iterator < len; iterator++) {
+    for (var iterator = 0, len = examplesAvailables.length; iterator < len; iterator++) {
       var eachExample = examplesAvailables[iterator];
       var eachExampleName = eachExample.name;
 
