@@ -146,13 +146,10 @@
           position: 'bottom-left'
         }
       },
-      geolocate: {
-        enabled: true
-      },
-      geocoder: {
+      attribution: {
         enabled: true,
         options: {
-          position: 'top-right'
+          compact: true
         }
       }
     };
