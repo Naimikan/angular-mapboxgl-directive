@@ -1,7 +1,7 @@
 body {
   background-color: #FFFFFF;
   font-family: 'Noto Serif', serif;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin: 0;
 }
 

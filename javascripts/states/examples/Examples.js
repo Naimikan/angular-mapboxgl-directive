@@ -6,6 +6,7 @@
   .constant('examplesAvailables', [
     {
       name: 'simple_map',
+      title: 'Create a simple map',
       templateUrl: 'javascripts/states/examples/simple_map/SimpleMapTemplate.html',
       controller: 'SimpleMapController'
     }
@@ -15,7 +16,7 @@
     $stateProvider.state('examples', {
       abstract: true,
       url: '/examples',
-      template: '<ui-view />',
+      templateUrl: 'javascripts/states/examples/ExamplesTemplate.html',
       controller: 'ExamplesController'
     });
 
