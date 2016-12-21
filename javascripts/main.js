@@ -5,7 +5,8 @@
     'ui.router',
     'mapboxgl-directive',
 
-    'app.Home'
+    'app.Home',
+    'app.Examples'
   ])
 
   .config(['$compileProvider', '$urlRouterProvider', function ($compileProvider, $urlRouterProvider) {

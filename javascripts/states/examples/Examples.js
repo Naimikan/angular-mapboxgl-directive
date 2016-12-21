@@ -6,13 +6,13 @@
   .constant('examplesAvailables', [
     {
       name: 'simple_map',
-      templateUrl: 'javascripts/states/home/examples/simple_map/SimpleMapTemplate.html',
+      templateUrl: 'javascripts/states/examples/simple_map/SimpleMapTemplate.html',
       controller: 'SimpleMapController'
     }
   ])
 
   .config(['$stateProvider', 'examplesAvailables', function ($stateProvider, examplesAvailables) {
-    $stateProvider.state('home.examples', {
+    $stateProvider.state('examples', {
       abstract: true,
       url: '/examples',
       template: '<ui-view />',
@@ -23,7 +23,7 @@
       var eachExample = examplesAvailables[iterator];
       var eachExampleName = eachExample.name;
 
-      $stateProvider.state('home.examples.' + eachExampleName, {
+      $stateProvider.state('examples.' + eachExampleName, {
         url: '/' + eachExampleName,
         views: {
           '': {
