@@ -1,0 +1,10 @@
+{
+	"dist": {
+    "src": ["dist/<%= package.name %>.js"],
+    "dest": "dist/<%= package.name %>.js"
+	},
+  "public": {
+    "src": ["public/lib/<%= package.name %>.js"],
+    "dest": "public/lib/<%= package.name %>.js"
+  }
+}

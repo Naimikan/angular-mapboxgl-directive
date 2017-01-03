@@ -124,27 +124,41 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
     */
 
 		controller.getMap().then(function (map) {
-      mapboxglScope.$watchCollection('glGeojson', function (geojson) {
-        if (angular.isDefined(geojson) && geojson !== null) {
-          $timeout(function () {
-            geojsonWatched(map, controller, geojson);
-          }, 500, true);
-
-          /*map.on('style.load', function () {
-            geojsonWatched(map, controller, geojson);
-          });*/
-
-          //geojsonWatched(map, controller, geojson);
-
-          /*if (map.style.loaded()) {
-            geojsonWatched(map, controller, geojson);
-          } else {
-            map.style.on('load', function () {
-              geojsonWatched(map, controller, geojson);
-            });
-          }*/
+      mapboxglScope.$watch('glGeojson.sources', function (geojsonSources) {
+        if (angular.isDefined(geojsonSources) && geojsonSources !== null) {
+          console.log(geojsonSources);
         }
-      });
+      }, true);
+
+      mapboxglScope.$watch('glGeojson.layers', function (geojsonLayers) {
+        if (angular.isDefined(geojsonLayers) && geojsonLayers !== null) {
+          console.log(geojsonLayers);
+        }
+      }, true);
+
+
+
+      // mapboxglScope.$watchCollection('glGeojson', function (geojson) {
+      //   if (angular.isDefined(geojson) && geojson !== null) {
+      //     $timeout(function () {
+      //       geojsonWatched(map, controller, geojson);
+      //     }, 500, true);
+      //
+      //     /*map.on('style.load', function () {
+      //       geojsonWatched(map, controller, geojson);
+      //     });*/
+      //
+      //     //geojsonWatched(map, controller, geojson);
+      //
+      //     /*if (map.style.loaded()) {
+      //       geojsonWatched(map, controller, geojson);
+      //     } else {
+      //       map.style.on('load', function () {
+      //         geojsonWatched(map, controller, geojson);
+      //       });
+      //     }*/
+      //   }
+      // });
     });
   }
 

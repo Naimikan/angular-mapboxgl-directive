@@ -173,6 +173,140 @@
       }
     ];
 
+    $scope.glSources = [
+      {
+        id: 'circle1',
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates:  [-2, 41]
+          }
+        }
+      }, {
+        id: 'circle2',
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [-4, 41]
+          }
+        }
+      }, {
+        id: 'polygon1',
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [-2, 40],
+                [-2.5, 41],
+                [-3, 42],
+                [-3.5, 39],
+                [-4, 38],
+                [-2, 40]
+              ]
+            ]
+          }
+        }
+      }
+    ];
+
+    $scope.glLayers = [
+      {
+        id: 'circle1',
+        type: 'circle',
+        source: 'circle1',
+        paint: {
+          'circle-radius': 15,
+          'circle-color': 'red',
+          'circle-opacity': 0.6
+        },
+        popup: {
+          enabled: true,
+          message: htmlButton,
+          getScope: function () {
+            return $scope;
+          }
+        }
+      }, {
+        id: 'circle2',
+        type: 'circle',
+        source: 'circle2',
+        paint: {
+          'circle-radius': 10,
+          'circle-color': 'blue',
+          'circle-opacity': 0.7
+        },
+        'paint.tilted': {
+          'circle-opacity': 0.2
+        },
+        popup: {
+          enabled: true,
+          message: 'Test popup'
+        }
+      }, {
+        id: 'polygon1',
+        type: 'fill-extrusion',
+        source: 'polygon1',
+        paint: {
+          /*'fill-color': 'yellow',
+          'fill-opacity': 0.8*/
+
+          'fill-extrusion-base': 0,
+          'fill-extrusion-height': 1250,
+          'fill-extrusion-color': 'yellow',
+          'fill-extrusion-opacity': 0.75
+        },
+        popup: {
+          enabled: true,
+          message: 'Test'
+        }
+      }
+    ];
+
+    $timeout(function () {
+      $scope.glSources = [
+        {
+          id: 'circle1',
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates:  [-2, 41]
+            }
+          }
+        }
+      ];
+
+      $scope.glLayers = [
+        {
+          id: 'circle1',
+          type: 'circle',
+          source: 'circle1',
+          before: 'water',
+          paint: {
+            'circle-radius': 8,
+            'circle-color': 'green',
+            'circle-opacity': 1
+          },
+          popup: {
+            enabled: true,
+            message: htmlButton,
+            getScope: function () {
+              return $scope;
+            }
+          }
+        }
+      ];
+    }, 5000, true);
+
     $scope.glGeojson = {
       sources: [
         {

@@ -1,5 +1,6 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.18.2 2016-12-21
+*  angular-mapboxgl-directive 0.18.2 2017-01-03
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -389,6 +390,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glPopups: '=',
       glMarkers: '=',
       glLights: '=',
+      glSources: '=',
+      glLayers: '=',
 
       persistentGeojson: '=',
       persistentImage: '=',
@@ -772,6 +775,115 @@ angular.module('mapboxgl-directive').factory('mapboxglImageUtils', ['mapboxglUti
 	return mapboxglImageUtils;
 }]);
 
+angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+  var _layersCreated = [];
+
+  function createLayerByObject (map, layerObject) {
+    if (angular.isUndefined(map) || map === null) {
+      throw new Error('Map is undefined');
+    }
+
+    if (angular.isUndefined(layerObject) || layerObject === null) {
+      throw new Error('Layer object is undefined');
+    }
+
+    if (angular.isUndefined(layerObject.id) || layerObject.id === null) {
+      throw new Error('Layer ID Required');
+    }
+
+    var tempObject = {};
+
+    for (var attribute in layerObject) {
+      tempObject[attribute] = layerObject[attribute];
+    }
+
+    map.addLayer(tempObject);
+
+    _layersCreated.push(layerObject.id);
+  }
+
+  function existLayerById (layerId) {
+    var exist = false;
+
+    if (angular.isDefined(layerId) && layerId !== null) {
+      exist = _layersCreated.indexOf(layerId) !== -1 ? true : false;
+    }
+
+    return exist;
+  }
+
+  function removeLayerById (map, layerId) {
+    if (angular.isUndefined(map) || map === null) {
+      throw new Error('Map is undefined');
+    }
+
+    if (existLayerById(layerId)) {
+      map.removeLayer(layerId);
+
+      _layersCreated = _layersCreated.filter(function (eachLayerCreated) {
+        return eachLayerCreated !== layerId;
+      });
+    } else {
+      throw new Error('Invalid layer ID');
+    }
+  }
+
+  function updateLayerByObject (map, layerObject) {
+    if (angular.isUndefined(map) || map === null) {
+      throw new Error('Map is undefined');
+    }
+
+    if (angular.isUndefined(layerObject) || layerObject === null) {
+      throw new Error('Layer object is undefined');
+    }
+
+    if (angular.isUndefined(layerObject.id) || layerObject.id === null) {
+      throw new Error('Layer ID Required');
+    }
+
+    // Before layer property
+    if (angular.isDefined(layerObject.before) && layerObject.before !== null) {
+      map.moveLayer(layerObject.id, layerObject.before);
+    }
+
+    // Paint properties
+    if (angular.isDefined(layerObject.paint) && layerObject.paint !== null) {
+      for (var eachPaintProperty in layerObject.paint) {
+        var layerPaintProperty = map.getPaintProperty(layerObject.id, eachPaintProperty);
+
+        if (layerPaintProperty !== layerObject.paint[eachPaintProperty]) {
+          map.setPaintProperty(layerObject.id, eachPaintProperty, layerObject.paint[eachPaintProperty]);
+        }
+      }
+    }
+
+    // Layout properties
+    if (angular.isDefined(layerObject.layout) && layerObject.layout !== null) {
+      for (var eachLayoutProperty in layerObject.layout) {
+        var layerLayoutProperty = map.getLayoutProperty(layerObject.id, eachLayoutProperty);
+
+        if (layerLayoutProperty !== layerObject.layout[eachLayoutProperty]) {
+          map.setLayoutProperty(layerObject.id, eachLayoutProperty, layerObject.layout[eachLayoutProperty]);
+        }
+      }
+    }
+  }
+
+  function getCreatedLayers () {
+    return _layersCreated;
+  }
+
+  var mapboxglLayerUtils = {
+    createLayerByObject: createLayerByObject,
+    existLayerById: existLayerById,
+    removeLayerById: removeLayerById,
+    updateLayerByObject: updateLayerByObject,
+    getCreatedLayers: getCreatedLayers
+	};
+
+	return mapboxglLayerUtils;
+}]);
+
 angular.module('mapboxgl-directive').factory('mapboxglMapsData', ['mapboxglUtils', function (mapboxglUtils) {
   var _mapInstances = [];
 
@@ -912,6 +1024,105 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 	};
 
 	return mapboxglPopupUtils;
+}]);
+
+angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+  var _sourcesCreated = [];
+
+  function createSourceByObject (map, sourceObject) {
+    if (angular.isUndefined(map) || map === null) {
+      throw new Error('Map is undefined');
+    }
+
+    if (angular.isUndefined(sourceObject) || sourceObject === null) {
+      throw new Error('Source object is undefined');
+    }
+
+    if (angular.isUndefined(sourceObject.id) || sourceObject.id === null) {
+      throw new Error('Source ID Required');
+    }
+
+    if (angular.isUndefined(sourceObject.type) || sourceObject.type === null) {
+      throw new Error('Source type Required');
+    }
+
+    if (angular.isUndefined(sourceObject.data) || sourceObject.data === null) {
+      throw new Error('Source data Required');
+    }
+
+    var tempObject = {};
+
+    for (var attribute in sourceObject) {
+      if (attribute !== 'id') {
+        tempObject[attribute] = sourceObject[attribute];
+      }
+    }
+
+    map.addSource(sourceObject.id, tempObject);
+
+    _sourcesCreated.push(sourceObject.id);
+  }
+
+  function existSourceById (sourceId) {
+    var exist = false;
+
+    if (angular.isDefined(sourceId) && sourceId !== null) {
+      exist = _sourcesCreated.indexOf(sourceId) !== -1 ? true : false;
+    }
+
+    return exist;
+  }
+
+  function removeSourceById (map, sourceId) {
+    if (angular.isUndefined(map) || map === null) {
+      throw new Error('Map is undefined');
+    }
+
+    if (existSourceById(sourceId)) {
+      map.removeSource(sourceId);
+
+      _sourcesCreated = _sourcesCreated.filter(function (eachSourceCreated) {
+        return eachSourceCreated !== sourceId;
+      });
+    } else {
+      throw new Error('Invalid source ID');
+    }
+  }
+
+  function updateSourceByObject (map, sourceObject) {
+    if (angular.isUndefined(map) || map === null) {
+      throw new Error('Map is undefined');
+    }
+
+    if (angular.isUndefined(sourceObject) || sourceObject === null) {
+      throw new Error('Source object is undefined');
+    }
+
+    if (angular.isUndefined(sourceObject.id) || sourceObject.id === null) {
+      throw new Error('Source ID Required');
+    }
+
+    if (angular.isUndefined(sourceObject.data) || sourceObject.data === null) {
+      throw new Error('Source data Required');
+    }
+
+    var currentSource = map.getSource(sourceObject.id);
+    currentSource.setData(sourceObject.data);
+  }
+
+  function getCreatedSources () {
+    return _sourcesCreated;
+  }
+
+  var mapboxglSourceUtils = {
+    createSourceByObject: createSourceByObject,
+    existSourceById: existSourceById,
+    removeSourceById: removeSourceById,
+    updateSourceByObject: updateSourceByObject,
+    getCreatedSources: getCreatedSources
+	};
+
+	return mapboxglSourceUtils;
 }]);
 
 angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', function ($window, $q) {
@@ -1610,27 +1821,41 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
     */
 
 		controller.getMap().then(function (map) {
-      mapboxglScope.$watchCollection('glGeojson', function (geojson) {
-        if (angular.isDefined(geojson) && geojson !== null) {
-          $timeout(function () {
-            geojsonWatched(map, controller, geojson);
-          }, 500, true);
-
-          /*map.on('style.load', function () {
-            geojsonWatched(map, controller, geojson);
-          });*/
-
-          //geojsonWatched(map, controller, geojson);
-
-          /*if (map.style.loaded()) {
-            geojsonWatched(map, controller, geojson);
-          } else {
-            map.style.on('load', function () {
-              geojsonWatched(map, controller, geojson);
-            });
-          }*/
+      mapboxglScope.$watch('glGeojson.sources', function (geojsonSources) {
+        if (angular.isDefined(geojsonSources) && geojsonSources !== null) {
+          console.log(geojsonSources);
         }
-      });
+      }, true);
+
+      mapboxglScope.$watch('glGeojson.layers', function (geojsonLayers) {
+        if (angular.isDefined(geojsonLayers) && geojsonLayers !== null) {
+          console.log(geojsonLayers);
+        }
+      }, true);
+
+
+
+      // mapboxglScope.$watchCollection('glGeojson', function (geojson) {
+      //   if (angular.isDefined(geojson) && geojson !== null) {
+      //     $timeout(function () {
+      //       geojsonWatched(map, controller, geojson);
+      //     }, 500, true);
+      //
+      //     /*map.on('style.load', function () {
+      //       geojsonWatched(map, controller, geojson);
+      //     });*/
+      //
+      //     //geojsonWatched(map, controller, geojson);
+      //
+      //     /*if (map.style.loaded()) {
+      //       geojsonWatched(map, controller, geojson);
+      //     } else {
+      //       map.style.on('load', function () {
+      //         geojsonWatched(map, controller, geojson);
+      //       });
+      //     }*/
+      //   }
+      // });
     });
   }
 
@@ -1786,6 +2011,90 @@ angular.module('mapboxgl-directive').directive('glInteractive', [function () {
 		replace: false,
 		require: '?^mapboxgl',
 		link: mapboxGlInteractiveDirectiveLink
+  };
+
+  return directive;
+}]);
+
+angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils', '$timeout', '$q', function (mapboxglLayerUtils, $timeout, $q) {
+  function mapboxGlLayersDirectiveLink (scope, element, attrs, controller) {
+    if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+    function createOrUpdateLayer (map, layerObject) {
+      if (mapboxglLayerUtils.existLayerById(layerObject.id)) {
+        mapboxglLayerUtils.updateLayerByObject(map, layerObject);
+      } else {
+        mapboxglLayerUtils.createLayerByObject(map, layerObject);
+      }
+    }
+
+    function checkLayersToBeRemoved (map, layers) {
+      var defer = $q.defer();
+
+      var layersIds = [];
+
+      if (Object.prototype.toString.call(layers) === Object.prototype.toString.call([])) {
+        layersIds = layers.map(function (eachLayer) {
+          return eachLayer.id;
+        });
+      } else if (Object.prototype.toString.call(layers) === Object.prototype.toString.call({})) {
+        layersIds.push(layers.id);
+      } else {
+        defer.reject(new Error('Invalid layers parameter'));
+      }
+
+      layersIds = layersIds.filter(function (eachLayerId) {
+        return angular.isDefined(eachLayerId);
+      });
+
+      var layersToBeRemoved = mapboxglLayerUtils.getCreatedLayers();
+
+      layersIds.map(function (eachLayerId) {
+        layersToBeRemoved = layersToBeRemoved.filter(function (eachLayerToBeRemoved) {
+          return eachLayerToBeRemoved !== eachLayerId;
+        });
+      });
+
+      layersToBeRemoved.map(function (eachLayerToBeRemoved) {
+        mapboxglLayerUtils.removeLayerById(map, eachLayerToBeRemoved);
+      });
+
+      defer.resolve();
+
+      return defer.promise;
+    }
+
+    controller.getMap().then(function (map) {
+      mapboxglScope.$watch('glLayers', function (layers) {
+        $timeout(function () {
+          checkLayersToBeRemoved(map, layers).then(function () {
+            if (Object.prototype.toString.call(layers) === Object.prototype.toString.call([])) {
+              layers.map(function (eachLayer) {
+                createOrUpdateLayer(map, eachLayer);
+              });
+            } else if (Object.prototype.toString.call(layers) === Object.prototype.toString.call({})) {
+              createOrUpdateLayer(map, layers);
+            } else {
+              throw new Error('Invalid layers parameter');
+            }
+          }).catch(function (error) {
+            throw error;
+          });
+        }, 500, true);
+      }, true);
+    });
+  }
+
+  var directive = {
+    restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlLayersDirectiveLink
   };
 
   return directive;
@@ -2043,6 +2352,90 @@ angular.module('mapboxgl-directive').directive('glPopups', ['mapboxglPopupUtils'
 	return directive;
 }]);
 
+angular.module('mapboxgl-directive').directive('glSources', ['mapboxglSourceUtils', '$timeout', '$q', function (mapboxglSourceUtils, $timeout, $q) {
+  function mapboxGlSourcesDirectiveLink (scope, element, attrs, controller) {
+    if (!controller) {
+			throw new Error('Invalid angular-mapboxgl-directive controller');
+		}
+
+		var mapboxglScope = controller.getMapboxGlScope();
+
+    function createOrUpdateSource (map, sourceObject) {
+      if (mapboxglSourceUtils.existSourceById(sourceObject.id)) {
+        mapboxglSourceUtils.updateSourceByObject(map, sourceObject);
+      } else {
+        mapboxglSourceUtils.createSourceByObject(map, sourceObject);
+      }
+    }
+
+    function checkSourcesToBeRemoved (map, sources) {
+      var defer = $q.defer();
+
+      var sourcesIds = [];
+
+      if (Object.prototype.toString.call(sources) === Object.prototype.toString.call([])) {
+        sourcesIds = sources.map(function (eachSource) {
+          return eachSource.id;
+        });
+      } else if (Object.prototype.toString.call(sources) === Object.prototype.toString.call({})) {
+        sourcesIds.push(sources.id);
+      } else {
+        defer.reject(new Error('Invalid sources parameter'));
+      }
+
+      sourcesIds = sourcesIds.filter(function (eachSourceId) {
+        return angular.isDefined(eachSourceId);
+      });
+
+      var sourcesToBeRemoved = mapboxglSourceUtils.getCreatedSources();
+
+      sourcesIds.map(function (eachSourceId) {
+        sourcesToBeRemoved = sourcesToBeRemoved.filter(function (eachSourceToBeRemoved) {
+          return eachSourceToBeRemoved !== eachSourceId;
+        });
+      });
+
+      sourcesToBeRemoved.map(function (eachSourceToBeRemoved) {
+        mapboxglSourceUtils.removeSourceById(map, eachSourceToBeRemoved);
+      });
+
+      defer.resolve();
+
+      return defer.promise;
+    }
+
+    controller.getMap().then(function (map) {
+      mapboxglScope.$watch('glSources', function (sources) {
+        $timeout(function () {
+          checkSourcesToBeRemoved(map, sources).then(function () {
+            if (Object.prototype.toString.call(sources) === Object.prototype.toString.call([])) {
+              sources.map(function (eachSource) {
+                createOrUpdateSource(map, eachSource);
+              });
+            } else if (Object.prototype.toString.call(sources) === Object.prototype.toString.call({})) {
+              createOrUpdateSource(map, sources);
+            } else {
+              throw new Error('Invalid sources parameter');
+            }
+          }).catch(function (error) {
+            throw error;
+          });
+        }, 500, true);
+      }, true);
+    });
+  }
+
+  var directive = {
+    restrict: 'A',
+		scope: false,
+		replace: false,
+		require: '?^mapboxgl',
+		link: mapboxGlSourcesDirectiveLink
+  };
+
+  return directive;
+}]);
+
 angular.module('mapboxgl-directive').directive('glStyle', ['$rootScope', function ($rootScope) {
 	function mapboxGlStyleDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
@@ -2198,3 +2591,4 @@ angular.module('mapboxgl-directive').directive('glZoom', [function () {
 }]);
 
 }(angular, mapboxgl));
+},{}]},{},[1]);

@@ -1,6 +1,6 @@
 {
   "name": "angular-mapboxgl-directive",
-  "version": "0.18.2",
+  "version": "0.19.0",
   "description": "An AngularJS directive for Mapbox GL",
   "main": "Gruntfile.js",
   "scripts": {
@@ -16,6 +16,7 @@
     "mapbox",
     "mapboxgl",
     "javascript",
+    "directive",
     "cli"
   ],
   "author": "https://github.com/Naimikan/angular-mapboxgl-directive/graphs/contributors",
@@ -31,6 +32,7 @@
   "devDependencies": {
     "connect-livereload": "^0.5.4",
     "grunt": "^1.0.1",
+    "grunt-browserify": "^5.0.0",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-connect": "^1.0.2",
