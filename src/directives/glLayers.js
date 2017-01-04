@@ -1,10 +1,45 @@
-angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils', '$timeout', '$q', function (mapboxglLayerUtils, $timeout, $q) {
+angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils', 'mapboxglPopupUtils', '$timeout', '$q', function (mapboxglLayerUtils, mapboxglPopupUtils, $timeout, $q) {
   function mapboxGlLayersDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
 		}
 
 		var mapboxglScope = controller.getMapboxGlScope();
+
+    function disableLayerEvents (map) {
+      mapboxglPopupUtils.removeAllPopupsCreated(map);
+
+      map.off('click');
+      map.off('mousemove');
+    }
+
+    function enableLayerEvents (map) {
+      map.on('click', function (event) {
+        var allLayers = mapboxglLayerUtils.getCreatedLayers();
+
+        var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
+
+        if (features.length > 0) {
+          var feature = features[0];
+
+          var popupObject = mapboxglLayerUtils.getPopupRelationByLayerId(feature.layer.id);
+
+          mapboxglPopupUtils.createPopupByObject(map, {
+            coordinates: event.point,
+            options: popupObject.options,
+            html: popupObject.message,
+            getScope: popupObject.getScope
+          }, feature.layer.id);
+        }
+      });
+
+      map.on('mousemove', function (event) {
+        var allLayers = mapboxglLayerUtils.getCreatedLayers();
+
+        var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
+        map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+      });
+    }
 
     function createOrUpdateLayer (map, layerObject) {
       if (mapboxglLayerUtils.existLayerById(layerObject.id)) {
@@ -53,6 +88,8 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
     controller.getMap().then(function (map) {
       mapboxglScope.$watch('glLayers', function (layers) {
         $timeout(function () {
+          disableLayerEvents(map);
+
           checkLayersToBeRemoved(map, layers).then(function () {
             if (Object.prototype.toString.call(layers) === Object.prototype.toString.call([])) {
               layers.map(function (eachLayer) {
@@ -63,6 +100,8 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
             } else {
               throw new Error('Invalid layers parameter');
             }
+
+            enableLayerEvents(map);
           }).catch(function (error) {
             throw error;
           });

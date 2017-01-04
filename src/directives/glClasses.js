@@ -9,9 +9,7 @@ angular.module('mapboxgl-directive').directive('glClasses', [function () {
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glClasses', function (classes) {
         if (angular.isDefined(classes)) {
-          if (angular.isArray(classes)) {
-            map.setClasses(classes);
-          }
+          map.setClasses(classes.classes, classes.options);
         } else {
           var currentClasses = map.getClasses();
 

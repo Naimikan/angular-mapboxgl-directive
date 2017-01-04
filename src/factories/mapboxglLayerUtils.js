@@ -1,5 +1,32 @@
-angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUtils', 'mapboxglConstants', 'mapboxglPopupUtils', function (mapboxglUtils, mapboxglConstants, mapboxglPopupUtils) {
   var _layersCreated = [];
+  var _relationLayersPopups = [];
+
+  function getCreatedLayers () {
+    return _layersCreated;
+  }
+
+  function removePopupRelationByLayerId (layerId) {
+    _relationLayersPopups = _relationLayersPopups.filter(function (each) {
+      return each.layerId !== layerId;
+    });
+  }
+
+  function removeAllPopupRelations () {
+    _relationLayersPopups = [];
+  }
+
+  function getPopupRelationByLayerId (layerId) {
+    var relationArray = _relationLayersPopups.filter(function (each) {
+      return each.layerId === layerId;
+    });
+
+    if (relationArray.length > 0) {
+      return relationArray[0].popup;
+    } else {
+      return false;
+    }
+  }
 
   function createLayerByObject (map, layerObject) {
     if (angular.isUndefined(map) || map === null) {
@@ -14,15 +41,36 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
       throw new Error('Layer ID Required');
     }
 
+    if (angular.isUndefined(layerObject.type) || layerObject.type === null) {
+      throw new Error('Layer type Required');
+    }
+
+    var defaultMetadata = {
+      type: 'mapboxgl:' + layerObject.type,
+      popup: angular.isDefined(layerObject.popup) && angular.isDefined(layerObject.popup.enabled) && layerObject.popup.enabled ? layerObject.popup.enabled : false
+    };
+
     var tempObject = {};
 
     for (var attribute in layerObject) {
-      tempObject[attribute] = layerObject[attribute];
+      if (attribute !== 'before' && attribute !== 'popup') {
+        tempObject[attribute] = layerObject[attribute];
+      }
     }
 
-    map.addLayer(tempObject);
+    tempObject.metadata = angular.isDefined(layerObject.metadata) ? layerObject.metadata : {};
+    angular.extend(tempObject.metadata, defaultMetadata);
+
+    var before = angular.isDefined(layerObject.before) && angular.isDefined(layerObject.before) ? layerObject.before : undefined;
+
+    map.addLayer(tempObject, before);
 
     _layersCreated.push(layerObject.id);
+
+    _relationLayersPopups.push({
+      layerId: layerObject.id,
+      popup: layerObject.popup
+    });
   }
 
   function existLayerById (layerId) {
@@ -46,6 +94,9 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
       _layersCreated = _layersCreated.filter(function (eachLayerCreated) {
         return eachLayerCreated !== layerId;
       });
+
+      mapboxglPopupUtils.removePopupByLayerId(layerId);
+      removePopupRelationByLayerId(layerId);
     } else {
       throw new Error('Invalid layer ID');
     }
@@ -69,6 +120,37 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
       map.moveLayer(layerObject.id, layerObject.before);
     }
 
+    // Filter property
+    if (angular.isDefined(layerObject.filter) && layerObject.filter !== null && angular.isArray(layerObject.filter)) {
+      map.setFilter(layerObject.id, layerObject.filter);
+    }
+
+    // Minzoom and maxzoom properties
+    // var currentLayerZoomRange = map.getLayerZoomRange(layerObject.id);
+    //
+    // if (angular.isDefined(layerObject.minzoom) && layerObject.minzoom !== null) {
+    //   if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
+    //     map.setLayerZoomRange(layerObject.id, layerObject.minzoom, layerObject.maxzoom);
+    //   } else {
+    //     map.setLayerZoomRange(layerObject.id, layerObject.minzoom, currentLayerZoomRange.maxzoom);
+    //   }
+    // } else {
+    //   if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
+    //     map.setLayerZoomRange(layerObject.id, currentLayerZoomRange.minzoom, layerObject.maxzoom);
+    //   }
+    // }
+
+    // Popup property
+    if (angular.isDefined(layerObject.popup) && layerObject.popup !== null) {
+      mapboxglPopupUtils.removePopupByLayerId(layerObject.id);
+      removePopupRelationByLayerId(layerObject.id);
+
+      _relationLayersPopups.push({
+        layerId: layerObject.id,
+        popup: layerObject.popup
+      });
+    }
+
     // Paint properties
     if (angular.isDefined(layerObject.paint) && layerObject.paint !== null) {
       for (var eachPaintProperty in layerObject.paint) {
@@ -79,7 +161,7 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
         }
       }
     }
-
+    
     // Layout properties
     if (angular.isDefined(layerObject.layout) && layerObject.layout !== null) {
       for (var eachLayoutProperty in layerObject.layout) {
@@ -92,16 +174,15 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
     }
   }
 
-  function getCreatedLayers () {
-    return _layersCreated;
-  }
-
   var mapboxglLayerUtils = {
     createLayerByObject: createLayerByObject,
     existLayerById: existLayerById,
     removeLayerById: removeLayerById,
     updateLayerByObject: updateLayerByObject,
-    getCreatedLayers: getCreatedLayers
+    getCreatedLayers: getCreatedLayers,
+    removeAllPopupRelations: removeAllPopupRelations,
+    removePopupRelationByLayerId: removePopupRelationByLayerId,
+    getPopupRelationByLayerId: getPopupRelationByLayerId
 	};
 
 	return mapboxglLayerUtils;

@@ -8,10 +8,12 @@ angular.module('mapboxgl-directive').directive('glPitch', [function () {
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glPitch', function (pitch) {
-				if (angular.isNumber(pitch) && (pitch >= 0 || pitch <= 60)) {
-					map.setPitch(pitch);
-				} else {
-					throw new Error('Invalid pitch');
+				if (angular.isDefined(pitch)) {
+					if (angular.isNumber(pitch.value) && (pitch.value >= 0 || pitch.value <= 60)) {
+						map.setPitch(pitch.value, pitch.eventData);
+					} else {
+						throw new Error('Invalid pitch');
+					}
 				}
 			}, true);
 		});

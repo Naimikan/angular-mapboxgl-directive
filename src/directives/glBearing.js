@@ -9,7 +9,7 @@ angular.module('mapboxgl-directive').directive('glBearing', [function () {
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glBearing', function (bearing) {
 				if (angular.isNumber(bearing)) {
-					map.setBearing(bearing);
+					map.setBearing(bearing.value, bearing.eventData);
 				} else {
 					throw new Error('Invalid bearing');
 				}

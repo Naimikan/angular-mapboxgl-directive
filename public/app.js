@@ -298,10 +298,7 @@
           },
           popup: {
             enabled: true,
-            message: htmlButton,
-            getScope: function () {
-              return $scope;
-            }
+            message: 'Modified popup message'
           }
         }
       ];

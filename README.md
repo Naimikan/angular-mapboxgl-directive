@@ -19,11 +19,18 @@ bower install angular-mapboxgl-directive --save
 
 ### Get Started
 
-Include files in your `index.html`:
+Include the files in your `index.html`:
 ```html
-<script src="angular-mapboxgl-directive.min.js"></script>
-
 <link href="angular-mapboxgl-directive.css" rel="stylesheet" />
+
+<script src="angular-mapboxgl-directive.min.js"></script>
+```
+
+Or you can include them from CDN:
+```html
+<link href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/X.X.X/angular-mapboxgl-directive.min.css" rel="stylesheet" />
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/X.X.X/angular-mapboxgl-directive.min.js"></script>
 ```
 
 Add `mapboxgl-directive` module in your AngularJS project:
@@ -33,12 +40,30 @@ var app = angular.module('YourProject', ['mapboxgl-directive']);
 
 ### Usage
 
+#### mapboxgl
+
 ```html
 <mapboxgl></mapboxgl>
 ```
 or
 ```html
 <div mapboxgl></div>
+```
+
+#### mapboxglCompare
+
+```html
+<mapboxgl-compare>
+   <mapboxgl></mapboxgl>
+   <mapboxgl></mapboxgl>
+</mapboxgl-compare>
+```
+or
+```html
+<div mapboxgl-compare>
+   <div mapboxgl></div>
+   <div mapboxgl></div>
+</div>
 ```
 
 ### See [Wiki](https://github.com/Naimikan/angular-mapboxgl-directive/wiki) for complete reference.

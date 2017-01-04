@@ -8,10 +8,12 @@ angular.module('mapboxgl-directive').directive('glZoom', [function () {
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glZoom', function (zoom) {
-				if (angular.isNumber(zoom) && (zoom >= 0 || zoom <= 20)) {
-					map.setZoom(zoom);
-				} else {
-					throw new Error('Invalid zoom');
+				if (angular.isDefined(zoom)) {
+					if (angular.isNumber(zoom.value) && (zoom.value >= 0 || zoom.value <= 20)) {
+						map.setZoom(zoom.value, zoom.eventData);
+					} else {
+						throw new Error('Invalid zoom');
+					}
 				}
 			}, true);
 		});

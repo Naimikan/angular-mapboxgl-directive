@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.18.2 2017-01-03
+*  angular-mapboxgl-directive 0.20.0 2017-01-04
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -775,8 +775,35 @@ angular.module('mapboxgl-directive').factory('mapboxglImageUtils', ['mapboxglUti
 	return mapboxglImageUtils;
 }]);
 
-angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUtils', 'mapboxglConstants', 'mapboxglPopupUtils', function (mapboxglUtils, mapboxglConstants, mapboxglPopupUtils) {
   var _layersCreated = [];
+  var _relationLayersPopups = [];
+
+  function getCreatedLayers () {
+    return _layersCreated;
+  }
+
+  function removePopupRelationByLayerId (layerId) {
+    _relationLayersPopups = _relationLayersPopups.filter(function (each) {
+      return each.layerId !== layerId;
+    });
+  }
+
+  function removeAllPopupRelations () {
+    _relationLayersPopups = [];
+  }
+
+  function getPopupRelationByLayerId (layerId) {
+    var relationArray = _relationLayersPopups.filter(function (each) {
+      return each.layerId === layerId;
+    });
+
+    if (relationArray.length > 0) {
+      return relationArray[0].popup;
+    } else {
+      return false;
+    }
+  }
 
   function createLayerByObject (map, layerObject) {
     if (angular.isUndefined(map) || map === null) {
@@ -791,15 +818,36 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
       throw new Error('Layer ID Required');
     }
 
+    if (angular.isUndefined(layerObject.type) || layerObject.type === null) {
+      throw new Error('Layer type Required');
+    }
+
+    var defaultMetadata = {
+      type: 'mapboxgl:' + layerObject.type,
+      popup: angular.isDefined(layerObject.popup) && angular.isDefined(layerObject.popup.enabled) && layerObject.popup.enabled ? layerObject.popup.enabled : false
+    };
+
     var tempObject = {};
 
     for (var attribute in layerObject) {
-      tempObject[attribute] = layerObject[attribute];
+      if (attribute !== 'before' && attribute !== 'popup') {
+        tempObject[attribute] = layerObject[attribute];
+      }
     }
 
-    map.addLayer(tempObject);
+    tempObject.metadata = angular.isDefined(layerObject.metadata) ? layerObject.metadata : {};
+    angular.extend(tempObject.metadata, defaultMetadata);
+
+    var before = angular.isDefined(layerObject.before) && angular.isDefined(layerObject.before) ? layerObject.before : undefined;
+
+    map.addLayer(tempObject, before);
 
     _layersCreated.push(layerObject.id);
+
+    _relationLayersPopups.push({
+      layerId: layerObject.id,
+      popup: layerObject.popup
+    });
   }
 
   function existLayerById (layerId) {
@@ -823,6 +871,9 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
       _layersCreated = _layersCreated.filter(function (eachLayerCreated) {
         return eachLayerCreated !== layerId;
       });
+
+      mapboxglPopupUtils.removePopupByLayerId(layerId);
+      removePopupRelationByLayerId(layerId);
     } else {
       throw new Error('Invalid layer ID');
     }
@@ -846,6 +897,37 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
       map.moveLayer(layerObject.id, layerObject.before);
     }
 
+    // Filter property
+    if (angular.isDefined(layerObject.filter) && layerObject.filter !== null && angular.isArray(layerObject.filter)) {
+      map.setFilter(layerObject.id, layerObject.filter);
+    }
+
+    // Minzoom and maxzoom properties
+    // var currentLayerZoomRange = map.getLayerZoomRange(layerObject.id);
+    //
+    // if (angular.isDefined(layerObject.minzoom) && layerObject.minzoom !== null) {
+    //   if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
+    //     map.setLayerZoomRange(layerObject.id, layerObject.minzoom, layerObject.maxzoom);
+    //   } else {
+    //     map.setLayerZoomRange(layerObject.id, layerObject.minzoom, currentLayerZoomRange.maxzoom);
+    //   }
+    // } else {
+    //   if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
+    //     map.setLayerZoomRange(layerObject.id, currentLayerZoomRange.minzoom, layerObject.maxzoom);
+    //   }
+    // }
+
+    // Popup property
+    if (angular.isDefined(layerObject.popup) && layerObject.popup !== null) {
+      mapboxglPopupUtils.removePopupByLayerId(layerObject.id);
+      removePopupRelationByLayerId(layerObject.id);
+
+      _relationLayersPopups.push({
+        layerId: layerObject.id,
+        popup: layerObject.popup
+      });
+    }
+
     // Paint properties
     if (angular.isDefined(layerObject.paint) && layerObject.paint !== null) {
       for (var eachPaintProperty in layerObject.paint) {
@@ -856,7 +938,7 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
         }
       }
     }
-
+    
     // Layout properties
     if (angular.isDefined(layerObject.layout) && layerObject.layout !== null) {
       for (var eachLayoutProperty in layerObject.layout) {
@@ -869,16 +951,15 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
     }
   }
 
-  function getCreatedLayers () {
-    return _layersCreated;
-  }
-
   var mapboxglLayerUtils = {
     createLayerByObject: createLayerByObject,
     existLayerById: existLayerById,
     removeLayerById: removeLayerById,
     updateLayerByObject: updateLayerByObject,
-    getCreatedLayers: getCreatedLayers
+    getCreatedLayers: getCreatedLayers,
+    removeAllPopupRelations: removeAllPopupRelations,
+    removePopupRelationByLayerId: removePopupRelationByLayerId,
+    getPopupRelationByLayerId: getPopupRelationByLayerId
 	};
 
 	return mapboxglLayerUtils;
@@ -979,7 +1060,51 @@ angular.module('mapboxgl-directive').factory('mapboxglMarkerUtils', ['mapboxglUt
 }]);
 
 angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUtils', 'mapboxglConstants', '$rootScope', '$compile', function (mapboxglUtils, mapboxglConstants, $rootScope, $compile) {
-	function createPopupByObject (map, object) {
+	var _popupsCreated = [];
+
+	function getAllPopupsCreated () {
+		return _popupsCreated;
+	}
+
+	function getPopupByLayerId (layerId) {
+		var popupsFiltered = _popupsCreated.filter(function (each) {
+			return each.layerId === layerId;
+		});
+
+		if (angular.isUndefined(layerId) || layerId === null) {
+			return popupsFiltered.map(function (each) {
+				return each.popupInstance;
+			});
+		} else {
+			if (popupsFiltered.length > 0) {
+				return popupsFiltered[0].popupInstance;
+			}
+		}
+	}
+
+	function removeAllPopupsCreated (map) {
+		_popupsCreated.map(function (eachPopup) {
+			eachPopup.popupInstance.remove();
+		});
+
+		_popupsCreated = [];
+	}
+
+	function removePopupByLayerId (map, layerId) {
+		var popupsByLayer = _popupsCreated.filter(function (eachPopup) {
+			return eachPopup.layerId === layerId;
+		});
+
+		popupsByLayer.map(function (eachPopup) {
+			eachPopup.popupInstance.remove();
+		});
+
+		_popupsCreated = _popupsCreated.filter(function (eachPopup) {
+			return eachPopup.layerId !== layerId;
+		});
+	}
+
+	function createPopupByObject (map, object, layerId) {
     if (angular.isUndefined(map) || map === null) {
       throw new Error('Map is undefined');
     }
@@ -1016,11 +1141,20 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
 		popup.addTo(map);
 
+		_popupsCreated.push({
+			popupInstance: popup,
+			layerId: layerId
+		});
+
     return popup;
 	}
 
 	var mapboxglPopupUtils = {
-		createPopupByObject: createPopupByObject
+		createPopupByObject: createPopupByObject,
+		getAllPopupsCreated: getAllPopupsCreated,
+		getPopupByLayerId: getPopupByLayerId,
+		removeAllPopupsCreated: removeAllPopupsCreated,
+		removePopupByLayerId: removePopupByLayerId
 	};
 
 	return mapboxglPopupUtils;
@@ -1265,7 +1399,7 @@ angular.module('mapboxgl-directive').directive('glBearing', [function () {
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glBearing', function (bearing) {
 				if (angular.isNumber(bearing)) {
-					map.setBearing(bearing);
+					map.setBearing(bearing.value, bearing.eventData);
 				} else {
 					throw new Error('Invalid bearing');
 				}
@@ -1283,6 +1417,7 @@ angular.module('mapboxgl-directive').directive('glBearing', [function () {
 
 	return directive;
 }]);
+
 angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
 	function mapboxGlCenterDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
@@ -1339,9 +1474,7 @@ angular.module('mapboxgl-directive').directive('glClasses', [function () {
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glClasses', function (classes) {
         if (angular.isDefined(classes)) {
-          if (angular.isArray(classes)) {
-            map.setClasses(classes);
-          }
+          map.setClasses(classes.classes, classes.options);
         } else {
           var currentClasses = map.getClasses();
 
@@ -1703,6 +1836,8 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 
 		var mapboxglScope = controller.getMapboxGlScope();
 
+    console.warn('glGeojson will be deprecated in next versions');
+
     var disableGeojsonEvents = function (map) {
       map.off('click');
       map.off('mousemove');
@@ -2016,13 +2151,48 @@ angular.module('mapboxgl-directive').directive('glInteractive', [function () {
   return directive;
 }]);
 
-angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils', '$timeout', '$q', function (mapboxglLayerUtils, $timeout, $q) {
+angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils', 'mapboxglPopupUtils', '$timeout', '$q', function (mapboxglLayerUtils, mapboxglPopupUtils, $timeout, $q) {
   function mapboxGlLayersDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
 		}
 
 		var mapboxglScope = controller.getMapboxGlScope();
+
+    function disableLayerEvents (map) {
+      mapboxglPopupUtils.removeAllPopupsCreated(map);
+
+      map.off('click');
+      map.off('mousemove');
+    }
+
+    function enableLayerEvents (map) {
+      map.on('click', function (event) {
+        var allLayers = mapboxglLayerUtils.getCreatedLayers();
+
+        var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
+
+        if (features.length > 0) {
+          var feature = features[0];
+
+          var popupObject = mapboxglLayerUtils.getPopupRelationByLayerId(feature.layer.id);
+
+          mapboxglPopupUtils.createPopupByObject(map, {
+            coordinates: event.point,
+            options: popupObject.options,
+            html: popupObject.message,
+            getScope: popupObject.getScope
+          }, feature.layer.id);
+        }
+      });
+
+      map.on('mousemove', function (event) {
+        var allLayers = mapboxglLayerUtils.getCreatedLayers();
+
+        var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
+        map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+      });
+    }
 
     function createOrUpdateLayer (map, layerObject) {
       if (mapboxglLayerUtils.existLayerById(layerObject.id)) {
@@ -2071,6 +2241,8 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
     controller.getMap().then(function (map) {
       mapboxglScope.$watch('glLayers', function (layers) {
         $timeout(function () {
+          disableLayerEvents(map);
+
           checkLayersToBeRemoved(map, layers).then(function () {
             if (Object.prototype.toString.call(layers) === Object.prototype.toString.call([])) {
               layers.map(function (eachLayer) {
@@ -2081,6 +2253,8 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
             } else {
               throw new Error('Invalid layers parameter');
             }
+
+            enableLayerEvents(map);
           }).catch(function (error) {
             throw error;
           });
@@ -2111,7 +2285,7 @@ angular.module('mapboxgl-directive').directive('glLights', [function () {
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glLights', function (lights) {
         if (angular.isDefined(lights)) {
-          map.setLight(lights);
+          map.setLight(lights.options, lights.lightOptions);
         }
 			}, true);
 		});
@@ -2279,10 +2453,12 @@ angular.module('mapboxgl-directive').directive('glPitch', [function () {
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glPitch', function (pitch) {
-				if (angular.isNumber(pitch) && (pitch >= 0 || pitch <= 60)) {
-					map.setPitch(pitch);
-				} else {
-					throw new Error('Invalid pitch');
+				if (angular.isDefined(pitch)) {
+					if (angular.isNumber(pitch.value) && (pitch.value >= 0 || pitch.value <= 60)) {
+						map.setPitch(pitch.value, pitch.eventData);
+					} else {
+						throw new Error('Invalid pitch');
+					}
 				}
 			}, true);
 		});
@@ -2298,6 +2474,7 @@ angular.module('mapboxgl-directive').directive('glPitch', [function () {
 
 	return directive;
 }]);
+
 angular.module('mapboxgl-directive').directive('glPopups', ['mapboxglPopupUtils', function (mapboxglPopupUtils) {
   function mapboxGlPopupDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
@@ -2570,10 +2747,12 @@ angular.module('mapboxgl-directive').directive('glZoom', [function () {
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glZoom', function (zoom) {
-				if (angular.isNumber(zoom) && (zoom >= 0 || zoom <= 20)) {
-					map.setZoom(zoom);
-				} else {
-					throw new Error('Invalid zoom');
+				if (angular.isDefined(zoom)) {
+					if (angular.isNumber(zoom.value) && (zoom.value >= 0 || zoom.value <= 20)) {
+						map.setZoom(zoom.value, zoom.eventData);
+					} else {
+						throw new Error('Invalid zoom');
+					}
 				}
 			}, true);
 		});

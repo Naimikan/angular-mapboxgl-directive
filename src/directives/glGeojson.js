@@ -6,6 +6,8 @@ angular.module('mapboxgl-directive').directive('glGeojson', ['mapboxglGeojsonUti
 
 		var mapboxglScope = controller.getMapboxGlScope();
 
+    console.warn('glGeojson will be deprecated in next versions');
+
     var disableGeojsonEvents = function (map) {
       map.off('click');
       map.off('mousemove');
