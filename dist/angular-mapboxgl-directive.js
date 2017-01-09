@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.20.0 2017-01-04
+*  angular-mapboxgl-directive 0.21.0 2017-01-09
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -903,19 +903,19 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
     }
 
     // Minzoom and maxzoom properties
-    // var currentLayerZoomRange = map.getLayerZoomRange(layerObject.id);
-    //
-    // if (angular.isDefined(layerObject.minzoom) && layerObject.minzoom !== null) {
-    //   if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
-    //     map.setLayerZoomRange(layerObject.id, layerObject.minzoom, layerObject.maxzoom);
-    //   } else {
-    //     map.setLayerZoomRange(layerObject.id, layerObject.minzoom, currentLayerZoomRange.maxzoom);
-    //   }
-    // } else {
-    //   if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
-    //     map.setLayerZoomRange(layerObject.id, currentLayerZoomRange.minzoom, layerObject.maxzoom);
-    //   }
-    // }
+    var currentLayer = map.getLayer(layerObject.id);
+
+    if (angular.isDefined(layerObject.minzoom) && layerObject.minzoom !== null) {
+      if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
+        map.setLayerZoomRange(layerObject.id, layerObject.minzoom, layerObject.maxzoom);
+      } else {
+        map.setLayerZoomRange(layerObject.id, layerObject.minzoom, currentLayer.maxzoom);
+      }
+    } else {
+      if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
+        map.setLayerZoomRange(layerObject.id, currentLayer.minzoom, layerObject.maxzoom);
+      }
+    }
 
     // Popup property
     if (angular.isDefined(layerObject.popup) && layerObject.popup !== null) {
@@ -938,7 +938,7 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
         }
       }
     }
-    
+
     // Layout properties
     if (angular.isDefined(layerObject.layout) && layerObject.layout !== null) {
       for (var eachLayoutProperty in layerObject.layout) {
@@ -1397,11 +1397,13 @@ angular.module('mapboxgl-directive').directive('glBearing', [function () {
 		var mapboxglScope = controller.getMapboxGlScope();
 
 		controller.getMap().then(function (map) {
-			mapboxglScope.$watch('glBearing', function (bearing) {
-				if (angular.isNumber(bearing)) {
-					map.setBearing(bearing.value, bearing.eventData);
-				} else {
-					throw new Error('Invalid bearing');
+			mapboxglScope.$watch('glBearing', function (bearingObject) {
+				if (angular.isDefined(bearingObject)) {
+					if (angular.isNumber(bearingObject.value)) {
+						map.setBearing(bearingObject.value, bearingObject.eventData);
+					} else {
+						throw new Error('Invalid bearing');
+					}
 				}
 			}, true);
 		});
@@ -1430,9 +1432,6 @@ angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', 'ma
 			mapboxglScope.$watch('glCenter', function (center, oldCenter) {
 				mapboxglUtils.validateAndFormatCenter(center).then(function (newCenter) {
 					if (newCenter) {
-						//map.panTo(newCenter);
-						//map.flyTo({ center: newCenter });
-
 						if (angular.isDefined(oldCenter) && center !== oldCenter) {
 							map.flyTo({ center: newCenter });
 						} else {
@@ -1442,8 +1441,6 @@ angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', 'ma
 						throw new Error('Invalid center');
 					}
 				}).catch(function (error) {
-					//map.panTo(mapboxglConstants.map.defaultCenter);
-					//map.flyTo({ center: mapboxglConstants.map.defaultCenter });
 					map.setCenter(mapboxglConstants.map.defaultCenter);
 
 					throw new Error(error.code + ' / ' + error.message);
@@ -1472,9 +1469,9 @@ angular.module('mapboxgl-directive').directive('glClasses', [function () {
 		var mapboxglScope = controller.getMapboxGlScope();
 
 		controller.getMap().then(function (map) {
-			mapboxglScope.$watch('glClasses', function (classes) {
-        if (angular.isDefined(classes)) {
-          map.setClasses(classes.classes, classes.options);
+			mapboxglScope.$watch('glClasses', function (classesObject) {
+        if (angular.isDefined(classesObject)) {
+          map.setClasses(classesObject.classes, classesObject.options);
         } else {
           var currentClasses = map.getClasses();
 
@@ -2283,9 +2280,9 @@ angular.module('mapboxgl-directive').directive('glLights', [function () {
 		var mapboxglScope = controller.getMapboxGlScope();
 
 		controller.getMap().then(function (map) {
-			mapboxglScope.$watch('glLights', function (lights) {
-        if (angular.isDefined(lights)) {
-          map.setLight(lights.options, lights.lightOptions);
+			mapboxglScope.$watch('glLights', function (lightsObject) {
+        if (angular.isDefined(lightsObject)) {
+          map.setLight(lightsObject.options, lightsObject.lightOptions);
         }
 			}, true);
 		});
@@ -2385,6 +2382,7 @@ angular.module('mapboxgl-directive').directive('glMaxBounds', [function () {
 
 	return directive;
 }]);
+
 angular.module('mapboxgl-directive').directive('glMaxZoom', [function () {
 	function mapboxGlMaxZoomDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
@@ -2452,10 +2450,10 @@ angular.module('mapboxgl-directive').directive('glPitch', [function () {
 		var mapboxglScope = controller.getMapboxGlScope();
 
 		controller.getMap().then(function (map) {
-			mapboxglScope.$watch('glPitch', function (pitch) {
-				if (angular.isDefined(pitch)) {
-					if (angular.isNumber(pitch.value) && (pitch.value >= 0 || pitch.value <= 60)) {
-						map.setPitch(pitch.value, pitch.eventData);
+			mapboxglScope.$watch('glPitch', function (pitchObject) {
+				if (angular.isDefined(pitchObject)) {
+					if (angular.isNumber(pitchObject.value) && (pitchObject.value >= 0 || pitchObject.value <= 60)) {
+						map.setPitch(pitchObject.value, pitchObject.eventData);
 					} else {
 						throw new Error('Invalid pitch');
 					}
@@ -2746,10 +2744,10 @@ angular.module('mapboxgl-directive').directive('glZoom', [function () {
 		var mapboxglScope = controller.getMapboxGlScope();
 
 		controller.getMap().then(function (map) {
-			mapboxglScope.$watch('glZoom', function (zoom) {
-				if (angular.isDefined(zoom)) {
-					if (angular.isNumber(zoom.value) && (zoom.value >= 0 || zoom.value <= 20)) {
-						map.setZoom(zoom.value, zoom.eventData);
+			mapboxglScope.$watch('glZoom', function (zoomObject) {
+				if (angular.isDefined(zoomObject)) {
+					if (angular.isNumber(zoomObject.value) && (zoomObject.value >= 0 || zoomObject.value <= 20)) {
+						map.setZoom(zoomObject.value, zoomObject.eventData);
 					} else {
 						throw new Error('Invalid zoom');
 					}

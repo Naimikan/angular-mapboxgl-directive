@@ -126,19 +126,19 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
     }
 
     // Minzoom and maxzoom properties
-    // var currentLayerZoomRange = map.getLayerZoomRange(layerObject.id);
-    //
-    // if (angular.isDefined(layerObject.minzoom) && layerObject.minzoom !== null) {
-    //   if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
-    //     map.setLayerZoomRange(layerObject.id, layerObject.minzoom, layerObject.maxzoom);
-    //   } else {
-    //     map.setLayerZoomRange(layerObject.id, layerObject.minzoom, currentLayerZoomRange.maxzoom);
-    //   }
-    // } else {
-    //   if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
-    //     map.setLayerZoomRange(layerObject.id, currentLayerZoomRange.minzoom, layerObject.maxzoom);
-    //   }
-    // }
+    var currentLayer = map.getLayer(layerObject.id);
+
+    if (angular.isDefined(layerObject.minzoom) && layerObject.minzoom !== null) {
+      if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
+        map.setLayerZoomRange(layerObject.id, layerObject.minzoom, layerObject.maxzoom);
+      } else {
+        map.setLayerZoomRange(layerObject.id, layerObject.minzoom, currentLayer.maxzoom);
+      }
+    } else {
+      if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
+        map.setLayerZoomRange(layerObject.id, currentLayer.minzoom, layerObject.maxzoom);
+      }
+    }
 
     // Popup property
     if (angular.isDefined(layerObject.popup) && layerObject.popup !== null) {
@@ -161,7 +161,7 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
         }
       }
     }
-    
+
     // Layout properties
     if (angular.isDefined(layerObject.layout) && layerObject.layout !== null) {
       for (var eachLayoutProperty in layerObject.layout) {

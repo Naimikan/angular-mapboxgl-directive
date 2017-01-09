@@ -7,9 +7,9 @@ angular.module('mapboxgl-directive').directive('glLights', [function () {
 		var mapboxglScope = controller.getMapboxGlScope();
 
 		controller.getMap().then(function (map) {
-			mapboxglScope.$watch('glLights', function (lights) {
-        if (angular.isDefined(lights)) {
-          map.setLight(lights.options, lights.lightOptions);
+			mapboxglScope.$watch('glLights', function (lightsObject) {
+        if (angular.isDefined(lightsObject)) {
+          map.setLight(lightsObject.options, lightsObject.lightOptions);
         }
 			}, true);
 		});

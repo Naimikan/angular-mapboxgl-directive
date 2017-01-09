@@ -7,11 +7,13 @@ angular.module('mapboxgl-directive').directive('glBearing', [function () {
 		var mapboxglScope = controller.getMapboxGlScope();
 
 		controller.getMap().then(function (map) {
-			mapboxglScope.$watch('glBearing', function (bearing) {
-				if (angular.isNumber(bearing)) {
-					map.setBearing(bearing.value, bearing.eventData);
-				} else {
-					throw new Error('Invalid bearing');
+			mapboxglScope.$watch('glBearing', function (bearingObject) {
+				if (angular.isDefined(bearingObject)) {
+					if (angular.isNumber(bearingObject.value)) {
+						map.setBearing(bearingObject.value, bearingObject.eventData);
+					} else {
+						throw new Error('Invalid bearing');
+					}
 				}
 			}, true);
 		});

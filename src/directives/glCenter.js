@@ -10,9 +10,6 @@ angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', 'ma
 			mapboxglScope.$watch('glCenter', function (center, oldCenter) {
 				mapboxglUtils.validateAndFormatCenter(center).then(function (newCenter) {
 					if (newCenter) {
-						//map.panTo(newCenter);
-						//map.flyTo({ center: newCenter });
-
 						if (angular.isDefined(oldCenter) && center !== oldCenter) {
 							map.flyTo({ center: newCenter });
 						} else {
@@ -22,8 +19,6 @@ angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', 'ma
 						throw new Error('Invalid center');
 					}
 				}).catch(function (error) {
-					//map.panTo(mapboxglConstants.map.defaultCenter);
-					//map.flyTo({ center: mapboxglConstants.map.defaultCenter });
 					map.setCenter(mapboxglConstants.map.defaultCenter);
 
 					throw new Error(error.code + ' / ' + error.message);

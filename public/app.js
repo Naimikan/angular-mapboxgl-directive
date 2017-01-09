@@ -109,7 +109,9 @@
       $scope.glStyle2 = 'mapbox://styles/mapbox/streets-v9';
     }, 6000, true);*/
 
-    $scope.glZoom = 12;
+    $scope.glZoom = {
+      value: 12
+    };
 
     var el = document.createElement('div');
     el.className = 'marker';
