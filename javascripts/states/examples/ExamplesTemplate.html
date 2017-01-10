@@ -1,19 +1,28 @@
-<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding: 0;">
-  <div full-height class="panel panel-default">
-    <div class="panel-heading">
-      <h4>Examples list</h4>
-    </div>
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+  <h1><a ui-sref="home">angular-mapboxgl-directive</a> examples</h1> <em>(<i class="fa fa-exclamation-triangle"></i> under construction)</em>
+  <hr />
 
-    <div full-height class="panel-body">
-      <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
-        <ul>
-          <li ng-repeat="eachExample in examplesAvailables">
-            <span ng-bind="eachExample.title"></span>
-          </li>
-        </ul>
+  <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+    <div ng-repeat="eachType in examplesTypes">
+      <h4 ng-bind="eachType"></h4>
+      <hr style="margin: 5px 0px; border-top-color: #CCCCCC;" />
+
+      <ul style="padding: 0; list-style: none;">
+        <li ng-repeat="eachExample in examplesAvailables | filter:{ type: eachType }">
+          <a ui-sref="{{eachExample.uiSref}}" ng-bind="eachExample.title"></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9" style="border-left: 1px solid #CCCCCC;">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 ng-bind="$state.current.data.title"></h4>
+        <em><small ng-bind="$state.current.data.description"></small></em>
       </div>
 
-      <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7" style="border-left: 1px solid #CCCCCC;">
+      <div class="panel-body" style="padding: 0">
         <div ui-view></div>
       </div>
     </div>

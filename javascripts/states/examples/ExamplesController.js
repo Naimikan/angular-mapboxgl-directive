@@ -3,7 +3,8 @@
 
   angular.module('app.Examples')
 
-  .controller('ExamplesController', ['$scope', 'examplesAvailables', function ($scope, examplesAvailables) {
+  .controller('ExamplesController', ['$scope', 'examplesAvailables', 'examplesTypes', function ($scope, examplesAvailables, examplesTypes) {
     $scope.examplesAvailables = examplesAvailables;
+    $scope.examplesTypes = examplesTypes;
   }]);
 })(window.angular);

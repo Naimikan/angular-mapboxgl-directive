@@ -8,6 +8,10 @@
       autodiscover: true
     };
 
+    $scope.glZoom = {
+      value: 2
+    };
+
     $scope.glControls = {
       navigation: {
         enabled: true,

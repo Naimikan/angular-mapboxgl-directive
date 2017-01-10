@@ -21,16 +21,25 @@
     <link rel="icon" href="stylesheets/icons/favicons/map-pin-32-195874.png" sizes="32x32">
 
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto+Serif">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.18.1/angular-mapboxgl-directive.min.css">
-    <link rel="stylesheet" type="text/css" href="https://api.mapbox.com/mapbox-gl-js/v0.29.0/mapbox-gl.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.21.0/angular-mapboxgl-directive.min.css">
+    <link rel="stylesheet" type="text/css" href="https://api.mapbox.com/mapbox-gl-js/v0.30.0/mapbox-gl.css" media="screen">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/github.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link rel="stylesheet" type="text/css" href="stylesheets/custom.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.min.js"></script>
-    <script src="https://api.mapbox.com/mapbox-gl-js/v0.29.0/mapbox-gl.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.18.1/angular-mapboxgl-directive.min.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v0.30.0/mapbox-gl.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.21.0/angular-mapboxgl-directive.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/languages/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/languages/json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/languages/xml.min.js"></script>
+    <script src="http://pc035860.github.io/angular-highlightjs/angular-highlightjs.min.js"></script>
+
+    <script>hljs.initHighlightingOnLoad();</script>
 
     <script src="javascripts/main.js"></script>
     <script src="javascripts/states/home/Home.js"></script>
@@ -38,6 +47,9 @@
     <script src="javascripts/states/examples/Examples.js"></script>
     <script src="javascripts/states/examples/ExamplesController.js"></script>
     <script src="javascripts/states/examples/simple_map/SimpleMapController.js"></script>
+    <script src="javascripts/states/examples/show_navigation_control/ShowNavigationControlController.js"></script>
+    <script src="javascripts/states/examples/show_scale_control/ShowScaleControlController.js"></script>
+    <script src="javascripts/states/examples/show_attribution_control/ShowAttributionControlController.js"></script>
 
     <title>Mapbox GL directive for AngularJS</title>
   </head>

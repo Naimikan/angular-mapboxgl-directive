@@ -1,5 +1,5 @@
 body {
-  background-color: #FFFFFF;
+  background-color: #F8F8F8;
   font-family: 'Noto Serif', serif;
   overflow-y: auto;
   margin: 0;
@@ -30,7 +30,18 @@ body {
 }
 
 .example-code-container {
-  
+
+}
+
+pre {
+  padding: 0;
+  border: none;
+  font-size: inherit;
+  margin: 0;
+}
+
+pre code.hljs {
+  background-color: #FFFFFF;
 }
 
 .forkme {

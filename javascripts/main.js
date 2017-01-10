@@ -4,6 +4,7 @@
   angular.module('app', [
     'ui.router',
     'mapboxgl-directive',
+    'hljs',
 
     'app.Home',
     'app.Examples'

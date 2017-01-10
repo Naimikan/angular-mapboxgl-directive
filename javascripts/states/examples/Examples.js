@@ -1,14 +1,48 @@
 (function (angular) {
   'use strict';
 
+  var examplesTypes = {
+    styles: 'Styles',
+    controls: 'Controls'
+  };
+
   angular.module('app.Examples', [])
+
+  .constant('examplesTypes', examplesTypes)
 
   .constant('examplesAvailables', [
     {
       name: 'simple_map',
-      title: 'Create a simple map',
+      title: 'Display a map',
+      type: examplesTypes.styles,
+      description: 'Display a simple map using mapboxgl directive',
       templateUrl: 'javascripts/states/examples/simple_map/SimpleMapTemplate.html',
-      controller: 'SimpleMapController'
+      controller: 'SimpleMapController',
+      uiSref: 'examples.simple_map'
+    }, {
+      name: 'show_navigation_control',
+      title: 'Display Navigation control in a map',
+      type: examplesTypes.controls,
+      description: 'Display Navigation control in a map using glControls directive',
+      templateUrl: 'javascripts/states/examples/show_navigation_control/ShowNavigationControlTemplate.html',
+      controller: 'ShowNavigationControlController',
+      uiSref: 'examples.show_navigation_control'
+    }, {
+      name: 'show_scale_control',
+      title: 'Display Scale control in a map',
+      type: examplesTypes.controls,
+      description: 'Display Scale control in a map using glControls directive',
+      templateUrl: 'javascripts/states/examples/show_scale_control/ShowScaleControlTemplate.html',
+      controller: 'ShowScaleControlController',
+      uiSref: 'examples.show_scale_control'
+    }, {
+      name: 'show_attribution_control',
+      title: 'Display Attribution control in a map',
+      type: examplesTypes.controls,
+      description: 'Display Attribution control in a map using glControls directive',
+      templateUrl: 'javascripts/states/examples/show_attribution_control/ShowAttributionControlTemplate.html',
+      controller: 'ShowAttributionControlController',
+      uiSref: 'examples.show_attribution_control'
     }
   ])
 
@@ -24,13 +58,17 @@
       var eachExample = examplesAvailables[iterator];
       var eachExampleName = eachExample.name;
 
-      $stateProvider.state('examples.' + eachExampleName, {
+      $stateProvider.state(eachExample.uiSref, {
         url: '/' + eachExampleName,
         views: {
           '': {
             templateUrl: eachExample.templateUrl,
             controller: eachExample.controller
           }
+        },
+        data: {
+          title: eachExample.title,
+          description: eachExample.description
         }
       });
     }
