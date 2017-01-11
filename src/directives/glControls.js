@@ -174,8 +174,8 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', '$wi
 				]
 			}, {
 				name: 'directions',
-				constructor: mapboxgl.Directions,
-				pluginName: 'mapboxgl.Directions',
+				constructor: mapboxgl.Directions || $window.MapboxDirections,
+				pluginName: mapboxgl.Directions ? 'mapboxgl.Directions' : 'MapboxDirections',
 				eventsExposedName: 'mapboxglDirections',
 				eventsAvailables: [
 					'clear',
@@ -188,17 +188,20 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', '$wi
 				]
 			}, {
 				name: 'draw',
-				constructor: mapboxgl.Draw,
-				pluginName: 'mapboxgl.Draw',
+				constructor: mapboxgl.Draw || $window.MapboxDraw,
+				pluginName: mapboxgl.Draw ? 'mapboxgl.Draw' : 'MapboxDraw',
 				eventsExposedName: 'mapboxglDraw',
 				listenInMap: true,
 				eventsAvailables: [
 					'draw.create',
 					'draw.delete',
+					'draw.combine',
+					'draw.uncombine',
 					'draw.update',
 					'draw.selectionchange',
 					'draw.modechange',
-					'draw.render'
+					'draw.render',
+					'draw.actionable'
 				]
 			}
 		];
