@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', function ($rootScope) {
+angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', '$window', function ($rootScope, $window) {
 	function mapboxGlControlsDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -162,8 +162,8 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', func
 				]
 			}, {
 				name: 'geocoder',
-				constructor: mapboxgl.Geocoder,
-				pluginName: 'mapboxgl.Geocoder',
+				constructor: mapboxgl.Geocoder || $window.MapboxGeocoder,
+				pluginName: mapboxgl.Geocoder ? 'mapboxgl.Geocoder' : 'MapboxGeocoder',
 				eventsExposedName: 'mapboxglGeocoder',
 				eventsAvailables: [
 					'clear',
