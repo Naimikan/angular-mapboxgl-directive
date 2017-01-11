@@ -59,6 +59,14 @@
       templateUrl: 'javascripts/states/examples/show_geocoder_control/ShowGeocoderControlTemplate.html',
       controller: 'ShowGeocoderControlController',
       uiSref: 'examples.show_geocoder_control'
+    }, {
+      name: 'show_directions_control',
+      title: 'Display Directions control in a map',
+      type: examplesTypes.controls,
+      description: 'Display Directions control in a map using glControls directive',
+      templateUrl: 'javascripts/states/examples/show_directions_control/ShowDirectionsControlTemplate.html',
+      controller: 'ShowDirectionsControlController',
+      uiSref: 'examples.show_directions_control'
     }
   ])
 
