@@ -1,3 +1,6 @@
+.angular-mapboxgl-compare {
+  position: relative;
+}
 .angular-mapboxgl-compare .compare-map {
   position: absolute;
   top: 0;
