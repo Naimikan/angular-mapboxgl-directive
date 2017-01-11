@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.21.0 2017-01-09
+*  angular-mapboxgl-directive 0.22.0 2017-01-11
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -231,11 +231,12 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       container: scope.mapboxglMapId,
       style: scope.glStyle || mapboxglConstants.map.defaultStyle,
       center: mapboxglConstants.map.defaultCenter,
-      hash: angular.isDefined(attrs.hash) && typeof(attrs.hash) === 'boolean' ? attrs.hash : mapboxglConstants.map.defaultHash,
-      bearingSnap: angular.isDefined(attrs.bearingSnap) && angular.isNumber(attrs.bearingSnap) ? attrs.bearingSnap : mapboxglConstants.map.defaultBearingSnap,
-      failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) && typeof(attrs.failIfMajorPerformanceCaveat) === 'boolean' ? attrs.failIfMajorPerformanceCaveat : mapboxglConstants.map.defaultFailIfMajorPerformanceCaveat,
-      preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) && typeof(attrs.preserveDrawingBuffer) === 'boolean' ? attrs.preserveDrawingBuffer : mapboxglConstants.map.defaultPreserveDrawingBuffer,
-      trackResize: angular.isDefined(attrs.trackResize) && typeof(attrs.trackResize) === 'boolean' ? attrs.trackResize : mapboxglConstants.map.defaultTrackResize,
+      hash: angular.isDefined(attrs.hash) ? mapboxglUtils.stringToBoolean(attrs.hash) : mapboxglConstants.map.defaultHash,
+      bearingSnap: angular.isDefined(attrs.bearingSnap) ? mapboxglUtils.stringToNumber(attrs.bearingSnap) : mapboxglConstants.map.defaultBearingSnap,
+      failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) ? mapboxglUtils.stringToBoolean(attrs.failIfMajorPerformanceCaveat) : mapboxglConstants.map.defaultFailIfMajorPerformanceCaveat,
+      preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) ? mapboxglUtils.stringToBoolean(attrs.preserveDrawingBuffer) : mapboxglConstants.map.defaultPreserveDrawingBuffer,
+      trackResize: angular.isDefined(attrs.trackResize) ? mapboxglUtils.stringToBoolean(attrs.trackResize) : mapboxglConstants.map.defaultTrackResize,
+      renderWorldCopies: angular.isDefined(attrs.renderWorldCopies) ? mapboxglUtils.stringToBoolean(attrs.renderWorldCopies) : mapboxglConstants.map.defaultRenderWorldCopies,
       attributionControl: false
     });
 
@@ -1313,10 +1314,34 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 	  return -1;
 	}
 
+	function stringToBoolean (stringValue) {
+		var returnValue = false;
+
+		if (angular.isDefined(stringValue) && stringValue !== null) {
+			returnValue = (stringValue.toLowerCase() === 'true');
+		}
+
+		return returnValue;
+	}
+
+	function stringToNumber (stringValue) {
+		if (angular.isDefined(stringValue) && stringValue !== null) {
+			var convertedNumber = +stringValue;
+
+			if (!isNaN(convertedNumber)) {
+				return convertedNumber;
+			} else {
+				throw new Error('mapboxglUtils.stringToNumber --> Invalid stringValue');
+			}
+		}
+	}
+
 	var mapboxglUtils = {
 		generateMapId: generateMapId,
 		validateAndFormatCenter: validateAndFormatCenter,
-		arrayObjectIndexOf: arrayObjectIndexOf
+		arrayObjectIndexOf: arrayObjectIndexOf,
+		stringToBoolean: stringToBoolean,
+		stringToNumber: stringToNumber
 	};
 
 	return mapboxglUtils;
@@ -1374,6 +1399,7 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 		defaultFailIfMajorPerformanceCaveat: false,
 		defaultPreserveDrawingBuffer: false,
 		defaultTrackResize: true,
+		defaultRenderWorldCopies: true,
 
 		defaultPersistentGeojson: false,
 		defaultPersistentImage: false,

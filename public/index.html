@@ -2,13 +2,13 @@
   <head>
     <title>Test Server - angular-mapboxgl-directive</title>
 
-    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.29.0/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.31.0/mapbox-gl.css" rel="stylesheet" />
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v2.2.0/mapbox-gl-directions.css' type='text/css' />
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.css' type='text/css' />
     <link href="css/angular-mapboxgl-directive.css" rel="stylesheet" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.29.0/mapbox-gl.js"></script>
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.31.0/mapbox-gl.js"></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.js'></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v2.2.0/mapbox-gl-directions.js'></script>
 
@@ -17,7 +17,19 @@
     <script src="app.js"></script>
   </head>
   <body ng-controller="IndexController" style="margin: 0;">
-    <div mapboxgl-compare compare-settings="{ mousemove: false }">
+    <div
+      mapboxgl
+      gl-controls="glControls"
+      gl-style="glStyle"
+      gl-center="glCenter"
+      gl-sources="glSources"
+      gl-layers="glLayers"
+      render-world-copies="false"
+      bearing-snap="5"
+      height="{{glHeight}}"></div>
+
+
+    <!-- <div mapboxgl-compare compare-settings="{ mousemove: false }">
       <div
         mapboxgl
         gl-controls="glControls"
@@ -25,6 +37,7 @@
         gl-center="glCenter"
         gl-sources="glSources"
         gl-layers="glLayers"
+        render-world-copies="false"
         height="{{glHeight}}"></div>
 
       <div
@@ -33,7 +46,7 @@
         gl-center="glCenter"
         gl-zoom="glZoom"
         height="{{glHeight}}"></div>
-    </div>
+    </div> -->
 
 
     <!-- <div

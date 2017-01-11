@@ -8,6 +8,7 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 		defaultFailIfMajorPerformanceCaveat: false,
 		defaultPreserveDrawingBuffer: false,
 		defaultTrackResize: true,
+		defaultRenderWorldCopies: true,
 
 		defaultPersistentGeojson: false,
 		defaultPersistentImage: false,

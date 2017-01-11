@@ -52,10 +52,34 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 	  return -1;
 	}
 
+	function stringToBoolean (stringValue) {
+		var returnValue = false;
+
+		if (angular.isDefined(stringValue) && stringValue !== null) {
+			returnValue = (stringValue.toLowerCase() === 'true');
+		}
+
+		return returnValue;
+	}
+
+	function stringToNumber (stringValue) {
+		if (angular.isDefined(stringValue) && stringValue !== null) {
+			var convertedNumber = +stringValue;
+
+			if (!isNaN(convertedNumber)) {
+				return convertedNumber;
+			} else {
+				throw new Error('mapboxglUtils.stringToNumber --> Invalid stringValue');
+			}
+		}
+	}
+
 	var mapboxglUtils = {
 		generateMapId: generateMapId,
 		validateAndFormatCenter: validateAndFormatCenter,
-		arrayObjectIndexOf: arrayObjectIndexOf
+		arrayObjectIndexOf: arrayObjectIndexOf,
+		stringToBoolean: stringToBoolean,
+		stringToNumber: stringToNumber
 	};
 
 	return mapboxglUtils;
