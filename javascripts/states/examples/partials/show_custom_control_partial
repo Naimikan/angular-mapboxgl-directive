@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="app">
   <head>
-    <title>Simple map</title>
+    <title>Custom Control</title>
 
     <link href="https://api.mapbox.com/mapbox-gl-js/v0.31.0/mapbox-gl.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.24.0/angular-mapboxgl-directive.min.css">
@@ -15,12 +15,20 @@
 
       .run([function () {
         mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
+      }])
+
+      .controller('CustomControlController', ['$scope', function ($scope) {
+        $scope.glControls = {
+          custom: [
+            {
+
+            }
+          ]
+        };
       }]);
     </script>
   </head>
-  <body>
-    <div mapboxgl></div>
-
-    <!-- Or <mapboxgl></mapboxgl> -->
+  <body ng-controller="CustomControlController">
+    <div mapboxgl gl-controls="glControls"></div>
   </body>
 </html>

@@ -67,6 +67,30 @@
       templateUrl: 'javascripts/states/examples/show_directions_control/ShowDirectionsControlTemplate.html',
       controller: 'ShowDirectionsControlController',
       uiSref: 'examples.show_directions_control'
+    }, {
+      name: 'show_draw_control',
+      title: 'Display Draw control in a map',
+      type: examplesTypes.controls,
+      description: 'Display Draw control in a map using glControls directive',
+      templateUrl: 'javascripts/states/examples/show_draw_control/ShowDrawControlTemplate.html',
+      controller: 'ShowDrawControlController',
+      uiSref: 'examples.show_draw_control'
+    }, {
+      name: 'show_custom_control',
+      title: 'Display Custom control in a map',
+      type: examplesTypes.controls,
+      description: 'Display Custom control in a map using glControls directive',
+      templateUrl: 'javascripts/states/examples/show_custom_control/ShowCustomControlTemplate.html',
+      controller: 'ShowCustomControlController',
+      uiSref: 'examples.show_custom_control'
+    }, {
+      name: 'swipe_between_maps',
+      title: 'Swipe between maps',
+      type: examplesTypes.styles,
+      description: 'Swipe between maps using mapboxglCompare directive',
+      templateUrl: 'javascripts/states/examples/swipe_between_maps/SwipeBetweenMapsTemplate.html',
+      controller: 'SwipeBetweenMapsController',
+      uiSref: 'examples.swipe_between_maps'
     }
   ])
 

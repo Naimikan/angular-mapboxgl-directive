@@ -3,13 +3,12 @@
 
   angular.module('app.Examples')
 
-  .controller('ShowGeocoderControlController', ['$scope', function ($scope) {
+  .controller('ShowDrawControlController', ['$scope', function ($scope) {
     $scope.glControls = {
-      geocoder: {
+      draw: {
         enabled: true,
         options: {
-          position: 'top-left',
-          accessToken: mapboxgl.accessToken
+          position: 'top-left'
         }
       }
     };
