@@ -43,6 +43,22 @@
       templateUrl: 'javascripts/states/examples/show_attribution_control/ShowAttributionControlTemplate.html',
       controller: 'ShowAttributionControlController',
       uiSref: 'examples.show_attribution_control'
+    }, {
+      name: 'show_geolocate_control',
+      title: 'Display Geolocate control in a map',
+      type: examplesTypes.controls,
+      description: 'Display Geolocate control in a map using glControls directive',
+      templateUrl: 'javascripts/states/examples/show_geolocate_control/ShowGeolocateControlTemplate.html',
+      controller: 'ShowGeolocateControlController',
+      uiSref: 'examples.show_geolocate_control'
+    }, {
+      name: 'show_geocoder_control',
+      title: 'Display Geocoder control in a map',
+      type: examplesTypes.controls,
+      description: 'Display Geocoder control in a map using glControls directive',
+      templateUrl: 'javascripts/states/examples/show_geocoder_control/ShowGeocoderControlTemplate.html',
+      controller: 'ShowGeocoderControlController',
+      uiSref: 'examples.show_geocoder_control'
     }
   ])
 

@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html ng-app="app">
   <head>
-    <title>Attribution Control</title>
+    <title>Geocoder Control</title>
 
     <link href="https://api.mapbox.com/mapbox-gl-js/v0.31.0/mapbox-gl.css">
+    <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.22.0/angular-mapboxgl-directive.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.31.0/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.22.0/angular-mapboxgl-directive.min.js"></script>
 
     <script>
@@ -17,19 +19,19 @@
         mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
       }])
 
-      .controller('AttributionControlController', ['$scope', function ($scope) {
+      .controller('GeocoderControlController', ['$scope', function ($scope) {
         $scope.glControls = {
-          attribution: {
+          geocoder: {
             enabled: true,
             options: {
-              position: 'bottom-right'
+              position: 'top-left'
             }
           }
         };
       }]);
     </script>
   </head>
-  <body ng-controller="AttributionControlController">
+  <body ng-controller="GeocoderControlController">
     <div mapboxgl gl-controls="glControls"></div>
   </body>
 </html>
