@@ -41,11 +41,41 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
       });
     }
 
+    var framesPerSecond = 15;
+    var initialOpacity = 1;
+    var opacity = initialOpacity;
+    var initialRadius = 8;
+    var radius = initialRadius;
+    var maxRadius = 18;
+
+    function animateMarker (timestamp) {
+      setTimeout(function () {
+        controller.getMap().then(function (map) {
+          requestAnimationFrame(animateMarker);
+
+          radius += (maxRadius - radius) / framesPerSecond;
+          opacity -= ( 0.9 / framesPerSecond );
+
+          map.setPaintProperty('circle1_animation', 'circle-radius', radius);
+          map.setPaintProperty('circle1_animation', 'circle-opacity', opacity);
+
+          if (opacity <= 0) {
+            radius = initialRadius;
+            opacity = initialOpacity;
+          }
+        });
+      }, 1000 / framesPerSecond);
+    }
+
     function createOrUpdateLayer (map, layerObject) {
       if (mapboxglLayerUtils.existLayerById(layerObject.id)) {
         mapboxglLayerUtils.updateLayerByObject(map, layerObject);
       } else {
         mapboxglLayerUtils.createLayerByObject(map, layerObject);
+      }
+
+      if (angular.isDefined(layerObject.animation) && angular.isDefined(layerObject.animation.enabled) && layerObject.animation.enabled) {
+        layerObject.animation.animationFunction(map, layerObject.id);
       }
     }
 
@@ -86,6 +116,8 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
     }
 
     controller.getMap().then(function (map) {
+      scope.selfMap = map;
+
       mapboxglScope.$watch('glLayers', function (layers) {
         $timeout(function () {
           disableLayerEvents(map);

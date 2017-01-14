@@ -53,7 +53,7 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
     var tempObject = {};
 
     for (var attribute in layerObject) {
-      if (attribute !== 'before' && attribute !== 'popup') {
+      if (attribute !== 'before' && attribute !== 'popup' && attribute !== 'animation') {
         tempObject[attribute] = layerObject[attribute];
       }
     }

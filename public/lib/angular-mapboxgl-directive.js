@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.24.1 2017-01-11
+*  angular-mapboxgl-directive 0.24.1 2017-01-14
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -831,7 +831,7 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
     var tempObject = {};
 
     for (var attribute in layerObject) {
-      if (attribute !== 'before' && attribute !== 'popup') {
+      if (attribute !== 'before' && attribute !== 'popup' && attribute !== 'animation') {
         tempObject[attribute] = layerObject[attribute];
       }
     }
@@ -2220,11 +2220,41 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
       });
     }
 
+    var framesPerSecond = 15;
+    var initialOpacity = 1;
+    var opacity = initialOpacity;
+    var initialRadius = 8;
+    var radius = initialRadius;
+    var maxRadius = 18;
+
+    function animateMarker (timestamp) {
+      setTimeout(function () {
+        controller.getMap().then(function (map) {
+          requestAnimationFrame(animateMarker);
+
+          radius += (maxRadius - radius) / framesPerSecond;
+          opacity -= ( 0.9 / framesPerSecond );
+
+          map.setPaintProperty('circle1_animation', 'circle-radius', radius);
+          map.setPaintProperty('circle1_animation', 'circle-opacity', opacity);
+
+          if (opacity <= 0) {
+            radius = initialRadius;
+            opacity = initialOpacity;
+          }
+        });
+      }, 1000 / framesPerSecond);
+    }
+
     function createOrUpdateLayer (map, layerObject) {
       if (mapboxglLayerUtils.existLayerById(layerObject.id)) {
         mapboxglLayerUtils.updateLayerByObject(map, layerObject);
       } else {
         mapboxglLayerUtils.createLayerByObject(map, layerObject);
+      }
+
+      if (angular.isDefined(layerObject.animation) && angular.isDefined(layerObject.animation.enabled) && layerObject.animation.enabled) {
+        layerObject.animation.animationFunction(map, layerObject.id);
       }
     }
 
@@ -2265,6 +2295,8 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
     }
 
     controller.getMap().then(function (map) {
+      scope.selfMap = map;
+
       mapboxglScope.$watch('glLayers', function (layers) {
         $timeout(function () {
           disableLayerEvents(map);

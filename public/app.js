@@ -225,54 +225,119 @@
         type: 'circle',
         source: 'circle1',
         paint: {
-          'circle-radius': 15,
-          'circle-color': 'red',
-          'circle-opacity': 0.6
+          'circle-radius': 8,
+          'circle-color': '#007cbf',
+          'circle-opacity': 1
+        }
+      }, {
+        id: 'circle1_animation',
+        type: 'circle',
+        source: 'circle1',
+        paint: {
+          'circle-radius': 8,
+          'circle-radius-transition': { duration: 0 },
+          'circle-opacity-transition': { duration: 0 },
+          'circle-color': '#007cbf',
         },
-        popup: {
+        animation: {
           enabled: true,
-          message: htmlButton,
-          getScope: function () {
-            return $scope;
+          animationFunction: function (map, layerId) {
+            var speed = 1000 / 15;
+            var initialOpacity = 1;
+            var opacity = initialOpacity;
+            var initialRadius = 11;
+            var radius = initialRadius;
+            var maxRadius = 22;
+
+            function animate (timestamp) {
+              radius += (maxRadius - radius) / speed;
+              opacity -= (0.9 / speed);
+
+              map.setPaintProperty(layerId, 'circle-radius', radius);
+              map.setPaintProperty(layerId, 'circle-opacity', opacity);
+
+              if (opacity <= 0) {
+                radius = 8;
+                opacity = 1;
+              }
+
+              requestAnimationFrame(animate);
+            }
+
+            animate(0);
           }
         }
+      }, {
+        id: 'circle1_before',
+        type: 'circle',
+        source: 'circle1',
+        paint: {
+          'circle-radius': 11,
+          'circle-color': 'white',
+          'circle-opacity': 1
+        },
+        before: 'circle1'
       }, {
         id: 'circle2',
         type: 'circle',
         source: 'circle2',
         paint: {
-          'circle-radius': 10,
-          'circle-color': 'blue',
-          'circle-opacity': 0.7
-        },
-        'paint.tilted': {
-          'circle-opacity': 0.2
-        },
-        popup: {
-          enabled: true,
-          message: 'Test popup'
+          'circle-radius': 8,
+          'circle-color': '#007cbf',
+          'circle-opacity': 1
         }
       }, {
-        id: 'polygon1',
-        type: 'fill-extrusion',
-        source: 'polygon1',
+        id: 'circle2_animation',
+        type: 'circle',
+        source: 'circle2',
         paint: {
-          /*'fill-color': 'yellow',
-          'fill-opacity': 0.8*/
-
-          'fill-extrusion-base': 0,
-          'fill-extrusion-height': 1250,
-          'fill-extrusion-color': 'yellow',
-          'fill-extrusion-opacity': 0.75
+          'circle-radius': 8,
+          'circle-radius-transition': { duration: 0 },
+          'circle-opacity-transition': { duration: 0 },
+          'circle-color': '#007cbf',
         },
-        popup: {
+        animation: {
           enabled: true,
-          message: 'Test'
+          animationFunction: function (map, layerId) {
+            var speed = 1000 / 15;
+            var initialOpacity = 1;
+            var opacity = initialOpacity;
+            var initialRadius = 11;
+            var radius = initialRadius;
+            var maxRadius = 22;
+
+            function animate (timestamp) {
+              radius += (maxRadius - radius) / speed;
+              opacity -= (0.9 / speed);
+
+              map.setPaintProperty(layerId, 'circle-radius', radius);
+              map.setPaintProperty(layerId, 'circle-opacity', opacity);
+
+              if (opacity <= 0) {
+                radius = 8;
+                opacity = 1;
+              }
+
+              requestAnimationFrame(animate);
+            }
+
+            animate(0);
+          }
         }
+      }, {
+        id: 'circle2_before',
+        type: 'circle',
+        source: 'circle2',
+        paint: {
+          'circle-radius': 11,
+          'circle-color': 'white',
+          'circle-opacity': 1
+        },
+        before: 'circle2'
       }
     ];
 
-    $timeout(function () {
+    /*$timeout(function () {
       $scope.glSources = [
         {
           id: 'circle1',
@@ -287,24 +352,34 @@
         }
       ];
 
+      var opacity = 1;
+      var radius = 8;
+      var maxRadius = 18;
+
       $scope.glLayers = [
         {
           id: 'circle1',
           type: 'circle',
           source: 'circle1',
-          before: 'water',
           paint: {
             'circle-radius': 8,
             'circle-color': 'green',
             'circle-opacity': 1
-          },
-          popup: {
-            enabled: true,
-            message: 'Modified popup message'
           }
+        }, {
+          id: 'circle1_animation',
+          type: 'circle',
+          source: 'circle1',
+          paint: {
+            'circle-raidus': 8,
+            'circle-radius-transition': { duration: 0 },
+            'circle-opacity-transition': { duration: 0 },
+            'circle-color': 'green',
+          },
+          isAnimated: true
         }
       ];
-    }, 5000, true);
+    }, 5000, true);*/
 
     $scope.glGeojson = {
       sources: [
