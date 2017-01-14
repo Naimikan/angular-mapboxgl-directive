@@ -175,64 +175,61 @@
       }
     ];
 
-    $scope.glSources = [
-      {
-        id: 'circle1',
+    $scope.glSources = [];
+    $scope.glLayers = [];
+
+    var tempGlLayers = [];
+    var tempGlSources = [];
+
+    for (var iterator = 0; iterator < 10; iterator++) {
+      var tempLng = Math.floor(Math.random() * -180) + 180;
+      var tempLat = Math.floor(Math.random() * -90) + 90;
+
+      tempGlSources.push({
+        id: 'circle' + iterator,
         type: 'geojson',
         data: {
           type: 'Feature',
           geometry: {
             type: 'Point',
-            coordinates:  [-2, 41]
+            coordinates: [tempLng, tempLat]
           }
-        }
-      }, {
-        id: 'circle2',
-        type: 'geojson',
-        data: {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [-4, 41]
-          }
-        }
-      }, {
-        id: 'polygon1',
-        type: 'geojson',
-        data: {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [-2, 40],
-                [-2.5, 41],
-                [-3, 42],
-                [-3.5, 39],
-                [-4, 38],
-                [-2, 40]
+        },
+        animation: {
+          enabled: true,
+          animationData: {
+            timeoutMilliseconds: 1000 / 15,
+            radius: 20
+          },
+          animationFunction: function (map, sourceId, animationData, timestamp) {
+            var newSourceData = {
+              type: 'Point',
+              coordinates: [
+                Math.cos(timestamp / 1000) * animationData.radius,
+                Math.sin(timestamp / 1000) * animationData.radius
               ]
-            ]
+            };
+
+            map.getSource(sourceId).setData(newSourceData);
           }
         }
-      }
-    ];
+      });
 
-    $scope.glLayers = [
-      {
-        id: 'circle1',
+      tempGlLayers.push({
+        id: 'circle' + iterator,
         type: 'circle',
-        source: 'circle1',
+        source: 'circle' + iterator,
         paint: {
           'circle-radius': 8,
           'circle-color': '#007cbf',
           'circle-opacity': 1
         }
-      }, {
-        id: 'circle1_animation',
+      });
+
+      tempGlLayers.push({
+        id: 'circle' + iterator + '_animation',
         type: 'circle',
-        source: 'circle1',
+        source: 'circle' + iterator,
         paint: {
           'circle-radius': 8,
           'circle-radius-transition': { duration: 0 },
@@ -241,101 +238,44 @@
         },
         animation: {
           enabled: true,
-          animationFunction: function (map, layerId) {
-            var speed = 1000 / 15;
-            var initialOpacity = 1;
-            var opacity = initialOpacity;
-            var initialRadius = 11;
-            var radius = initialRadius;
-            var maxRadius = 22;
+          animationData: {
+            timeoutMilliseconds: 1000 / 25,
+            initialOpacity: 1,
+            opacity: 1,
+            initialRadius: 11,
+            radius: 11,
+            maxRadius: 22
+          },
+          animationFunction: function (map, layerId, animationData) {
+            animationData.radius += (animationData.maxRadius - animationData.radius) / animationData.speed;
+            animationData.opacity -= (0.9 / animationData.speed);
 
-            function animate (timestamp) {
-              radius += (maxRadius - radius) / speed;
-              opacity -= (0.9 / speed);
+            map.setPaintProperty(layerId, 'circle-radius', animationData.radius);
+            map.setPaintProperty(layerId, 'circle-opacity', animationData.opacity);
 
-              map.setPaintProperty(layerId, 'circle-radius', radius);
-              map.setPaintProperty(layerId, 'circle-opacity', opacity);
-
-              if (opacity <= 0) {
-                radius = 8;
-                opacity = 1;
-              }
-
-              requestAnimationFrame(animate);
+            if (animationData.opacity <= 0) {
+              animationData.radius = animationData.initialRadius;
+              animationData.opacity = animationData.initialOpacity;
             }
-
-            animate(0);
           }
         }
-      }, {
-        id: 'circle1_before',
+      });
+
+      tempGlLayers.push({
+        id: 'circle' + iterator + '_before',
         type: 'circle',
-        source: 'circle1',
+        source: 'circle' + iterator,
         paint: {
           'circle-radius': 11,
           'circle-color': 'white',
           'circle-opacity': 1
         },
-        before: 'circle1'
-      }, {
-        id: 'circle2',
-        type: 'circle',
-        source: 'circle2',
-        paint: {
-          'circle-radius': 8,
-          'circle-color': '#007cbf',
-          'circle-opacity': 1
-        }
-      }, {
-        id: 'circle2_animation',
-        type: 'circle',
-        source: 'circle2',
-        paint: {
-          'circle-radius': 8,
-          'circle-radius-transition': { duration: 0 },
-          'circle-opacity-transition': { duration: 0 },
-          'circle-color': '#007cbf',
-        },
-        animation: {
-          enabled: true,
-          animationFunction: function (map, layerId) {
-            var speed = 1000 / 15;
-            var initialOpacity = 1;
-            var opacity = initialOpacity;
-            var initialRadius = 11;
-            var radius = initialRadius;
-            var maxRadius = 22;
+        before: 'circle' + iterator
+      });
+    }
 
-            function animate (timestamp) {
-              radius += (maxRadius - radius) / speed;
-              opacity -= (0.9 / speed);
-
-              map.setPaintProperty(layerId, 'circle-radius', radius);
-              map.setPaintProperty(layerId, 'circle-opacity', opacity);
-
-              if (opacity <= 0) {
-                radius = 8;
-                opacity = 1;
-              }
-
-              requestAnimationFrame(animate);
-            }
-
-            animate(0);
-          }
-        }
-      }, {
-        id: 'circle2_before',
-        type: 'circle',
-        source: 'circle2',
-        paint: {
-          'circle-radius': 11,
-          'circle-color': 'white',
-          'circle-opacity': 1
-        },
-        before: 'circle2'
-      }
-    ];
+    $scope.glSources = tempGlSources;
+    $scope.glLayers = tempGlLayers;
 
     /*$timeout(function () {
       $scope.glSources = [
