@@ -9,7 +9,7 @@
 
       <ul style="padding: 0; list-style: none;">
         <li ng-repeat="eachExample in examplesAvailables | filter:{ type: eachType }">
-          <a ui-sref="{{eachExample.uiSref}}" ng-bind="eachExample.title"></a>
+          <a class="example-link" ui-sref="{{eachExample.uiSref}}" ui-sref-active="example-link-selected" ng-bind="eachExample.title"></a>
         </li>
       </ul>
     </div>

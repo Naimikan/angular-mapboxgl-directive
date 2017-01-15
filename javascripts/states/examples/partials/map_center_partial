@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="app">
   <head>
-    <title>Navigation Control</title>
+    <title>Map style</title>
 
     <link href="https://api.mapbox.com/mapbox-gl-js/v0.31.0/mapbox-gl.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.25.0/angular-mapboxgl-directive.min.css">
@@ -15,21 +15,10 @@
 
       .run([function () {
         mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
-      }])
-
-      .controller('NavigationControlController', ['$scope', function ($scope) {
-        $scope.glControls = {
-          navigation: {
-            enabled: true,
-            options: {
-              position: 'top-left'
-            }
-          }
-        };
       }]);
     </script>
   </head>
-  <body ng-controller="NavigationControlController">
-    <div mapboxgl gl-controls="glControls"></div>
+  <body>
+    <div mapboxgl gl-center="{ lat: 45.53, lng: -73.58 }"></div>
   </body>
 </html>

@@ -25,12 +25,18 @@ body {
 
 }
 
-.example-map-container {
-
+.example-link {
+  color: #333333;
 }
 
-.example-code-container {
+.example-link:hover {
+  color: #333333;
+  font-weight: bold;
+  text-decoration: none;
+}
 
+.example-link-selected {
+  font-weight: bold;
 }
 
 pre {

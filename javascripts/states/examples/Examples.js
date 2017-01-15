@@ -3,7 +3,8 @@
 
   var examplesTypes = {
     styles: 'Styles',
-    controls: 'Controls'
+    controls: 'Controls',
+    camera: 'Camera'
   };
 
   angular.module('app.Examples', [])
@@ -16,7 +17,7 @@
       title: 'Display a map',
       type: examplesTypes.styles,
       description: 'Display a simple map using mapboxgl directive',
-      templateUrl: 'javascripts/states/examples/simple_map/SimpleMapTemplate.html',
+      templateUrl: 'javascripts/states/examples/examples_source/simple_map/SimpleMapTemplate.html',
       controller: 'SimpleMapController',
       uiSref: 'examples.simple_map'
     }, {
@@ -24,7 +25,7 @@
       title: 'Display Navigation control in a map',
       type: examplesTypes.controls,
       description: 'Display Navigation control in a map using glControls directive',
-      templateUrl: 'javascripts/states/examples/show_navigation_control/ShowNavigationControlTemplate.html',
+      templateUrl: 'javascripts/states/examples/examples_source/show_navigation_control/ShowNavigationControlTemplate.html',
       controller: 'ShowNavigationControlController',
       uiSref: 'examples.show_navigation_control'
     }, {
@@ -32,7 +33,7 @@
       title: 'Display Scale control in a map',
       type: examplesTypes.controls,
       description: 'Display Scale control in a map using glControls directive',
-      templateUrl: 'javascripts/states/examples/show_scale_control/ShowScaleControlTemplate.html',
+      templateUrl: 'javascripts/states/examples/examples_source/show_scale_control/ShowScaleControlTemplate.html',
       controller: 'ShowScaleControlController',
       uiSref: 'examples.show_scale_control'
     }, {
@@ -40,7 +41,7 @@
       title: 'Display Attribution control in a map',
       type: examplesTypes.controls,
       description: 'Display Attribution control in a map using glControls directive',
-      templateUrl: 'javascripts/states/examples/show_attribution_control/ShowAttributionControlTemplate.html',
+      templateUrl: 'javascripts/states/examples/examples_source/show_attribution_control/ShowAttributionControlTemplate.html',
       controller: 'ShowAttributionControlController',
       uiSref: 'examples.show_attribution_control'
     }, {
@@ -48,7 +49,7 @@
       title: 'Display Geolocate control in a map',
       type: examplesTypes.controls,
       description: 'Display Geolocate control in a map using glControls directive',
-      templateUrl: 'javascripts/states/examples/show_geolocate_control/ShowGeolocateControlTemplate.html',
+      templateUrl: 'javascripts/states/examples/examples_source/show_geolocate_control/ShowGeolocateControlTemplate.html',
       controller: 'ShowGeolocateControlController',
       uiSref: 'examples.show_geolocate_control'
     }, {
@@ -56,7 +57,7 @@
       title: 'Display Geocoder control in a map',
       type: examplesTypes.controls,
       description: 'Display Geocoder control in a map using glControls directive',
-      templateUrl: 'javascripts/states/examples/show_geocoder_control/ShowGeocoderControlTemplate.html',
+      templateUrl: 'javascripts/states/examples/examples_source/show_geocoder_control/ShowGeocoderControlTemplate.html',
       controller: 'ShowGeocoderControlController',
       uiSref: 'examples.show_geocoder_control'
     }, {
@@ -64,7 +65,7 @@
       title: 'Display Directions control in a map',
       type: examplesTypes.controls,
       description: 'Display Directions control in a map using glControls directive',
-      templateUrl: 'javascripts/states/examples/show_directions_control/ShowDirectionsControlTemplate.html',
+      templateUrl: 'javascripts/states/examples/examples_source/show_directions_control/ShowDirectionsControlTemplate.html',
       controller: 'ShowDirectionsControlController',
       uiSref: 'examples.show_directions_control'
     }, {
@@ -72,7 +73,7 @@
       title: 'Display Draw control in a map',
       type: examplesTypes.controls,
       description: 'Display Draw control in a map using glControls directive',
-      templateUrl: 'javascripts/states/examples/show_draw_control/ShowDrawControlTemplate.html',
+      templateUrl: 'javascripts/states/examples/examples_source/show_draw_control/ShowDrawControlTemplate.html',
       controller: 'ShowDrawControlController',
       uiSref: 'examples.show_draw_control'
     }, {
@@ -80,17 +81,33 @@
       title: 'Display Custom control in a map',
       type: examplesTypes.controls,
       description: 'Display Custom control in a map using glControls directive',
-      templateUrl: 'javascripts/states/examples/show_custom_control/ShowCustomControlTemplate.html',
+      templateUrl: 'javascripts/states/examples/examples_source/show_custom_control/ShowCustomControlTemplate.html',
       controller: 'ShowCustomControlController',
       uiSref: 'examples.show_custom_control'
+    }, {
+      name: 'map_style',
+      title: 'Display a map with other style',
+      type: examplesTypes.styles,
+      description: 'Display a map with other style using glStyle directive',
+      templateUrl: 'javascripts/states/examples/examples_source/map_style/MapStyleTemplate.html',
+      controller: 'MapStyleController',
+      uiSref: 'examples.map_style'
     }, {
       name: 'swipe_between_maps',
       title: 'Swipe between maps',
       type: examplesTypes.styles,
       description: 'Swipe between maps using mapboxglCompare directive',
-      templateUrl: 'javascripts/states/examples/swipe_between_maps/SwipeBetweenMapsTemplate.html',
+      templateUrl: 'javascripts/states/examples/examples_source/swipe_between_maps/SwipeBetweenMapsTemplate.html',
       controller: 'SwipeBetweenMapsController',
       uiSref: 'examples.swipe_between_maps'
+    }, {
+      name: 'map_center',
+      title: 'Set map center',
+      type: examplesTypes.camera,
+      description: 'Set map center using glCenter directive',
+      templateUrl: 'javascripts/states/examples/examples_source/map_center/MapCenterTemplate.html',
+      controller: 'MapCenterController',
+      uiSref: 'examples.map_center'
     }
   ])
 
