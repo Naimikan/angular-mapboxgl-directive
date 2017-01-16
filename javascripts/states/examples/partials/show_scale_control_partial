@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="app">
   <head>
-    <title>Scale Control</title>
+    <title></title>
 
     <link href="https://api.mapbox.com/mapbox-gl-js/v0.31.0/mapbox-gl.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.25.0/angular-mapboxgl-directive.min.css">

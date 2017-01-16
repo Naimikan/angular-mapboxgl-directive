@@ -101,6 +101,14 @@
       controller: 'SwipeBetweenMapsController',
       uiSref: 'examples.swipe_between_maps'
     }, {
+      name: 'map_zoom',
+      title: 'Set map zoom',
+      type: examplesTypes.camera,
+      description: 'Set map zoom using glZoom directive',
+      templateUrl: 'javascripts/states/examples/examples_source/map_zoom/MapZoomTemplate.html',
+      controller: 'MapZoomController',
+      uiSref: 'examples.map_zoom'
+    }, {
       name: 'map_center',
       title: 'Set map center',
       type: examplesTypes.camera,
@@ -108,6 +116,14 @@
       templateUrl: 'javascripts/states/examples/examples_source/map_center/MapCenterTemplate.html',
       controller: 'MapCenterController',
       uiSref: 'examples.map_center'
+    }, {
+      name: 'map_pitch_bearing',
+      title: 'Set map pitch and bearing',
+      type: examplesTypes.camera,
+      description: 'Set map pitch and bearing using glPitch and glBearing directives',
+      templateUrl: 'javascripts/states/examples/examples_source/map_pitch_bearing/MapPitchBearingTemplate.html',
+      controller: 'MapPitchBearingController',
+      uiSref: 'examples.map_pitch_bearing'
     }
   ])
 

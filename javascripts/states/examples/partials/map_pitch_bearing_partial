@@ -19,8 +19,11 @@
     </script>
   </head>
   <body>
-    <div mapboxgl></div>
-
-    <!-- Or <mapboxgl></mapboxgl> -->
+    <div mapboxgl
+      gl-zoom="{ value: 13 }"
+      gl-center="{ lat: 45.53, lng: -73.58 }"
+      gl-pitch="{ value: 30 }"
+      gl-bearing="{ value: 15 }">
+    </div>
   </body>
 </html>

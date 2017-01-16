@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="app">
   <head>
-    <title>Geocoder Control</title>
+    <title></title>
 
     <link href="https://api.mapbox.com/mapbox-gl-js/v0.31.0/mapbox-gl.css">
     <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css">

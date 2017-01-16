@@ -19,8 +19,6 @@
     </script>
   </head>
   <body>
-    <div mapboxgl></div>
-
-    <!-- Or <mapboxgl></mapboxgl> -->
+    <div mapboxgl gl-zoom="{ value: 4 }" ></div>
   </body>
 </html>

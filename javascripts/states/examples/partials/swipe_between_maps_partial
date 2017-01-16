@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="app">
   <head>
-    <title>Simple map</title>
+    <title></title>
 
     <link href="https://api.mapbox.com/mapbox-gl-js/v0.31.0/mapbox-gl.css">
     <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.css">
