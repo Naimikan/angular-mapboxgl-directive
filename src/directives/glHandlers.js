@@ -22,8 +22,10 @@ angular.module('mapboxgl-directive').directive('glHandlers', [function () {
       mapboxglScope.$watch('glHandlers', function (handlers) {
         if (angular.isDefined(handlers) && Object.prototype.toString.call(handlers) === Object.prototype.toString.call({})) {
           for (var attribute in handlers) {
-            var functionToExecute = handlers[attribute] ? 'enable' : 'disable';
-            map[attribute][functionToExecute]();
+            if (handlers.hasOwnProperty(attribute)) {
+              var functionToExecute = handlers[attribute] ? 'enable' : 'disable';
+              map[attribute][functionToExecute]();
+            }
           }
         }
       }, true);
