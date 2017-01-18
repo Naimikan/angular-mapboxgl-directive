@@ -1,6 +1,9 @@
 engines:
   eslint:
     enabled: true
+  stylelint:
+    enabled: true
+    channel: "beta"
 ratings:
    paths:
    - "src/**/*"
