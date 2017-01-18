@@ -3,11 +3,11 @@ engines:
     enabled: false
 ratings:
    paths:
-   - src/**/*
-   - **.js
+   - "src/**/*"
+   - "**.js"
 exclude_paths:
-- node_modules/
-- public/
-- grunt/
-- tests/
-- dist/
+- "node_modules/"
+- "public/"
+- "grunt/"
+- "tests/"
+- "dist/"
