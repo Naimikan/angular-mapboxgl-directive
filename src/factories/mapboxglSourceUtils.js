@@ -25,7 +25,7 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
     var tempObject = {};
 
     for (var attribute in sourceObject) {
-      if (attribute !== 'id') {
+      if (attribute !== 'id' && attribute !== 'animation') {
         tempObject[attribute] = sourceObject[attribute];
       }
     }

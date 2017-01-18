@@ -24,12 +24,14 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
 
           var popupObject = mapboxglLayerUtils.getPopupRelationByLayerId(feature.layer.id);
 
-          mapboxglPopupUtils.createPopupByObject(map, {
-            coordinates: event.point,
-            options: popupObject.options,
-            html: popupObject.message,
-            getScope: popupObject.getScope
-          }, feature.layer.id);
+          if (angular.isDefined(popupObject) && popupObject !== null) {
+            mapboxglPopupUtils.createPopupByObject(map, {
+              coordinates: event.point,
+              options: popupObject.options,
+              html: popupObject.message,
+              getScope: popupObject.getScope
+            }, feature.layer.id);
+          }
         }
       });
 
@@ -41,32 +43,6 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
       });
     }
 
-    var framesPerSecond = 15;
-    var initialOpacity = 1;
-    var opacity = initialOpacity;
-    var initialRadius = 8;
-    var radius = initialRadius;
-    var maxRadius = 18;
-
-    function animateMarker (timestamp) {
-      setTimeout(function () {
-        controller.getMap().then(function (map) {
-          requestAnimationFrame(animateMarker);
-
-          radius += (maxRadius - radius) / framesPerSecond;
-          opacity -= ( 0.9 / framesPerSecond );
-
-          map.setPaintProperty('circle1_animation', 'circle-radius', radius);
-          map.setPaintProperty('circle1_animation', 'circle-opacity', opacity);
-
-          if (opacity <= 0) {
-            radius = initialRadius;
-            opacity = initialOpacity;
-          }
-        });
-      }, 1000 / framesPerSecond);
-    }
-
     function createOrUpdateLayer (map, layerObject) {
       if (mapboxglLayerUtils.existLayerById(layerObject.id)) {
         mapboxglLayerUtils.updateLayerByObject(map, layerObject);
@@ -75,7 +51,15 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
       }
 
       if (angular.isDefined(layerObject.animation) && angular.isDefined(layerObject.animation.enabled) && layerObject.animation.enabled) {
-        layerObject.animation.animationFunction(map, layerObject.id);
+        var animate = function (timestamp) {
+          setTimeout(function () {
+            requestAnimationFrame(animate);
+
+            layerObject.animation.animationFunction(map, layerObject.id, layerObject.animation.animationData, timestamp);
+          }, layerObject.animation.timeoutMilliseconds || 1000);
+        };
+
+        animate(0);
       }
     }
 
