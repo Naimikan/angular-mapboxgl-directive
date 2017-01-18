@@ -1,9 +1,10 @@
-# angular-mapboxgl-directive
-AngularJS directive for Mapbox GL
-
 [![NPM version][npm-image]][npm-url]
+[![Code Climate][codeclimate-image]][codeclimate-url]
 <!-- [![Bower version][bower-image]][bower-url] -->
 [![License][license-image]](LICENSE)
+
+# angular-mapboxgl-directive
+AngularJS directive for Mapbox GL
 
 ### Installation
 
@@ -81,6 +82,8 @@ grunt & grunt preview
 [npm-image]: https://img.shields.io/npm/v/angular-mapboxgl-directive.svg?style=flat-square
 [bower-image]: https://img.shields.io/bower/v/angular-mapboxgl-directive.svg?style=flat-square
 [license-image]: https://img.shields.io/npm/l/angular-mapboxgl-directive.svg?style=flat-square
+[codeclimate-image]: https://codeclimate.com/github/Naimikan/angular-mapboxgl-directive/badges/gpa.svg
 
 [npm-url]: https://www.npmjs.com/package/angular-mapboxgl-directive
 [bower-url]: https://bower.io/search/?q=angular-mapboxgl-directive
+[codeclimate-url]: https://codeclimate.com/github/Naimikan/angular-mapboxgl-directive
