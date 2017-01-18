@@ -154,10 +154,12 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
     // Paint properties
     if (angular.isDefined(layerObject.paint) && layerObject.paint !== null) {
       for (var eachPaintProperty in layerObject.paint) {
-        var layerPaintProperty = map.getPaintProperty(layerObject.id, eachPaintProperty);
+        if (layerObject.paint.hasOwnProperty(eachPaintProperty)) {
+          var layerPaintProperty = map.getPaintProperty(layerObject.id, eachPaintProperty);
 
-        if (layerPaintProperty !== layerObject.paint[eachPaintProperty]) {
-          map.setPaintProperty(layerObject.id, eachPaintProperty, layerObject.paint[eachPaintProperty]);
+          if (layerPaintProperty !== layerObject.paint[eachPaintProperty]) {
+            map.setPaintProperty(layerObject.id, eachPaintProperty, layerObject.paint[eachPaintProperty]);
+          }
         }
       }
     }
@@ -165,10 +167,12 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
     // Layout properties
     if (angular.isDefined(layerObject.layout) && layerObject.layout !== null) {
       for (var eachLayoutProperty in layerObject.layout) {
-        var layerLayoutProperty = map.getLayoutProperty(layerObject.id, eachLayoutProperty);
+        if (layerObject.layout.hasOwnProperty(eachLayoutProperty)) {
+          var layerLayoutProperty = map.getLayoutProperty(layerObject.id, eachLayoutProperty);
 
-        if (layerLayoutProperty !== layerObject.layout[eachLayoutProperty]) {
-          map.setLayoutProperty(layerObject.id, eachLayoutProperty, layerObject.layout[eachLayoutProperty]);
+          if (layerLayoutProperty !== layerObject.layout[eachLayoutProperty]) {
+            map.setLayoutProperty(layerObject.id, eachLayoutProperty, layerObject.layout[eachLayoutProperty]);
+          }
         }
       }
     }
