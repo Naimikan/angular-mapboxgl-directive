@@ -503,7 +503,6 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       glControls: '=',
       glFilter: '=',
       glClasses: '=',
-      glGeojson: '=',
       glInteractive: '=',
       glHandlers: '=',
       glImage: '=',
