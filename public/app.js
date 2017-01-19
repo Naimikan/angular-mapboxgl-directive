@@ -153,6 +153,15 @@
         options: {
           compact: true
         }
+      },
+      geocoder: {
+        enabled: true,
+        options: {
+          accessToken: mapboxgl.accessToken
+        }
+      },
+      geolocate: {
+        enabled: true
       }
     };
 
@@ -195,7 +204,7 @@
             coordinates: [tempLng, tempLat]
           }
         },
-        animation: {
+        /*animation: {
           enabled: true,
           animationData: {
             timeoutMilliseconds: 1000 / 15,
@@ -212,7 +221,7 @@
 
             map.getSource(sourceId).setData(newSourceData);
           }
-        }
+        }*/
       });
 
       tempGlLayers.push({
@@ -226,7 +235,7 @@
         }
       });
 
-      tempGlLayers.push({
+      /*tempGlLayers.push({
         id: 'circle' + iterator + '_animation',
         type: 'circle',
         source: 'circle' + iterator,
@@ -259,7 +268,7 @@
             }
           }
         }
-      });
+      });*/
 
       tempGlLayers.push({
         id: 'circle' + iterator + '_before',

@@ -127,18 +127,7 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
 
     // Minzoom and maxzoom properties
     var currentLayer = map.getLayer(layerObject.id);
-
-    if (angular.isDefined(layerObject.minzoom) && layerObject.minzoom !== null) {
-      if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
-        map.setLayerZoomRange(layerObject.id, layerObject.minzoom, layerObject.maxzoom);
-      } else {
-        map.setLayerZoomRange(layerObject.id, layerObject.minzoom, currentLayer.maxzoom);
-      }
-    } else {
-      if (angular.isDefined(layerObject.maxzoom) && layerObject.maxzoom !== null) {
-        map.setLayerZoomRange(layerObject.id, currentLayer.minzoom, layerObject.maxzoom);
-      }
-    }
+    map.setLayerZoomRange(layerObject.id, layerObject.minzoom || currentLayer.minzoom, layerObject.maxzoom || currentLayer.maxzoom);
 
     // Popup property
     if (angular.isDefined(layerObject.popup) && layerObject.popup !== null) {
