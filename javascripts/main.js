@@ -10,11 +10,13 @@
     'app.Examples'
   ])
 
-  .config(['$compileProvider', '$urlRouterProvider', function ($compileProvider, $urlRouterProvider) {
+  .config(['$compileProvider', '$urlRouterProvider', '$locationProvider', function ($compileProvider, $urlRouterProvider, $locationProvider) {
     // Needed for routing to work
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|tel):/);
 
     $urlRouterProvider.otherwise('/');
+
+    $locationProvider.html5Mode(true);
   }])
 
   .run(['$rootScope', '$state', '$stateParams', function ($rootScope, $state, $stateParams) {

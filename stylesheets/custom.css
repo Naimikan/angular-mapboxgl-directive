@@ -25,18 +25,34 @@ body {
 
 }
 
+.return-to-home {
+
+}
+
+.examples-header {
+  background-color: #B4DDFD;
+  border-color: #6C8497;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.example-section-title {
+  font-size: 15px;
+}
+
 .example-link {
-  color: #333333;
+  /*color: #4DAFFB;*/
+  color: #4C4C4C;
+  font-size: 12px;
 }
 
 .example-link:hover {
-  color: #333333;
-  font-weight: bold;
+  color: #4DAFFB;
   text-decoration: none;
 }
 
 .example-link-selected {
-  font-weight: bold;
+  color: #4DAFFB;
 }
 
 pre {
