@@ -5,12 +5,12 @@
 
     <link href="https://api.mapbox.com/mapbox-gl-js/v0.31.0/mapbox-gl.css">
     <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.25.0/angular-mapboxgl-directive.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.26.0/angular-mapboxgl-directive.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.31.0/mapbox-gl.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.25.0/angular-mapboxgl-directive.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.26.0/angular-mapboxgl-directive.min.js"></script>
 
     <script>
       var app = angular.module('app', ['mapboxgl-directive'])

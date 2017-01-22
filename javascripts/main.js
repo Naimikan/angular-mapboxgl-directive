@@ -15,8 +15,6 @@
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|file|tel):/);
 
     $urlRouterProvider.otherwise('/');
-
-    $locationProvider.html5Mode(true);
   }])
 
   .run(['$rootScope', '$state', '$stateParams', function ($rootScope, $state, $stateParams) {

@@ -15,21 +15,14 @@
 
       .run([function () {
         mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
-      }])
-
-      .controller('GeolocateControlController', ['$scope', function ($scope) {
-        $scope.glControls = {
-          geolocate: {
-            enabled: true,
-            options: {
-              position: 'top-left'
-            }
-          }
-        };
       }]);
     </script>
   </head>
-  <body ng-controller="GeolocateControlController">
-    <div mapboxgl gl-controls="glControls"></div>
+  <body>
+    <div mapboxgl
+      gl-center="{ lat: 45.53, lng: -73.58 }"
+      gl-min-zoom="8"
+      gl-max-zoom="11">
+    </div>
   </body>
 </html>

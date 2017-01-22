@@ -124,6 +124,14 @@
       templateUrl: 'javascripts/states/examples/examples_source/map_pitch_bearing/MapPitchBearingTemplate.html',
       controller: 'MapPitchBearingController',
       uiSref: 'examples.map_pitch_bearing'
+    }, {
+      name: 'map_max_min_zoom',
+      title: 'Set min and max zoom',
+      type: examplesTypes.camera,
+      description: 'Set min and max zoom of a map using glMinZoom and glMaxZoom directives',
+      templateUrl: 'javascripts/states/examples/examples_source/map_max_min_zoom/MapMinMaxZoomTemplate.html',
+      controller: 'MapMinMaxZoomController',
+      uiSref: 'examples.map_max_min_zoom'
     }
   ])
 
