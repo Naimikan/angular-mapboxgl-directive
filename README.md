@@ -6,7 +6,7 @@
     <img src="https://codeclimate.com/github/Naimikan/angular-mapboxgl-directive/badges/gpa.svg" alt="codeclimate" />
   </a>
   <a href="LICENSE">
-    <img src="https://img.shields.io/npm/l/angular-mapboxgl-directive.svg?style=flat-square" alt="downloads" />
+    <img src="https://img.shields.io/npm/l/angular-mapboxgl-directive.svg?style=flat-square" alt="license" />
   </a>
 </p>
 
