@@ -1,12 +1,20 @@
-[![NPM version][npm-image]][npm-url]
-[![Code Climate][codeclimate-image]][codeclimate-url]
-<!-- [![Bower version][bower-image]][bower-url] -->
-[![License][license-image]](LICENSE)
+<p align="left">
+  <a href="https://www.npmjs.com/package/angular-mapboxgl-directive">
+    <img src="https://img.shields.io/npm/v/angular-mapboxgl-directive.svg?style=flat-square" alt="version" />
+  </a>
+  <a href="https://codeclimate.com/github/Naimikan/angular-mapboxgl-directive">
+    <img src="https://codeclimate.com/github/Naimikan/angular-mapboxgl-directive/badges/gpa.svg" alt="codeclimate" />
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/npm/l/angular-mapboxgl-directive.svg?style=flat-square" alt="downloads" />
+  </a>
+</p>
 
-# angular-mapboxgl-directive
-AngularJS directive for Mapbox GL
+<h1 align="center">angular-mapboxgl-directive | <a href="https://github.com/Naimikan/angular-mapboxgl-directive/wiki">Wiki</a></h1>
 
-### Installation
+<h5 align="center">AngularJS directive for Mapbox GL</h5>
+
+<h2 align="center">Installation</h2>
 
 NPM
 ```shell
@@ -18,7 +26,7 @@ Bower
 bower install angular-mapboxgl-directive --save
 ```
 
-### Get Started
+<h2 align="center">Get Started</h2>
 
 Include the files in your `index.html`:
 ```html
@@ -39,9 +47,9 @@ Add `mapboxgl-directive` module in your AngularJS project:
 var app = angular.module('YourProject', ['mapboxgl-directive']);
 ```
 
-### Usage
+<h2 align="center">Usage</h2>
 
-#### mapboxgl
+<h5>mapboxgl</h5>
 
 ```html
 <mapboxgl></mapboxgl>
@@ -51,7 +59,7 @@ or
 <div mapboxgl></div>
 ```
 
-#### mapboxglCompare
+<h5>mapboxglCompare</h5>
 
 ```html
 <mapboxgl-compare>
@@ -67,9 +75,8 @@ or
 </div>
 ```
 
-### See [Wiki](https://github.com/Naimikan/angular-mapboxgl-directive/wiki) for complete reference.
+<h2 align="center">Developing</h2>
 
-### Developing
 Install dependencies, build the source files and preview
 
 ```shell
