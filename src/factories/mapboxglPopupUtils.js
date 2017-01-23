@@ -43,7 +43,7 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 		});
 	}
 
-	function createPopupByObject (map, object, layerId) {
+	function createPopupByObject (map, feature, object) {
     if (angular.isUndefined(map) || map === null) {
       throw new Error('Map is undefined');
     }
@@ -69,12 +69,24 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 			popup.setDOMContent(object.html);
 		} else {
 			var templateScope = angular.isDefined(object.getScope) && angular.isFunction(object.getScope) ? object.getScope() : $rootScope;
+			var htmlCopy = angular.copy(object.html);
+
+			/*
+				/\$\{(.+?)\}/g --> Lorem ${ipsum} lorem ${ipsum} --> ['${ipsum}', '${ipsum}']
+				/[^\$\{](.+)[^\}]/g --> ${ipsum} --> ipsum
+			*/
+
+			var allMatches = object.html.match(/\$\{(.+?)\}/g);
+			allMatches.forEach(function (eachMatch) {
+				htmlCopy = htmlCopy.replace(eachMatch, feature.properties[eachMatch.match(/[^\$\{](.+)[^\}]/g)[0]]);
+			});
+
 			try {
-				var templateHtmlElement = $compile(object.html)(templateScope)[0];
+				var templateHtmlElement = $compile(htmlCopy)(templateScope)[0];
 
 				popup.setDOMContent(templateHtmlElement);
 			} catch (error) {
-				popup.setHTML(object.html);
+				popup.setHTML(htmlCopy);
 			}
 		}
 
@@ -82,7 +94,7 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
 		_popupsCreated.push({
 			popupInstance: popup,
-			layerId: layerId
+			layerId: feature.layer.id
 		});
 
     return popup;

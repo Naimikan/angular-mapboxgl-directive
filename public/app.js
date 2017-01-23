@@ -187,8 +187,54 @@
     $scope.glSources = [];
     $scope.glLayers = [];
 
-    var tempGlLayers = [];
+    var features = [];
+
+    for (var iterator = 0; iterator < 10; iterator++) {
+      var tempLng = Math.floor(Math.random() * -180) + 180;
+      var tempLat = Math.floor(Math.random() * -90) + 90;
+
+      features.push({
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [tempLng, tempLat]
+        },
+        properties: {
+          lattitude: tempLat,
+          longitude: tempLng
+        }
+      });
+    }
+
+    $scope.glSources = {
+      id: 'circles',
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: features
+      }
+    };
+
+    $scope.glLayers = {
+      id: 'circles',
+      type: 'circle',
+      source: 'circles',
+      paint: {
+        'circle-radius': 8,
+        'circle-color': '#007cbf',
+        'circle-opacity': 1
+      },
+      popup: {
+        enabled: true,
+        message: '<button class="btn btn-primary" ng-click="deleteButtonClick($event);">${lattitude}</button>',
+        getScope: function () {
+          return $scope;
+        }
+      }
+    };
+
     var tempGlSources = [];
+    var tempGlLayers = [];
 
     for (var iterator = 0; iterator < 10; iterator++) {
       var tempLng = Math.floor(Math.random() * -180) + 180;
@@ -282,9 +328,6 @@
         before: 'circle' + iterator
       });
     }
-
-    $scope.glSources = tempGlSources;
-    $scope.glLayers = tempGlLayers;
 
     /*$timeout(function () {
       $scope.glSources = [

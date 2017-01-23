@@ -25,12 +25,12 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
           var popupObject = mapboxglLayerUtils.getPopupRelationByLayerId(feature.layer.id);
 
           if (angular.isDefined(popupObject) && popupObject !== null) {
-            mapboxglPopupUtils.createPopupByObject(map, {
+            mapboxglPopupUtils.createPopupByObject(map, feature, {
               coordinates: event.point,
               options: popupObject.options,
               html: popupObject.message,
               getScope: popupObject.getScope
-            }, feature.layer.id);
+            });
           }
         }
       });
@@ -104,23 +104,25 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
 
       mapboxglScope.$watch('glLayers', function (layers) {
         $timeout(function () {
-          disableLayerEvents(map);
+          if (angular.isDefined(layers)) {
+            disableLayerEvents(map);
 
-          checkLayersToBeRemoved(map, layers).then(function () {
-            if (Object.prototype.toString.call(layers) === Object.prototype.toString.call([])) {
-              layers.map(function (eachLayer) {
-                createOrUpdateLayer(map, eachLayer);
-              });
-            } else if (Object.prototype.toString.call(layers) === Object.prototype.toString.call({})) {
-              createOrUpdateLayer(map, layers);
-            } else {
-              throw new Error('Invalid layers parameter');
-            }
+            checkLayersToBeRemoved(map, layers).then(function () {
+              if (Object.prototype.toString.call(layers) === Object.prototype.toString.call([])) {
+                layers.map(function (eachLayer) {
+                  createOrUpdateLayer(map, eachLayer);
+                });
+              } else if (Object.prototype.toString.call(layers) === Object.prototype.toString.call({})) {
+                createOrUpdateLayer(map, layers);
+              } else {
+                throw new Error('Invalid layers parameter');
+              }
 
-            enableLayerEvents(map);
-          }).catch(function (error) {
-            throw error;
-          });
+              enableLayerEvents(map);
+            }).catch(function (error) {
+              throw error;
+            });
+          }
         }, 500, true);
       }, true);
     });

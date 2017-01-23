@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.26.0 2017-01-19
+*  angular-mapboxgl-directive 0.27.0 2017-01-23
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -1028,7 +1028,7 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 		});
 	}
 
-	function createPopupByObject (map, object, layerId) {
+	function createPopupByObject (map, feature, object) {
     if (angular.isUndefined(map) || map === null) {
       throw new Error('Map is undefined');
     }
@@ -1054,12 +1054,24 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 			popup.setDOMContent(object.html);
 		} else {
 			var templateScope = angular.isDefined(object.getScope) && angular.isFunction(object.getScope) ? object.getScope() : $rootScope;
+			var htmlCopy = angular.copy(object.html);
+
+			/*
+				/\$\{(.+?)\}/g --> Lorem ${ipsum} lorem ${ipsum} --> ['${ipsum}', '${ipsum}']
+				/[^\$\{](.+)[^\}]/g --> ${ipsum} --> ipsum
+			*/
+
+			var allMatches = object.html.match(/\$\{(.+?)\}/g);
+			allMatches.forEach(function (eachMatch) {
+				htmlCopy = htmlCopy.replace(eachMatch, feature.properties[eachMatch.match(/[^\$\{](.+)[^\}]/g)[0]]);
+			});
+
 			try {
-				var templateHtmlElement = $compile(object.html)(templateScope)[0];
+				var templateHtmlElement = $compile(htmlCopy)(templateScope)[0];
 
 				popup.setDOMContent(templateHtmlElement);
 			} catch (error) {
-				popup.setHTML(object.html);
+				popup.setHTML(htmlCopy);
 			}
 		}
 
@@ -1067,7 +1079,7 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
 		_popupsCreated.push({
 			popupInstance: popup,
-			layerId: layerId
+			layerId: feature.layer.id
 		});
 
     return popup;
@@ -1952,12 +1964,12 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
           var popupObject = mapboxglLayerUtils.getPopupRelationByLayerId(feature.layer.id);
 
           if (angular.isDefined(popupObject) && popupObject !== null) {
-            mapboxglPopupUtils.createPopupByObject(map, {
+            mapboxglPopupUtils.createPopupByObject(map, feature, {
               coordinates: event.point,
               options: popupObject.options,
               html: popupObject.message,
               getScope: popupObject.getScope
-            }, feature.layer.id);
+            });
           }
         }
       });
@@ -2031,23 +2043,25 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
 
       mapboxglScope.$watch('glLayers', function (layers) {
         $timeout(function () {
-          disableLayerEvents(map);
+          if (angular.isDefined(layers)) {
+            disableLayerEvents(map);
 
-          checkLayersToBeRemoved(map, layers).then(function () {
-            if (Object.prototype.toString.call(layers) === Object.prototype.toString.call([])) {
-              layers.map(function (eachLayer) {
-                createOrUpdateLayer(map, eachLayer);
-              });
-            } else if (Object.prototype.toString.call(layers) === Object.prototype.toString.call({})) {
-              createOrUpdateLayer(map, layers);
-            } else {
-              throw new Error('Invalid layers parameter');
-            }
+            checkLayersToBeRemoved(map, layers).then(function () {
+              if (Object.prototype.toString.call(layers) === Object.prototype.toString.call([])) {
+                layers.map(function (eachLayer) {
+                  createOrUpdateLayer(map, eachLayer);
+                });
+              } else if (Object.prototype.toString.call(layers) === Object.prototype.toString.call({})) {
+                createOrUpdateLayer(map, layers);
+              } else {
+                throw new Error('Invalid layers parameter');
+              }
 
-            enableLayerEvents(map);
-          }).catch(function (error) {
-            throw error;
-          });
+              enableLayerEvents(map);
+            }).catch(function (error) {
+              throw error;
+            });
+          }
         }, 500, true);
       }, true);
     });
@@ -2389,19 +2403,21 @@ angular.module('mapboxgl-directive').directive('glSources', ['mapboxglSourceUtil
     controller.getMap().then(function (map) {
       mapboxglScope.$watch('glSources', function (sources) {
         $timeout(function () {
-          checkSourcesToBeRemoved(map, sources).then(function () {
-            if (Object.prototype.toString.call(sources) === Object.prototype.toString.call([])) {
-              sources.map(function (eachSource) {
-                createOrUpdateSource(map, eachSource);
-              });
-            } else if (Object.prototype.toString.call(sources) === Object.prototype.toString.call({})) {
-              createOrUpdateSource(map, sources);
-            } else {
-              throw new Error('Invalid sources parameter');
-            }
-          }).catch(function (error) {
-            throw error;
-          });
+          if (angular.isDefined(sources)) {
+            checkSourcesToBeRemoved(map, sources).then(function () {
+              if (Object.prototype.toString.call(sources) === Object.prototype.toString.call([])) {
+                sources.map(function (eachSource) {
+                  createOrUpdateSource(map, eachSource);
+                });
+              } else if (Object.prototype.toString.call(sources) === Object.prototype.toString.call({})) {
+                createOrUpdateSource(map, sources);
+              } else {
+                throw new Error('Invalid sources parameter');
+              }
+            }).catch(function (error) {
+              throw error;
+            });
+          }
         }, 500, true);
       }, true);
     });
