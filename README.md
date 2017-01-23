@@ -1,4 +1,4 @@
-<p align="left">
+<p align="right">
   <a href="https://www.npmjs.com/package/angular-mapboxgl-directive">
     <img src="https://img.shields.io/npm/v/angular-mapboxgl-directive.svg?style=flat-square" alt="version" />
   </a>
