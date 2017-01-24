@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.27.0 2017-01-23
+*  angular-mapboxgl-directive 0.27.1 2017-01-24
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -986,6 +986,13 @@ angular.module('mapboxgl-directive').factory('mapboxglMarkerUtils', ['mapboxglUt
 angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUtils', 'mapboxglConstants', '$rootScope', '$compile', function (mapboxglUtils, mapboxglConstants, $rootScope, $compile) {
 	var _popupsCreated = [];
 
+	/*
+		/\$\{(.+?)\}/g --> Lorem ${ipsum} lorem ${ipsum} --> ['${ipsum}', '${ipsum}']
+		/[^\$\{](.+)[^\}]/g --> ${ipsum} --> ipsum
+	*/
+	var _regexFindDollar = new RegExp(/\$\{(.+?)\}/g);
+	var _regexGetValueBetweenDollarClaudator = new RegExp(/[^\$\{](.+)[^\}]/g);
+
 	function getAllPopupsCreated () {
 		return _popupsCreated;
 	}
@@ -1056,15 +1063,25 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 			var templateScope = angular.isDefined(object.getScope) && angular.isFunction(object.getScope) ? object.getScope() : $rootScope;
 			var htmlCopy = angular.copy(object.html);
 
-			/*
-				/\$\{(.+?)\}/g --> Lorem ${ipsum} lorem ${ipsum} --> ['${ipsum}', '${ipsum}']
-				/[^\$\{](.+)[^\}]/g --> ${ipsum} --> ipsum
-			*/
+			if (_regexFindDollar.test(object.html)) {
+				var allMatches = object.html.match(_regexFindDollar);
 
-			var allMatches = object.html.match(/\$\{(.+?)\}/g);
-			allMatches.forEach(function (eachMatch) {
-				htmlCopy = htmlCopy.replace(eachMatch, feature.properties[eachMatch.match(/[^\$\{](.+)[^\}]/g)[0]]);
-			});
+				if (allMatches.length > 0) {
+					allMatches.forEach(function (eachMatch) {
+						var tempMatch = eachMatch.match(_regexGetValueBetweenDollarClaudator);
+
+						if (tempMatch.length > 0) {
+							var regexValue = tempMatch[0];
+
+							if (feature.properties.hasOwnProperty(regexValue)) {
+								htmlCopy = htmlCopy.replace(eachMatch, feature.properties[regexValue]);
+							} else {
+								throw new Error('Property "' + regexValue + '" isn\'t exist in source "' + feature.layer.source + '"');
+							}
+						}
+					});
+				}
+			}
 
 			try {
 				var templateHtmlElement = $compile(htmlCopy)(templateScope)[0];

@@ -1,6 +1,13 @@
 angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUtils', 'mapboxglConstants', '$rootScope', '$compile', function (mapboxglUtils, mapboxglConstants, $rootScope, $compile) {
 	var _popupsCreated = [];
 
+	/*
+		/\$\{(.+?)\}/g --> Lorem ${ipsum} lorem ${ipsum} --> ['${ipsum}', '${ipsum}']
+		/[^\$\{](.+)[^\}]/g --> ${ipsum} --> ipsum
+	*/
+	var _regexFindDollar = new RegExp(/\$\{(.+?)\}/g);
+	var _regexGetValueBetweenDollarClaudator = new RegExp(/[^\$\{](.+)[^\}]/g);
+
 	function getAllPopupsCreated () {
 		return _popupsCreated;
 	}
@@ -71,15 +78,25 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 			var templateScope = angular.isDefined(object.getScope) && angular.isFunction(object.getScope) ? object.getScope() : $rootScope;
 			var htmlCopy = angular.copy(object.html);
 
-			/*
-				/\$\{(.+?)\}/g --> Lorem ${ipsum} lorem ${ipsum} --> ['${ipsum}', '${ipsum}']
-				/[^\$\{](.+)[^\}]/g --> ${ipsum} --> ipsum
-			*/
+			if (_regexFindDollar.test(object.html)) {
+				var allMatches = object.html.match(_regexFindDollar);
 
-			var allMatches = object.html.match(/\$\{(.+?)\}/g);
-			allMatches.forEach(function (eachMatch) {
-				htmlCopy = htmlCopy.replace(eachMatch, feature.properties[eachMatch.match(/[^\$\{](.+)[^\}]/g)[0]]);
-			});
+				if (allMatches.length > 0) {
+					allMatches.forEach(function (eachMatch) {
+						var tempMatch = eachMatch.match(_regexGetValueBetweenDollarClaudator);
+
+						if (tempMatch.length > 0) {
+							var regexValue = tempMatch[0];
+
+							if (feature.properties.hasOwnProperty(regexValue)) {
+								htmlCopy = htmlCopy.replace(eachMatch, feature.properties[regexValue]);
+							} else {
+								throw new Error('Property "' + regexValue + '" isn\'t exist in source "' + feature.layer.source + '"');
+							}
+						}
+					});
+				}
+			}
 
 			try {
 				var templateHtmlElement = $compile(htmlCopy)(templateScope)[0];
