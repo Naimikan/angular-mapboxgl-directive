@@ -242,13 +242,22 @@
         'circle-color': '#007cbf',
         'circle-opacity': 1
       },
-      popup: {
+      events: {
+        onClick: function (map, feature, allFeatures) {
+          console.log('onClick called --> ' + feature + ' --> ' + allFeatures);
+        },
+        onMouseover: function (map, feature, allFeatures) {
+          console.log('onMouseover called --> ' + feature + ' --> ' + allFeatures);
+        }
+      }
+
+      /*popup: {
         enabled: true,
         message: '<button class="btn btn-primary" ng-click="deleteButtonClick($event);">${lattitude}</button>',
         getScope: function () {
           return $scope;
         }
-      }
+      }*/
     };
 
     var tempGlSources = [];

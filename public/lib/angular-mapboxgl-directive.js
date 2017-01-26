@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.27.2 2017-01-26
+*  angular-mapboxgl-directive 0.28.0 2017-01-26
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -582,11 +582,13 @@ angular.module('mapboxgl-directive').factory('mapboxglImageUtils', ['mapboxglUti
 angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUtils', 'mapboxglConstants', 'mapboxglPopupUtils', function (mapboxglUtils, mapboxglConstants, mapboxglPopupUtils) {
   var _layersCreated = [];
   var _relationLayersPopups = [];
+  var _relationLayersEvents = [];
 
   function getCreatedLayers () {
     return _layersCreated;
   }
 
+  /* Layer/Popup relation */
   function removePopupRelationByLayerId (layerId) {
     _relationLayersPopups = _relationLayersPopups.filter(function (each) {
       return each.layerId !== layerId;
@@ -604,6 +606,29 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
 
     if (relationArray.length > 0) {
       return relationArray[0].popup;
+    } else {
+      return false;
+    }
+  }
+
+  /* Layer/Event relation */
+  function removeEventRelationByLayerId (layerId) {
+    _relationLayersEvents = _relationLayersEvents.filter(function (each) {
+      return each.layerId !== layerId;
+    });
+  }
+
+  function removeAllEventRelations () {
+    _relationLayersEvents = [];
+  }
+
+  function getEventRelationByLayerId (layerId) {
+    var relationArray = _relationLayersEvents.filter(function (each) {
+      return each.layerId === layerId;
+    });
+
+    if (relationArray.length > 0) {
+      return relationArray[0].events;
     } else {
       return false;
     }
@@ -634,7 +659,7 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
     var tempObject = {};
 
     for (var attribute in layerObject) {
-      if (attribute !== 'before' && attribute !== 'popup' && attribute !== 'animation') {
+      if (attribute !== 'before' && attribute !== 'popup' && attribute !== 'animation' && attribute !== 'events') {
         tempObject[attribute] = layerObject[attribute];
       }
     }
@@ -648,9 +673,16 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
 
     _layersCreated.push(layerObject.id);
 
+    // Add popup relation
     _relationLayersPopups.push({
       layerId: layerObject.id,
       popup: layerObject.popup
+    });
+
+    // Add events relation
+    _relationLayersEvents.push({
+      layerId: layerObject.id,
+      events: layerObject.events
     });
   }
 
@@ -678,6 +710,9 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
 
       mapboxglPopupUtils.removePopupByLayerId(layerId);
       removePopupRelationByLayerId(layerId);
+      removeEventRelationByLayerId(layerId);
+
+      // map.off('eventName');
     } else {
       throw new Error('Invalid layer ID');
     }
@@ -721,6 +756,16 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
       });
     }
 
+    // Events property
+    if (angular.isDefined(layerObject.events) && layerObject.events !== null) {
+      removeEventRelationByLayerId(layerObject.id);
+
+      _relationLayersEvents.push({
+        layerId: layerObject.id,
+        events: layerObject.events
+      });
+    }
+
     // Paint properties
     if (angular.isDefined(layerObject.paint) && layerObject.paint !== null) {
       for (var eachPaintProperty in layerObject.paint) {
@@ -756,7 +801,10 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
     getCreatedLayers: getCreatedLayers,
     removeAllPopupRelations: removeAllPopupRelations,
     removePopupRelationByLayerId: removePopupRelationByLayerId,
-    getPopupRelationByLayerId: getPopupRelationByLayerId
+    getPopupRelationByLayerId: getPopupRelationByLayerId,
+    removeAllEventRelations: removeAllEventRelations,
+    removeEventRelationByLayerId: removeEventRelationByLayerId,
+    getEventRelationByLayerId: getEventRelationByLayerId
 	};
 
 	return mapboxglLayerUtils;
@@ -1844,6 +1892,9 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
 
     function enableLayerEvents (map) {
       map.on('click', function (event) {
+        event.originalEvent.preventDefault();
+        event.originalEvent.stopPropagation();
+
         var allLayers = mapboxglLayerUtils.getCreatedLayers();
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
@@ -1851,15 +1902,23 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
         if (features.length > 0) {
           var feature = features[0];
 
+          // Check popup
           var popupObject = mapboxglLayerUtils.getPopupRelationByLayerId(feature.layer.id);
 
           if (angular.isDefined(popupObject) && popupObject !== null) {
             mapboxglPopupUtils.createPopupByObject(map, feature, {
-              coordinates: event.point,
+              coordinates: event.lngLat,
               options: popupObject.options,
               html: popupObject.message,
               getScope: popupObject.getScope
             });
+          }
+
+          // Check events
+          var layerEvents = mapboxglLayerUtils.getEventRelationByLayerId(feature.layer.id);
+
+          if (angular.isDefined(layerEvents) && layerEvents !== null && angular.isDefined(layerEvents.onClick) && angular.isFunction(layerEvents.onClick)) {
+            layerEvents.onClick(map, feature, features);
           }
         }
       });
@@ -1869,6 +1928,16 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
         map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+
+        if (features.length > 0) {
+          var feature = features[0];
+
+          var layerEvents = mapboxglLayerUtils.getEventRelationByLayerId(feature.layer.id);
+
+          if (angular.isDefined(layerEvents) && layerEvents !== null && angular.isDefined(layerEvents.onMouseover) && angular.isFunction(layerEvents.onMouseover)) {
+            layerEvents.onMouseover(map, feature, features);
+          }
+        }
       });
     }
 

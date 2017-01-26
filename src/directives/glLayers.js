@@ -15,6 +15,9 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
 
     function enableLayerEvents (map) {
       map.on('click', function (event) {
+        event.originalEvent.preventDefault();
+        event.originalEvent.stopPropagation();
+
         var allLayers = mapboxglLayerUtils.getCreatedLayers();
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
@@ -22,15 +25,23 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
         if (features.length > 0) {
           var feature = features[0];
 
+          // Check popup
           var popupObject = mapboxglLayerUtils.getPopupRelationByLayerId(feature.layer.id);
 
           if (angular.isDefined(popupObject) && popupObject !== null) {
             mapboxglPopupUtils.createPopupByObject(map, feature, {
-              coordinates: event.point,
+              coordinates: event.lngLat,
               options: popupObject.options,
               html: popupObject.message,
               getScope: popupObject.getScope
             });
+          }
+
+          // Check events
+          var layerEvents = mapboxglLayerUtils.getEventRelationByLayerId(feature.layer.id);
+
+          if (angular.isDefined(layerEvents) && layerEvents !== null && angular.isDefined(layerEvents.onClick) && angular.isFunction(layerEvents.onClick)) {
+            layerEvents.onClick(map, feature, features);
           }
         }
       });
@@ -40,6 +51,16 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
         map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+
+        if (features.length > 0) {
+          var feature = features[0];
+
+          var layerEvents = mapboxglLayerUtils.getEventRelationByLayerId(feature.layer.id);
+
+          if (angular.isDefined(layerEvents) && layerEvents !== null && angular.isDefined(layerEvents.onMouseover) && angular.isFunction(layerEvents.onMouseover)) {
+            layerEvents.onMouseover(map, feature, features);
+          }
+        }
       });
     }
 
