@@ -22,12 +22,30 @@
 
   .controller('IndexController', ['$scope', '$window', '$timeout', 'mapboxglMapsData', '$compile', function ($scope, $window, $timeout, mapboxglMapsData, $compile) {
     $scope.glHeight = $window.innerHeight;
+    $scope.glWidth = {
+      value: $window.innerWidth
+    };
 
     $window.onresize = function (event) {
       $scope.$apply(function () {
         $scope.glHeight = event.target.innerHeight;
+        $scope.glWidth = {
+          value: $window.innerWidth
+        };
       });
     };
+
+    $scope.onClick = function () {
+      $scope.glWidth = {
+        value: $window.innerWidth,
+        animation: {
+          enabled: true,
+          transitionTime: 500
+        }
+      };
+    };
+
+
 
     $scope.persistentGeojson = true;
     $scope.persistentImage = true;

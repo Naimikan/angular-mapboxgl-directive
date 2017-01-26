@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.27.1 2017-01-24
+*  angular-mapboxgl-directive 0.27.2 2017-01-26
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -135,133 +135,6 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
         }
       }
     });
-
-
-    /*this._mapboxGlMap = $q.defer();
-    this._geojsonObjects = [];
-    this._imageObjects = [];
-    this._videoObjects = [];
-    this._markerObjects = [];
-    this._persistentGeojson = mapboxglConstants.map.defaultPersistentGeojson;
-    this._persistentImage = mapboxglConstants.map.defaultPersistentImage;
-    this._persistentVideo = mapboxglConstants.map.defaultPersistentVideo;
-    this._elementDOM = null;*/
-
-    this.getMap = function () {
-      return this._mapboxGlMap.promise;
-    };
-
-    this.getMapboxGlScope = function () {
-      return $scope;
-    };
-
-    this.getDOMElement = function () {
-      return this._elementDOM;
-    };
-
-    this.setDOMElement = function (elementDOM) {
-      this._elementDOM = elementDOM;
-    };
-
-    /* Geojson */
-    this.getGeojsonObjects = function () {
-      return this._geojsonObjects;
-    };
-
-    this.addGeojsonObject = function (geojsonObject) {
-      this._geojsonObjects.push(geojsonObject);
-    };
-
-    this.removeGeojsonObjects = function () {
-      this._geojsonObjects = [];
-    };
-
-    /* Image */
-    this.getImageObjects = function () {
-      return this._imageObjects;
-    };
-
-    this.addImageObject = function (imageObject) {
-      this._imageObjects.push(imageObject);
-    };
-
-    this.removeImageObjects = function () {
-      this._imageObjects = [];
-    };
-
-    /* Video */
-    this.getVideoObjects = function () {
-      return this._videoObjects;
-    };
-
-    this.addVideoObject = function (videoObject) {
-      this._videoObjects.push(videoObject);
-    };
-
-    this.removeVideoObjects = function () {
-      this._videoObjects = [];
-    };
-
-    /* Markers */
-    this.getMarkerObjects = function () {
-      return this._markerObjects;
-    };
-
-    this.addMarkerObject = function (markerObject) {
-      this._markerObjects.push(markerObject);
-    };
-
-    this.removeMarkerObjects = function () {
-      this._markerObjects = [];
-    };
-
-    /* Persistent Geojson */
-    this.isGeojsonPersistent = function () {
-      return this._persistentGeojson;
-    };
-
-    this.setPersistentGeojson = function (persistentGeojson) {
-      this._persistentGeojson = persistentGeojson;
-    };
-
-    /* Persistent Image */
-    this.isImagePersistent = function () {
-      return this._persistentImage;
-    };
-
-    this.setPersistentImage = function (persistentImage) {
-      this._persistentImage = persistentImage;
-    };
-
-    /* Persistent Video */
-    this.isVideoPersistent = function () {
-      return this._persistentVideo;
-    };
-
-    this.setPersistentVideo = function (persistentVideo) {
-      this._persistentVideo = persistentVideo;
-    };
-
-    /* Loading Overlay */
-    this.changeLoadingMap = function (newValue) {
-      if (newValue) {
-        if (!this._elementDOM.hasClass('angular-mapboxgl-map-loading')) {
-          this.getMap().then(function (map) {
-            map.getCanvas().style.opacity = 0.25;
-          });
-
-          this._elementDOM.addClass('angular-mapboxgl-map-loading');
-        }
-      } else {
-        if (this._elementDOM.hasClass('angular-mapboxgl-map-loading')) {
-          this.getMap().then(function (map) {
-            map.getCanvas().style.opacity = 1;
-          });
-
-          this._elementDOM.removeClass('angular-mapboxgl-map-loading');
-        }
-      }
-    };
   }
 
   function mapboxGlDirectiveLink (scope, element, attrs, controller) {
@@ -1054,7 +927,7 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
     var popupOptions = object.options || {};
 
-		var popup = new mapboxgl.Popup(popupOptions).setLngLat(map.unproject(object.coordinates));
+		var popup = new mapboxgl.Popup(popupOptions).setLngLat(object.coordinates);
 
 		// If HTML Element
 		if (object.html instanceof HTMLElement) {

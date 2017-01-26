@@ -69,7 +69,7 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
     var popupOptions = object.options || {};
 
-		var popup = new mapboxgl.Popup(popupOptions).setLngLat(map.unproject(object.coordinates));
+		var popup = new mapboxgl.Popup(popupOptions).setLngLat(object.coordinates);
 
 		// If HTML Element
 		if (object.html instanceof HTMLElement) {
