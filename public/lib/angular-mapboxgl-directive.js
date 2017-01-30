@@ -267,6 +267,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
       mapboxglMapsData.addMap(scope.mapboxglMapId, mapboxGlMap);
 
+      mapboxglEventsUtils.exposeMapEvents(mapboxGlMap);
+
       //scope.isLoading = true;
       //controller.changeLoadingMap(mapboxGlMap, scope.isLoading);
 
@@ -274,8 +276,6 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
         var map = event.target;
 
         controller._mapboxGlMap.resolve(map);
-
-        mapboxglEventsUtils.exposeMapEvents(map);
 
         // Language
         scope.$watch(function () {
