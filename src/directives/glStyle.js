@@ -23,8 +23,8 @@ angular.module('mapboxgl-directive').directive('glStyle', ['$rootScope', functio
 
 						map.setStyle(style);
 
-						map.on('data', function (event) {
-							if (event.dataType === 'style' && !styleChanged) {
+						map.on('styledata', function (event) {
+							if (!styleChanged) {
 								$rootScope.$broadcast('mapboxglMap:styleChanged', {
 									map: map,
 									newStyle: style,

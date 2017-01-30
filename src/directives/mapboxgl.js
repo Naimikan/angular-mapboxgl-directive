@@ -107,20 +107,20 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       },
 
       /* Loading Overlay */
-      changeLoadingMap: function (newValue) {
+      changeLoadingMap: function (map, newValue) {
         if (newValue) {
           if (!this._elementDOM.hasClass('angular-mapboxgl-map-loading')) {
-            this.getMap().then(function (map) {
+            //this.getMap().then(function (map) {
               map.getCanvas().style.opacity = 0.25;
-            });
+            //});
 
             this._elementDOM.addClass('angular-mapboxgl-map-loading');
           }
         } else {
           if (this._elementDOM.hasClass('angular-mapboxgl-map-loading')) {
-            this.getMap().then(function (map) {
+            //this.getMap().then(function (map) {
               map.getCanvas().style.opacity = 1;
-            });
+            //});
 
             this._elementDOM.removeClass('angular-mapboxgl-map-loading');
           }
@@ -131,19 +131,27 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
   function mapboxGlDirectiveLink (scope, element, attrs, controller) {
     if (!mapboxgl) {
-      throw new Error('Mapbox GL does not included');
+      throw new Error('Mapbox GL doesn\`t included');
     }
 
     if (!mapboxgl.accessToken) {
       if (angular.isDefined(attrs.accessToken) && attrs.accessToken.length > 0) {
         mapboxgl.accessToken = attrs.accessToken;
       } else {
-        throw new Error('Mapbox access token does not defined');
+        throw new Error('Mapbox access token doesn\`t defined');
       }
     }
 
     if (!mapboxgl.supported()) {
-      throw new Error('Your browser does not support Mapbox GL');
+      throw new Error('Your browser doesn\`t support Mapbox GL');
+    }
+
+    if (angular.isDefined(attrs.rtlEnabled) && mapboxglUtils.stringToBoolean(attrs.rtlEnabled)) {
+      if (mapboxgl.setRTLTextPlugin) {
+        mapboxgl.setRTLTextPlugin(mapboxglConstants.plugins.rtlPluginUrl);
+      } else {
+        throw new Error('Your version of Mapbox GL doesn\`t support "setRTLTextPlugin" function.');
+      }
     }
 
     controller.setDOMElement(element);
@@ -220,146 +228,165 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       });
     }
 
-    var mapboxGlMap = new mapboxgl.Map({
-      container: scope.mapboxglMapId,
-      style: scope.glStyle || mapboxglConstants.map.defaultStyle,
+    var initObject = {
       center: mapboxglConstants.map.defaultCenter,
+      zoom: angular.isDefined(scope.glZoom) && scope.glZoom !== null && angular.isDefined(scope.glZoom.value) && scope.glZoom.value !== null ? scope.glZoom.value : mapboxglUtils.map.defaultZoom,
+      style: scope.glStyle || mapboxglConstants.map.defaultStyle,
       hash: angular.isDefined(attrs.hash) ? mapboxglUtils.stringToBoolean(attrs.hash) : mapboxglConstants.map.defaultHash,
       bearingSnap: angular.isDefined(attrs.bearingSnap) ? mapboxglUtils.stringToNumber(attrs.bearingSnap) : mapboxglConstants.map.defaultBearingSnap,
       failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) ? mapboxglUtils.stringToBoolean(attrs.failIfMajorPerformanceCaveat) : mapboxglConstants.map.defaultFailIfMajorPerformanceCaveat,
       preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) ? mapboxglUtils.stringToBoolean(attrs.preserveDrawingBuffer) : mapboxglConstants.map.defaultPreserveDrawingBuffer,
       trackResize: angular.isDefined(attrs.trackResize) ? mapboxglUtils.stringToBoolean(attrs.trackResize) : mapboxglConstants.map.defaultTrackResize,
-      renderWorldCopies: angular.isDefined(attrs.renderWorldCopies) ? mapboxglUtils.stringToBoolean(attrs.renderWorldCopies) : mapboxglConstants.map.defaultRenderWorldCopies,
-      attributionControl: false
-    });
+      renderWorldCopies: angular.isDefined(attrs.renderWorldCopies) ? mapboxglUtils.stringToBoolean(attrs.renderWorldCopies) : mapboxglConstants.map.defaultRenderWorldCopies
+    };
 
-    mapboxglMapsData.addMap(scope.mapboxglMapId, mapboxGlMap);
+    mapboxglUtils.validateAndFormatCenter(scope.glCenter).then(function (newCenter) {
+      if (newCenter) { initObject.center = newCenter; }
 
-    //scope.isLoading = true;
-    //controller.changeLoadingMap(scope.isLoading);
+      var mapboxGlMap = new mapboxgl.Map({
+        container: scope.mapboxglMapId,
+        style: initObject.style,
+        center: initObject.center,
+        zoom: initObject.zoom,
+        hash: initObject.hash,
+        bearingSnap: initObject.bearingSnap,
+        failIfMajorPerformanceCaveat: initObject.failIfMajorPerformanceCaveat,
+        preserveDrawingBuffer: initObject.preserveDrawingBuffer,
+        trackResize: initObject.trackResize,
+        renderWorldCopies: initObject.renderWorldCopies,
+        attributionControl: false
+      });
 
-    //mapboxGlMap.on('load', function (map) {
-      controller._mapboxGlMap.resolve(mapboxGlMap);
+      mapboxglMapsData.addMap(scope.mapboxglMapId, mapboxGlMap);
 
-      mapboxglEventsUtils.exposeMapEvents(mapboxGlMap);
+      //scope.isLoading = true;
+      //controller.changeLoadingMap(mapboxGlMap, scope.isLoading);
 
-      //scope.isLoading = false;
-      //controller.changeLoadingMap(scope.isLoading);
-    //});
+      mapboxGlMap.on('load', function (event) {
+        var map = event.target;
 
-    controller.getMap().then(function (map) {
-      // Language
-      scope.$watch(function () {
-        return attrs.language;
-      }, function () {
-        if (map.loaded()) {
-          updateLanguage(map);
-        } else {
-          map.on('load', function () {
+        controller._mapboxGlMap.resolve(map);
+
+        mapboxglEventsUtils.exposeMapEvents(map);
+
+        // Language
+        scope.$watch(function () {
+          return attrs.language;
+        }, function () {
+          if (map.loaded()) {
             updateLanguage(map);
+          } else {
+            map.on('load', function () {
+              updateLanguage(map);
+            });
+          }
+        });
+
+        // showCollisionBoxes
+        scope.$watch(function () {
+          return attrs.showCollisionBoxes;
+        }, function () {
+          if (typeof(attrs.showCollisionBoxes) === 'boolean') {
+            map.showCollisionBoxes = attrs.showCollisionBoxes;
+          }
+        });
+
+        // showTileBoundaries
+        scope.$watch(function () {
+          return attrs.showTileBoundaries;
+        }, function () {
+          if (typeof(attrs.showTileBoundaries) === 'boolean') {
+            map.showTileBoundaries = attrs.showTileBoundaries;
+          }
+        });
+
+        // repaint
+        scope.$watch(function () {
+          return attrs.repaint;
+        }, function () {
+          if (typeof(attrs.repaint) === 'boolean') {
+            map.repaint = attrs.repaint;
+          }
+        });
+
+        // Width
+        if (angular.isDefined(attrs.width)) {
+          updateWidth(map);
+
+          scope.$watch(function () {
+            return element[0].getAttribute('width');
+          }, function () {
+            updateWidth(map);
           });
         }
-      });
 
-      // showCollisionBoxes
-      scope.$watch(function () {
-        return attrs.showCollisionBoxes;
-      }, function () {
-        if (typeof(attrs.showCollisionBoxes) === 'boolean') {
-          map.showCollisionBoxes = attrs.showCollisionBoxes;
-        }
-      });
-
-      // showTileBoundaries
-      scope.$watch(function () {
-        return attrs.showTileBoundaries;
-      }, function () {
-        if (typeof(attrs.showTileBoundaries) === 'boolean') {
-          map.showTileBoundaries = attrs.showTileBoundaries;
-        }
-      });
-
-      // repaint
-      scope.$watch(function () {
-        return attrs.repaint;
-      }, function () {
-        if (typeof(attrs.repaint) === 'boolean') {
-          map.repaint = attrs.repaint;
-        }
-      });
-
-      // Width
-      if (angular.isDefined(attrs.width)) {
-        updateWidth(map);
-
-        scope.$watch(function () {
-          return element[0].getAttribute('width');
-        }, function () {
-          updateWidth(map);
-        });
-      }
-
-      // Height
-      if (angular.isDefined(attrs.height)) {
-        updateHeight(map);
-
-        scope.$watch(function () {
-          return element[0].getAttribute('height');
-        }, function () {
+        // Height
+        if (angular.isDefined(attrs.height)) {
           updateHeight(map);
-        });
-      } else {
-        element.css('height', mapboxglConstants.map.defaultHeight);
 
-        map.resize();
-      }
-    });
+          scope.$watch(function () {
+            return element[0].getAttribute('height');
+          }, function () {
+            updateHeight(map);
+          });
+        } else {
+          element.css('height', mapboxglConstants.map.defaultHeight);
 
-    scope.$on('mapboxglMap:styleChanged', function () {
-      controller.getMap().then(function (map) {
-        updateLanguage(map);
+          map.resize();
+        }
+
+        //scope.isLoading = false;
+        //controller.changeLoadingMap(map, scope.isLoading);
       });
-    });
 
-    scope.$on('$destroy', function () {
-      mapboxGlMap.remove();
-    });
+      scope.$on('mapboxglMap:styleChanged', function () {
+        controller.getMap().then(function (map) {
+          updateLanguage(map);
+        });
+      });
+
+      scope.$on('$destroy', function () {
+        mapboxGlMap.remove();
+      });
 
 
-    /*scope.$watch(function () { return scope.controlsAvailables; }, function (newValue, oldValue) {
-      if (newValue !== void 0) {
-        // Custom Control DrawGl
-        if (newValue.drawControl !== void 0 && newValue.drawControl.enabled !== void 0 && newValue.drawControl.enabled) {
-          if (mapboxgl.DrawGl !== void 0) {
-            scope.mapboxGlControls.drawGl = new mapboxgl.DrawGl({
-              position: newValue.drawControl.position || 'top-left',
-              drawOptions: newValue.drawControl.drawOptions ? {
-                polyline: newValue.drawControl.drawOptions.polyline ? newValue.drawControl.drawOptions.polyline : false,
-                polygon: newValue.drawControl.drawOptions.polygon ? newValue.drawControl.drawOptions.polygon : false,
-                rectangle: newValue.drawControl.drawOptions.rectangle ? newValue.drawControl.drawOptions.rectangle : false,
-                circle: newValue.drawControl.drawOptions.circle ? newValue.drawControl.drawOptions.circle : false,
-                marker: newValue.drawControl.drawOptions.marker ? newValue.drawControl.drawOptions.marker : false,
-                edit: newValue.drawControl.drawOptions.edit ? newValue.drawControl.drawOptions.edit : true,
-                trash: newValue.drawControl.drawOptions.trash ? newValue.drawControl.drawOptions.trash : true
-              } : {
-                polyline: true,
-                polygon: true,
-                rectangle: true,
-                circle: true,
-                marker: true,
-                edit: true,
-                trash: true
-              },
-              distanceUnit: mapboxgl.DrawGl.DISTANCE_UNITS.meters
-            });
+      /*scope.$watch(function () { return scope.controlsAvailables; }, function (newValue, oldValue) {
+        if (newValue !== void 0) {
+          // Custom Control DrawGl
+          if (newValue.drawControl !== void 0 && newValue.drawControl.enabled !== void 0 && newValue.drawControl.enabled) {
+            if (mapboxgl.DrawGl !== void 0) {
+              scope.mapboxGlControls.drawGl = new mapboxgl.DrawGl({
+                position: newValue.drawControl.position || 'top-left',
+                drawOptions: newValue.drawControl.drawOptions ? {
+                  polyline: newValue.drawControl.drawOptions.polyline ? newValue.drawControl.drawOptions.polyline : false,
+                  polygon: newValue.drawControl.drawOptions.polygon ? newValue.drawControl.drawOptions.polygon : false,
+                  rectangle: newValue.drawControl.drawOptions.rectangle ? newValue.drawControl.drawOptions.rectangle : false,
+                  circle: newValue.drawControl.drawOptions.circle ? newValue.drawControl.drawOptions.circle : false,
+                  marker: newValue.drawControl.drawOptions.marker ? newValue.drawControl.drawOptions.marker : false,
+                  edit: newValue.drawControl.drawOptions.edit ? newValue.drawControl.drawOptions.edit : true,
+                  trash: newValue.drawControl.drawOptions.trash ? newValue.drawControl.drawOptions.trash : true
+                } : {
+                  polyline: true,
+                  polygon: true,
+                  rectangle: true,
+                  circle: true,
+                  marker: true,
+                  edit: true,
+                  trash: true
+                },
+                distanceUnit: mapboxgl.DrawGl.DISTANCE_UNITS.meters
+              });
 
-            scope.mapboxGlMap.addControl(scope.mapboxGlControls.drawGl);
-          } else {
-            throw new Error('mapboxgl.DrawGl plugin is not included.');
+              scope.mapboxGlMap.addControl(scope.mapboxGlControls.drawGl);
+            } else {
+              throw new Error('mapboxgl.DrawGl plugin is not included.');
+            }
           }
         }
-      }
-    }); */
+      }); */
+    }).catch(function (error) {
+
+    });
   }
 
   var directive = {

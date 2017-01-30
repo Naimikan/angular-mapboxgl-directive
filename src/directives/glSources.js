@@ -66,23 +66,21 @@ angular.module('mapboxgl-directive').directive('glSources', ['mapboxglSourceUtil
 
     controller.getMap().then(function (map) {
       mapboxglScope.$watch('glSources', function (sources) {
-        $timeout(function () {
-          if (angular.isDefined(sources)) {
-            checkSourcesToBeRemoved(map, sources).then(function () {
-              if (Object.prototype.toString.call(sources) === Object.prototype.toString.call([])) {
-                sources.map(function (eachSource) {
-                  createOrUpdateSource(map, eachSource);
-                });
-              } else if (Object.prototype.toString.call(sources) === Object.prototype.toString.call({})) {
-                createOrUpdateSource(map, sources);
-              } else {
-                throw new Error('Invalid sources parameter');
-              }
-            }).catch(function (error) {
-              throw error;
-            });
-          }
-        }, 500, true);
+        if (angular.isDefined(sources)) {
+          checkSourcesToBeRemoved(map, sources).then(function () {
+            if (Object.prototype.toString.call(sources) === Object.prototype.toString.call([])) {
+              sources.map(function (eachSource) {
+                createOrUpdateSource(map, eachSource);
+              });
+            } else if (Object.prototype.toString.call(sources) === Object.prototype.toString.call({})) {
+              createOrUpdateSource(map, sources);
+            } else {
+              throw new Error('Invalid sources parameter');
+            }
+          }).catch(function (error) {
+            throw error;
+          });
+        }
       }, true);
     });
   }

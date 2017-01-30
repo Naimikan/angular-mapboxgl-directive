@@ -3,6 +3,7 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 		defaultHeight: '450px',
 		defaultStyle: 'mapbox://styles/mapbox/streets-v9',
 		defaultCenter: [0, 0],
+		defaultZoom: 0,
 		defaultHash: false,
 		defaultBearingSnap: 7,
 		defaultFailIfMajorPerformanceCaveat: false,
@@ -20,5 +21,9 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 		defaultTolerance: 0.375,
 		defaultCluster: false,
 		defaultClusterRadius: 50
+	},
+
+	plugins: {
+		rtlPluginUrl: 'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.1.0/mapbox-gl-rtl-text.js'
 	}
 });

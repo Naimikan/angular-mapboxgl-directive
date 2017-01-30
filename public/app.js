@@ -50,7 +50,7 @@
     $scope.persistentGeojson = true;
     $scope.persistentImage = true;
 
-    $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
+    $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
     $scope.glStyle2 = 'mapbox://styles/mapbox/dark-v9'
 
     $scope.deleteButtonClick = function (event) {
@@ -123,7 +123,7 @@
     };
 
     /*$timeout(function () {
-      $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
+      $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
       $scope.glStyle2 = 'mapbox://styles/mapbox/streets-v9';
     }, 6000, true);*/
 
@@ -207,9 +207,9 @@
 
     var features = [];
 
-    for (var iterator = 0; iterator < 10; iterator++) {
-      var tempLng = Math.floor(Math.random() * -180) + 180;
-      var tempLat = Math.floor(Math.random() * -90) + 90;
+    for (var iterator = 0; iterator < 8000; iterator++) {
+      var tempLng = (Math.random() * (180 - (-180)) + 180).toFixed(5) * 1;
+      var tempLat = (Math.random() * (90 - (-90)) + 90).toFixed(5) * 1;
 
       features.push({
         type: 'Feature',
@@ -233,32 +233,27 @@
       }
     };
 
-    $scope.glLayers = {
-      id: 'circles',
-      type: 'circle',
-      source: 'circles',
-      paint: {
-        'circle-radius': 8,
-        'circle-color': '#007cbf',
-        'circle-opacity': 1
-      },
-      events: {
-        onClick: function (map, feature, allFeatures) {
-          console.log('onClick called --> ' + feature + ' --> ' + allFeatures);
-        },
-        onMouseover: function (map, feature, allFeatures) {
-          console.log('onMouseover called --> ' + feature + ' --> ' + allFeatures);
+    $scope.glLayers = [
+      {
+        id: 'circles',
+        type: 'circle',
+        source: 'circles',
+        paint: {
+          'circle-radius': 5,
+          'circle-color': '#0DAAFF'
+          //'circle-color': '#FF620D'
+        }
+      }, {
+        id: 'circles-external',
+        type: 'circle',
+        source: 'circles',
+        before: 'circles',
+        paint: {
+          'circle-radius': 7,
+          'circle-color': '#FFFFFF',
         }
       }
-
-      /*popup: {
-        enabled: true,
-        message: '<button class="btn btn-primary" ng-click="deleteButtonClick($event);">${lattitude}</button>',
-        getScope: function () {
-          return $scope;
-        }
-      }*/
-    };
+    ];
 
     var tempGlSources = [];
     var tempGlLayers = [];

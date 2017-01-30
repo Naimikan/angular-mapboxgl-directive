@@ -121,30 +121,26 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
     }
 
     controller.getMap().then(function (map) {
-      scope.selfMap = map;
-
       mapboxglScope.$watch('glLayers', function (layers) {
-        $timeout(function () {
-          if (angular.isDefined(layers)) {
-            disableLayerEvents(map);
+        if (angular.isDefined(layers)) {
+          disableLayerEvents(map);
 
-            checkLayersToBeRemoved(map, layers).then(function () {
-              if (Object.prototype.toString.call(layers) === Object.prototype.toString.call([])) {
-                layers.map(function (eachLayer) {
-                  createOrUpdateLayer(map, eachLayer);
-                });
-              } else if (Object.prototype.toString.call(layers) === Object.prototype.toString.call({})) {
-                createOrUpdateLayer(map, layers);
-              } else {
-                throw new Error('Invalid layers parameter');
-              }
+          checkLayersToBeRemoved(map, layers).then(function () {
+            if (Object.prototype.toString.call(layers) === Object.prototype.toString.call([])) {
+              layers.map(function (eachLayer) {
+                createOrUpdateLayer(map, eachLayer);
+              });
+            } else if (Object.prototype.toString.call(layers) === Object.prototype.toString.call({})) {
+              createOrUpdateLayer(map, layers);
+            } else {
+              throw new Error('Invalid layers parameter');
+            }
 
-              enableLayerEvents(map);
-            }).catch(function (error) {
-              throw error;
-            });
-          }
-        }, 500, true);
+            enableLayerEvents(map);
+          }).catch(function (error) {
+            throw error;
+          });
+        }
       }, true);
     });
   }
