@@ -417,7 +417,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       persistentImage: '=',
       persistentVideo: '='
     },
-    template: '<div class="angular-mapboxgl-map"><div class="loader" ng-if="isLoading"></div></div>',
+    template: '<div class="angular-mapboxgl-map"></div>',
     controller: mapboxGlDirectiveController,
     link: mapboxGlDirectiveLink
   };

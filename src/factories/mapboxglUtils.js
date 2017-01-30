@@ -37,6 +37,8 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 			} else {
 				defer.resolve(false);
 			}
+		} else {
+			defer.resolve(false);
 		}
 
 		return defer.promise;
