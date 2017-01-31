@@ -2,25 +2,16 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
   var _sourcesCreated = [];
 
   function createSourceByObject (map, sourceObject) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(sourceObject) || sourceObject === null) {
-      throw new Error('Source object is undefined');
-    }
-
-    if (angular.isUndefined(sourceObject.id) || sourceObject.id === null) {
-      throw new Error('Source ID Required');
-    }
-
-    if (angular.isUndefined(sourceObject.type) || sourceObject.type === null) {
-      throw new Error('Source type Required');
-    }
-
-    if (angular.isUndefined(sourceObject.data) || sourceObject.data === null) {
-      throw new Error('Source data Required');
-    }
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Source object',
+        object: sourceObject,
+        attributes: ['id', 'type', 'data']
+      }
+    ]);
 
     var tempObject = {};
 
@@ -46,9 +37,12 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
   }
 
   function removeSourceById (map, sourceId) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }
+    ]);
 
     if (existSourceById(sourceId)) {
       map.removeSource(sourceId);
@@ -62,23 +56,26 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
   }
 
   function updateSourceByObject (map, sourceObject) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(sourceObject) || sourceObject === null) {
-      throw new Error('Source object is undefined');
-    }
-
-    if (angular.isUndefined(sourceObject.id) || sourceObject.id === null) {
-      throw new Error('Source ID Required');
-    }
-
-    if (angular.isUndefined(sourceObject.data) || sourceObject.data === null) {
-      throw new Error('Source data Required');
-    }
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Source object',
+        object: sourceObject,
+        attributes: ['id', 'data']
+      }
+    ]);
 
     var currentSource = map.getSource(sourceObject.id);
+
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Source ' + sourceObject.id,
+        object: currentSource
+      }
+    ]);
+
     currentSource.setData(sourceObject.data);
   }
 

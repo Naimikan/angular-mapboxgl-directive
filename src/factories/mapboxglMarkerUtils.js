@@ -1,20 +1,15 @@
 angular.module('mapboxgl-directive').factory('mapboxglMarkerUtils', ['mapboxglUtils', 'mapboxglConstants', 'mapboxglPopupUtils', function (mapboxglUtils, mapboxglConstants, mapboxglPopupUtils) {
 	function createMarkerByObject (map, object) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(object) || object === null) {
-      throw new Error('Object definition is undefined');
-    }
-
-    if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
-      throw new Error('Object coordinates are undefined');
-    }
-
-    if (angular.isUndefined(object.element) || object.element === null) {
-      throw new Error('Object element is undefined');
-    }
+		mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Object',
+        object: object,
+        attributes: ['coordinates', 'element']
+      }
+    ]);
 
     var markerOptions = object.options || {};
 

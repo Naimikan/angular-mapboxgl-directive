@@ -54,21 +54,16 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
   }
 
   function createLayerByObject (map, layerObject) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(layerObject) || layerObject === null) {
-      throw new Error('Layer object is undefined');
-    }
-
-    if (angular.isUndefined(layerObject.id) || layerObject.id === null) {
-      throw new Error('Layer ID Required');
-    }
-
-    if (angular.isUndefined(layerObject.type) || layerObject.type === null) {
-      throw new Error('Layer type Required');
-    }
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Layer object',
+        object: layerObject,
+        attributes: ['id', 'type']
+      }
+    ]);
 
     var defaultMetadata = {
       type: 'mapboxgl:' + layerObject.type,
@@ -86,7 +81,7 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
     tempObject.metadata = angular.isDefined(layerObject.metadata) ? layerObject.metadata : {};
     angular.extend(tempObject.metadata, defaultMetadata);
 
-    var before = angular.isDefined(layerObject.before) && angular.isDefined(layerObject.before) ? layerObject.before : undefined;
+    var before = angular.isDefined(layerObject.before) ? layerObject.before : undefined;
 
     map.addLayer(tempObject, before);
 
@@ -106,19 +101,16 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
   }
 
   function existLayerById (layerId) {
-    var exist = false;
-
-    if (angular.isDefined(layerId) && layerId !== null) {
-      exist = _layersCreated.indexOf(layerId) !== -1 ? true : false;
-    }
-
-    return exist;
+    return angular.isDefined(layerId) && layerId !== null && _layersCreated.indexOf(layerId) !== -1;
   }
 
   function removeLayerById (map, layerId) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }
+    ]);
 
     if (existLayerById(layerId)) {
       map.removeLayer(layerId);
@@ -130,25 +122,22 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
       mapboxglPopupUtils.removePopupByLayerId(layerId);
       removePopupRelationByLayerId(layerId);
       removeEventRelationByLayerId(layerId);
-
-      // map.off('eventName');
     } else {
       throw new Error('Invalid layer ID');
     }
   }
 
   function updateLayerByObject (map, layerObject) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(layerObject) || layerObject === null) {
-      throw new Error('Layer object is undefined');
-    }
-
-    if (angular.isUndefined(layerObject.id) || layerObject.id === null) {
-      throw new Error('Layer ID Required');
-    }
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Layer object',
+        object: layerObject,
+        attributes: ['id']
+      }
+    ]);
 
     // Before layer property
     if (angular.isDefined(layerObject.before) && layerObject.before !== null) {

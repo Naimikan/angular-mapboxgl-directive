@@ -51,21 +51,16 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 	}
 
 	function createPopupByObject (map, feature, object) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(object) || object === null) {
-      throw new Error('Object definition is undefined');
-    }
-
-    if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
-      throw new Error('Object coordinates are undefined');
-    }
-
-    if (angular.isUndefined(object.html) || object.html === null) {
-      throw new Error('Object html is undefined');
-    }
+		mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Object',
+        object: object,
+        attributes: ['coordinates', 'html']
+      }
+    ]);
 
     var popupOptions = object.options || {};
 

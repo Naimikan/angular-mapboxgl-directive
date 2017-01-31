@@ -76,12 +76,31 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 		}
 	}
 
+	function checkObjects (objectsArray) {
+		if (angular.isDefined(objectsArray) && angular.isArray(objectsArray)) {
+      objectsArray.map(function (eachObject) {
+        if (angular.isUndefined(eachObject.object) || eachObject.object === null) {
+          throw new Error(eachObject.name + ' is undefined');
+        }
+
+        if (angular.isDefined(eachObject.attributes) && angular.isArray(eachObject.attributes)) {
+          eachObject.attributes.map(function (eachAttribute) {
+            if (angular.isUndefined(eachObject.object[eachAttribute] || eachObject.object[eachAttribute] === null)) {
+              throw new Error(eachObject.name + ' ' + eachAttribute + ' is undefined');
+            }
+          });
+        }
+      });
+    }
+	}
+
 	var mapboxglUtils = {
 		generateMapId: generateMapId,
 		validateAndFormatCenter: validateAndFormatCenter,
 		arrayObjectIndexOf: arrayObjectIndexOf,
 		stringToBoolean: stringToBoolean,
-		stringToNumber: stringToNumber
+		stringToNumber: stringToNumber,
+		checkObjects: checkObjects
 	};
 
 	return mapboxglUtils;

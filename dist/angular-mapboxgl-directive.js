@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.28.3 2017-01-30
+*  angular-mapboxgl-directive 0.28.5 2017-01-31
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -566,21 +566,16 @@ angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope
 
 angular.module('mapboxgl-directive').factory('mapboxglImageUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
 	function createImageByObject (map, object) {
-		if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(object) || object === null) {
-      throw new Error('Object definition is undefined');
-    }
-
-    if (angular.isUndefined(object.url) || object.url === null) {
-			throw new Error('Object url is undefined');
-		}
-
-    if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
-			throw new Error('Object coordinates are undefined');
-		}
+		mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Layer object',
+        object: object,
+        attributes: ['url', 'coordinates']
+      }
+    ]);
 
     object.id = 'image_' + Date.now();
 
@@ -662,21 +657,16 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
   }
 
   function createLayerByObject (map, layerObject) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(layerObject) || layerObject === null) {
-      throw new Error('Layer object is undefined');
-    }
-
-    if (angular.isUndefined(layerObject.id) || layerObject.id === null) {
-      throw new Error('Layer ID Required');
-    }
-
-    if (angular.isUndefined(layerObject.type) || layerObject.type === null) {
-      throw new Error('Layer type Required');
-    }
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Layer object',
+        object: layerObject,
+        attributes: ['id', 'type']
+      }
+    ]);
 
     var defaultMetadata = {
       type: 'mapboxgl:' + layerObject.type,
@@ -694,7 +684,7 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
     tempObject.metadata = angular.isDefined(layerObject.metadata) ? layerObject.metadata : {};
     angular.extend(tempObject.metadata, defaultMetadata);
 
-    var before = angular.isDefined(layerObject.before) && angular.isDefined(layerObject.before) ? layerObject.before : undefined;
+    var before = angular.isDefined(layerObject.before) ? layerObject.before : undefined;
 
     map.addLayer(tempObject, before);
 
@@ -714,19 +704,16 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
   }
 
   function existLayerById (layerId) {
-    var exist = false;
-
-    if (angular.isDefined(layerId) && layerId !== null) {
-      exist = _layersCreated.indexOf(layerId) !== -1 ? true : false;
-    }
-
-    return exist;
+    return angular.isDefined(layerId) && layerId !== null && _layersCreated.indexOf(layerId) !== -1;
   }
 
   function removeLayerById (map, layerId) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }
+    ]);
 
     if (existLayerById(layerId)) {
       map.removeLayer(layerId);
@@ -738,25 +725,22 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
       mapboxglPopupUtils.removePopupByLayerId(layerId);
       removePopupRelationByLayerId(layerId);
       removeEventRelationByLayerId(layerId);
-
-      // map.off('eventName');
     } else {
       throw new Error('Invalid layer ID');
     }
   }
 
   function updateLayerByObject (map, layerObject) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(layerObject) || layerObject === null) {
-      throw new Error('Layer object is undefined');
-    }
-
-    if (angular.isUndefined(layerObject.id) || layerObject.id === null) {
-      throw new Error('Layer ID Required');
-    }
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Layer object',
+        object: layerObject,
+        attributes: ['id']
+      }
+    ]);
 
     // Before layer property
     if (angular.isDefined(layerObject.before) && layerObject.before !== null) {
@@ -893,21 +877,16 @@ angular.module('mapboxgl-directive').factory('mapboxglMapsData', ['mapboxglUtils
 
 angular.module('mapboxgl-directive').factory('mapboxglMarkerUtils', ['mapboxglUtils', 'mapboxglConstants', 'mapboxglPopupUtils', function (mapboxglUtils, mapboxglConstants, mapboxglPopupUtils) {
 	function createMarkerByObject (map, object) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(object) || object === null) {
-      throw new Error('Object definition is undefined');
-    }
-
-    if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
-      throw new Error('Object coordinates are undefined');
-    }
-
-    if (angular.isUndefined(object.element) || object.element === null) {
-      throw new Error('Object element is undefined');
-    }
+		mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Object',
+        object: object,
+        attributes: ['coordinates', 'element']
+      }
+    ]);
 
     var markerOptions = object.options || {};
 
@@ -984,21 +963,16 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 	}
 
 	function createPopupByObject (map, feature, object) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(object) || object === null) {
-      throw new Error('Object definition is undefined');
-    }
-
-    if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
-      throw new Error('Object coordinates are undefined');
-    }
-
-    if (angular.isUndefined(object.html) || object.html === null) {
-      throw new Error('Object html is undefined');
-    }
+		mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Object',
+        object: object,
+        attributes: ['coordinates', 'html']
+      }
+    ]);
 
     var popupOptions = object.options || {};
 
@@ -1065,25 +1039,16 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
   var _sourcesCreated = [];
 
   function createSourceByObject (map, sourceObject) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(sourceObject) || sourceObject === null) {
-      throw new Error('Source object is undefined');
-    }
-
-    if (angular.isUndefined(sourceObject.id) || sourceObject.id === null) {
-      throw new Error('Source ID Required');
-    }
-
-    if (angular.isUndefined(sourceObject.type) || sourceObject.type === null) {
-      throw new Error('Source type Required');
-    }
-
-    if (angular.isUndefined(sourceObject.data) || sourceObject.data === null) {
-      throw new Error('Source data Required');
-    }
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Source object',
+        object: sourceObject,
+        attributes: ['id', 'type', 'data']
+      }
+    ]);
 
     var tempObject = {};
 
@@ -1109,9 +1074,12 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
   }
 
   function removeSourceById (map, sourceId) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }
+    ]);
 
     if (existSourceById(sourceId)) {
       map.removeSource(sourceId);
@@ -1125,23 +1093,26 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
   }
 
   function updateSourceByObject (map, sourceObject) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(sourceObject) || sourceObject === null) {
-      throw new Error('Source object is undefined');
-    }
-
-    if (angular.isUndefined(sourceObject.id) || sourceObject.id === null) {
-      throw new Error('Source ID Required');
-    }
-
-    if (angular.isUndefined(sourceObject.data) || sourceObject.data === null) {
-      throw new Error('Source data Required');
-    }
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Source object',
+        object: sourceObject,
+        attributes: ['id', 'data']
+      }
+    ]);
 
     var currentSource = map.getSource(sourceObject.id);
+
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Source ' + sourceObject.id,
+        object: currentSource
+      }
+    ]);
+
     currentSource.setData(sourceObject.data);
   }
 
@@ -1238,12 +1209,31 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 		}
 	}
 
+	function checkObjects (objectsArray) {
+		if (angular.isDefined(objectsArray) && angular.isArray(objectsArray)) {
+      objectsArray.map(function (eachObject) {
+        if (angular.isUndefined(eachObject.object) || eachObject.object === null) {
+          throw new Error(eachObject.name + ' is undefined');
+        }
+
+        if (angular.isDefined(eachObject.attributes) && angular.isArray(eachObject.attributes)) {
+          eachObject.attributes.map(function (eachAttribute) {
+            if (angular.isUndefined(eachObject.object[eachAttribute] || eachObject.object[eachAttribute] === null)) {
+              throw new Error(eachObject.name + ' ' + eachAttribute + ' is undefined');
+            }
+          });
+        }
+      });
+    }
+	}
+
 	var mapboxglUtils = {
 		generateMapId: generateMapId,
 		validateAndFormatCenter: validateAndFormatCenter,
 		arrayObjectIndexOf: arrayObjectIndexOf,
 		stringToBoolean: stringToBoolean,
-		stringToNumber: stringToNumber
+		stringToNumber: stringToNumber,
+		checkObjects: checkObjects
 	};
 
 	return mapboxglUtils;
@@ -1251,21 +1241,16 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 
 angular.module('mapboxgl-directive').factory('mapboxglVideoUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
   function createVideoByObject (map, object) {
-    if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(object) || object === null) {
-      throw new Error('Object definition is undefined');
-    }
-
-    if (angular.isUndefined(object.urls) || !angular.isArray(object.urls) || object.urls === null) {
-      throw new Error('Object urls is undefined');
-    }
-
-    if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
-      throw new Error('Object coordinates are undefined');
-    }
+    mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Layer object',
+        object: object,
+        attributes: ['urls', 'coordinates']
+      }
+    ]);
 
     object.id = 'video_' + Date.now();
 

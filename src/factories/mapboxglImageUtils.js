@@ -1,20 +1,15 @@
 angular.module('mapboxgl-directive').factory('mapboxglImageUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
 	function createImageByObject (map, object) {
-		if (angular.isUndefined(map) || map === null) {
-      throw new Error('Map is undefined');
-    }
-
-    if (angular.isUndefined(object) || object === null) {
-      throw new Error('Object definition is undefined');
-    }
-
-    if (angular.isUndefined(object.url) || object.url === null) {
-			throw new Error('Object url is undefined');
-		}
-
-    if (angular.isUndefined(object.coordinates) || object.coordinates === null) {
-			throw new Error('Object coordinates are undefined');
-		}
+		mapboxglUtils.checkObjects([
+      {
+        name: 'Map',
+        object: map
+      }, {
+        name: 'Layer object',
+        object: object,
+        attributes: ['url', 'coordinates']
+      }
+    ]);
 
     object.id = 'image_' + Date.now();
 
