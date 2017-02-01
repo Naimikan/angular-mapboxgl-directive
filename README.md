@@ -8,6 +8,9 @@
   <a href="LICENSE">
     <img src="https://img.shields.io/npm/l/angular-mapboxgl-directive.svg?style=flat-square" alt="license" />
   </a>
+  <a href="https://img.shields.io/cdnjs/v/angular-mapboxgl-directive.svg">
+    <img src="https://img.shields.io/cdnjs/v/angular-mapboxgl-directive.svg?style=flat-square" alt="cdnjs version" />
+  </a>
 </p>
 
 <h1 align="center">angular-mapboxgl-directive | <a href="https://github.com/Naimikan/angular-mapboxgl-directive/wiki">Wiki</a></h1>
