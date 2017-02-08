@@ -27,19 +27,21 @@ angular.module('mapboxgl-directive').factory('mapboxglAnimationUtils', ['$window
 
   function _updateSourcesData (featuresBySource) {
     for (var iterator in featuresBySource) {
-      var map = featuresBySource[iterator].map;
-      var data = map.getSource(iterator)._data;
+      if (featuresBySource.hasOwnProperty(iterator)) {
+        var map = featuresBySource[iterator].map;
+        var data = map.getSource(iterator)._data;
 
-      if (data.type === 'FeatureCollection') {
-        angular.extend(data.features, featuresBySource[iterator].features);
-      } else if (data.type === 'Feature') {
-        data = {
-          type: 'FeatureCollection',
-          features: featuresBySource[iterator].features
-        };
+        if (data.type === 'FeatureCollection') {
+          angular.extend(data.features, featuresBySource[iterator].features);
+        } else if (data.type === 'Feature') {
+          data = {
+            type: 'FeatureCollection',
+            features: featuresBySource[iterator].features
+          };
+        }
+
+        map.getSource(iterator).setData(data);
       }
-
-      map.getSource(iterator).setData(data);
     }
   }
 
