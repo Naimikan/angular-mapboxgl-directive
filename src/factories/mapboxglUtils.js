@@ -94,13 +94,22 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
     }
 	}
 
+	function generateGUID () {
+		function generatePiece () {
+			return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+		}
+
+		return generatePiece() + generatePiece() + '-' + generatePiece() + '-' + generatePiece() + '-' + generatePiece() + '-' + generatePiece() + generatePiece() + generatePiece();
+	}
+
 	var mapboxglUtils = {
 		generateMapId: generateMapId,
 		validateAndFormatCenter: validateAndFormatCenter,
 		arrayObjectIndexOf: arrayObjectIndexOf,
 		stringToBoolean: stringToBoolean,
 		stringToNumber: stringToNumber,
-		checkObjects: checkObjects
+		checkObjects: checkObjects,
+		generateGUID: generateGUID
 	};
 
 	return mapboxglUtils;

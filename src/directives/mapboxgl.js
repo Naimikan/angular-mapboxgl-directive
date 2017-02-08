@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', 'mapboxglConstants', 'mapboxglEventsUtils', 'mapboxglMapsData', function ($q, mapboxglUtils, mapboxglConstants, mapboxglEventsUtils, mapboxglMapsData) {
+angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', 'mapboxglConstants', 'mapboxglEventsUtils', 'mapboxglMapsData', 'mapboxglAnimationUtils', function ($q, mapboxglUtils, mapboxglConstants, mapboxglEventsUtils, mapboxglMapsData, mapboxglAnimationUtils) {
   function mapboxGlDirectiveController ($scope) {
     angular.extend(this, {
       _mapboxGlMap: $q.defer(),
@@ -260,6 +260,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       mapboxglMapsData.addMap(scope.mapboxglMapId, mapboxGlMap);
 
       mapboxglEventsUtils.exposeMapEvents(mapboxGlMap);
+      mapboxglAnimationUtils.initAnimationSystem();
 
       //scope.isLoading = true;
       //controller.changeLoadingMap(mapboxGlMap, scope.isLoading);

@@ -12,20 +12,6 @@ angular.module('mapboxgl-directive').directive('glSources', ['mapboxglSourceUtil
       } else {
         mapboxglSourceUtils.createSourceByObject(map, sourceObject);
       }
-
-      setTimeout(function () {
-        if (angular.isDefined(sourceObject.animation) && angular.isDefined(sourceObject.animation.enabled) && sourceObject.animation.enabled) {
-          var animate = function (timestamp) {
-            setTimeout(function () {
-              requestAnimationFrame(animate);
-
-              sourceObject.animation.animationFunction(map, sourceObject.id, sourceObject.animation.animationData, timestamp);
-            }, sourceObject.animation.timeoutMilliseconds || 1000);
-          };
-
-          animate(0);
-        }
-      }, 500);
     }
 
     function checkSourcesToBeRemoved (map, sources) {

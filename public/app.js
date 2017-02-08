@@ -1,4 +1,4 @@
-(function (angular, mapboxgl, undefined) {
+(function (angular, mapboxgl, turf, undefined) {
   'use strict';
 
   angular.module('app', ['mapboxgl-directive'])
@@ -128,7 +128,7 @@
     }, 6000, true);*/
 
     $scope.glZoom = {
-      value: 12
+      value: 0
     };
 
     var el = document.createElement('div');
@@ -206,32 +206,223 @@
     $scope.glLayers = [];
 
     var features = [];
+    var counter = 0;
 
-    for (var iterator = 0; iterator < 8000; iterator++) {
-      var tempLng = (Math.random() * (180 - (-180)) + 180).toFixed(5) * 1;
-      var tempLat = (Math.random() * (90 - (-90)) + 90).toFixed(5) * 1;
+    var colors = ['#0DAAFF', '#FF620D'];
+    var routes = [
+      {
+        origin: [-122.414, 37.776],
+        destination: [-77.032, 38.913]
+      }, {
+        origin: [-2.15, 41.776],
+        destination: [-77.032, 38.913]
+      }
+    ];
 
-      features.push({
+    features = [
+      {
         type: 'Feature',
         geometry: {
           type: 'Point',
-          coordinates: [tempLng, tempLat]
+          coordinates: routes[0].origin
         },
         properties: {
-          lattitude: tempLat,
-          longitude: tempLng
-        }
-      });
-    }
+          radius: 8,
+          animation: {
+            enabled: true,
+            animationData: {
+              origin: routes[0].origin,
+              destination: routes[0].destination,
+              speed: 5,
+              speedUnit: 'meters'
+            },
+            animationFunction: function (map, sourceId, featureId, feature, animationData, deltaTime, end) {
+              var arc = [];
 
-    $scope.glSources = {
-      id: 'circles',
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: features
+              var route = {
+                type: 'Feature',
+                geometry: {
+                  type: 'LineString',
+                  coordinates: [feature.geometry.coordinates, animationData.destination]
+                }
+              };
+
+              // Calculate the distance in kilometers between route start/end point.
+              var lineDistance = turf.lineDistance(route, animationData.speedUnit);
+              var segment = feature.geometry.coordinates;
+
+              if (lineDistance > 0) {
+                segment = turf.along(route, animationData.speed, animationData.speedUnit);
+              }
+
+              feature.properties.radius = Math.cos(deltaTime / 500) * 20 < 5 ? 5 : Math.cos(deltaTime / 500) * 20;
+
+              feature.geometry.coordinates = segment.geometry.coordinates;
+
+              if (feature.geometry.coordinates[0] >= animationData.destination[0]) {
+                console.log('end');
+                end();
+              }
+
+              // feature.geometry.coordinates[0] += 0.1;
+              // feature.geometry.coordinates[1] += 0.05;
+              //
+              // if (timestamp >= 8000) {
+              //    end();
+              // }
+            }
+          }
+        }
       }
-    };
+    ];
+
+
+    // for (var iterator = 0; iterator < 2; iterator++) {
+    //   /*var tempLng = (Math.random() * (180 - (-180)) + 180).toFixed(5) * 1;
+    //   var tempLat = (Math.random() * (90 - (-90)) + 90).toFixed(5) * 1;
+    //
+    //   var tempLng2 = (Math.random() * (180 - (-180)) + 180).toFixed(5) * 1;
+    //   var tempLat2 = (Math.random() * (90 - (-90)) + 90).toFixed(5) * 1;*/
+    //
+    //   features.push({
+    //     type: 'Feature',
+    //     geometry: {
+    //       type: 'Point',
+    //       coordinates: angular.copy(routes[iterator].origin)
+    //       //coordinates: [tempLng, tempLat]
+    //     },
+    //     properties: {
+    //       //lattitude: tempLat,
+    //       //longitude: tempLng,
+    //       animation: {
+    //         enabled: true,
+    //         animationData: {
+    //           origin: angular.copy(routes[iterator].origin),
+    //           destination: angular.copy(routes[iterator].destination),
+    //           generateRoute: function (newOrigin, newDestination) {
+    //             var arc = [];
+    //
+    //             var route = {
+    //               type: 'Feature',
+    //               geometry: {
+    //                 type: 'LineString',
+    //                 coordinates: [newOrigin, newDestination]
+    //               }
+    //             };
+    //
+    //             // Calculate the distance in kilometers between route start/end point.
+    //             var lineDistance = turf.lineDistance(route, 'meters');
+    //
+    //             if (lineDistance > 0) {
+    //               // Draw an arc between the `origin` & `destination` of the two points
+    //               for (var i = 0; i < lineDistance; i++) {
+    //                 var segment = turf.along(route, i / 1000 * lineDistance, 'meters');
+    //                 arc.push(segment.geometry.coordinates);
+    //               }
+    //
+    //               // Update the route with calculated arc coordinates
+    //               route.geometry.coordinates = arc;
+    //             }
+    //
+    //             return route;
+    //           }
+    //         },
+    //         animationFunction: function (map, sourceId, featureId, feature, animationData, timestamp, end) {
+    //           feature.geometry.coordinates[0] += 1;
+    //           feature.geometry.coordinates[1] += 0.05;
+    //
+    //           console.log(feature.geometry.coordinates[0]);
+    //
+    //           if (feature.geometry.coordinates[0] >= 100) {
+    //             end();
+    //           }
+    //
+    //           counter += 1;
+    //
+    //           // var route = animationData.generateRoute(animationData.origin, animationData.destination);
+    //           //
+    //           // if (route && route.geometry && route.geometry.coordinates && route.geometry.coordinates[counter]) {
+    //           //   feature.geometry.coordinates = route.geometry.coordinates[counter];
+    //           //
+    //           //   if (feature.geometry.coordinates[0] === animationData.destination[0]) {
+    //           //     end();
+    //           //   }
+    //           //
+    //           //   counter = counter + 1;
+    //           // }
+    //         }
+    //       }
+    //     }
+    //   });
+    // }
+
+    $scope.glSources = [
+      {
+        id: 'circles',
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: features
+        }
+      }, {
+        id: 'circles2',
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: routes[1].origin
+              },
+              properties: {
+                radius: 6,
+                animation: {
+                  enabled: true,
+                  animationFunction: function (map, sourceId, featureId, feature, animationData, deltaTime, end) {
+                    feature.geometry.coordinates = [
+                      Math.cos(deltaTime / 250) * 70,
+                      Math.sin(deltaTime / 2500) * 20
+                    ];
+
+                    feature.properties.radius = Math.cos(deltaTime / 500) * 20 < 5 ? 5 : Math.cos(deltaTime / 500) * 20;
+
+                    // if (timestamp >= 20000) {
+                    //   end();
+                    // }
+                  }
+                }
+              }
+            }, {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: routes[1].origin
+              },
+              properties: {
+                radius: 6,
+                animation: {
+                  enabled: true,
+                  animationFunction: function (map, sourceId, featureId, feature, animationData, timestamp, end) {
+                    feature.geometry.coordinates = [
+                      Math.cos(timestamp / 500) * 70,
+                      Math.sin(timestamp / 500) * 20
+                    ];
+
+                    //console.log(timestamp);
+
+                    if (timestamp >= 15000) {
+                      end();
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ];
 
     $scope.glLayers = [
       {
@@ -239,21 +430,42 @@
         type: 'circle',
         source: 'circles',
         paint: {
-          'circle-radius': 5,
-          'circle-color': '#0DAAFF'
-          //'circle-color': '#FF620D'
+          'circle-radius': {
+            type: 'identity',
+            property: 'radius'
+          },
+          'circle-color': '#FF620D'
         }
       }, {
-        id: 'circles-external',
+        id: 'circles2',
         type: 'circle',
-        source: 'circles',
-        before: 'circles',
+        source: 'circles2',
         paint: {
-          'circle-radius': 7,
-          'circle-color': '#FFFFFF',
+          'circle-radius': {
+            type: 'identity',
+            property: 'radius'
+          },
+          'circle-color': '#006AFC'
         }
       }
     ];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     var tempGlSources = [];
     var tempGlLayers = [];
@@ -350,49 +562,5 @@
         before: 'circle' + iterator
       });
     }
-
-    /*$timeout(function () {
-      $scope.glSources = [
-        {
-          id: 'circle1',
-          type: 'geojson',
-          data: {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates:  [-2, 41]
-            }
-          }
-        }
-      ];
-
-      var opacity = 1;
-      var radius = 8;
-      var maxRadius = 18;
-
-      $scope.glLayers = [
-        {
-          id: 'circle1',
-          type: 'circle',
-          source: 'circle1',
-          paint: {
-            'circle-radius': 8,
-            'circle-color': 'green',
-            'circle-opacity': 1
-          }
-        }, {
-          id: 'circle1_animation',
-          type: 'circle',
-          source: 'circle1',
-          paint: {
-            'circle-raidus': 8,
-            'circle-radius-transition': { duration: 0 },
-            'circle-opacity-transition': { duration: 0 },
-            'circle-color': 'green',
-          },
-          isAnimated: true
-        }
-      ];
-    }, 5000, true);*/
   }]);
-})(window.angular, window.mapboxgl);
+})(window.angular, window.mapboxgl, window.turf);

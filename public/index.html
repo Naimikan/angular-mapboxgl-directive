@@ -12,6 +12,7 @@
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.js'></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v2.2.0/mapbox-gl-directions.js'></script>
 
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Turf.js/3.0.14/turf.min.js'></script>
 
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css' type='text/css' />
@@ -29,6 +30,7 @@
       gl-sources="glSources"
       gl-layers="glLayers"
       gl-zoom="glZoom"
+      render-world-copies="false"
       rtl-enabled="true"
       height="{{glHeight}}"></div>
 
