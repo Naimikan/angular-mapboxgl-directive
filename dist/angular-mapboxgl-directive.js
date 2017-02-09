@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.30.1 2017-02-09
+*  angular-mapboxgl-directive 0.30.2 2017-02-09
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -798,32 +798,31 @@ angular.module('mapboxgl-directive').factory('mapboxglControlsUtils', ['$window'
   }
 
   function addNewControlCreated (controlName, newControl, isCustomControl, controlEvents, isEventsListenedByMap) {
+    var mapListenEvents = angular.isDefined(isEventsListenedByMap) ? isEventsListenedByMap : false;
+    var events = angular.isDefined(controlEvents) && angular.isArray(controlEvents) ? controlEvents : [];
+
     if (isCustomControl) {
       _controlsCreated.custom.push({
         name: controlName || 'customControl_' + mapboxglUtils.generateGUID(),
         control: newControl,
-        isEventsListenedByMap: angular.isDefined(isEventsListenedByMap) ? isEventsListenedByMap : false,
-        events: angular.isDefined(controlEvents) && angular.isArray(controlEvents) ? controlEvents : []
+        isEventsListenedByMap: mapListenEvents,
+        events: events
       });
     } else {
       _controlsCreated[controlName] = {
         control: newControl,
-        isEventsListenedByMap: angular.isDefined(isEventsListenedByMap) ? isEventsListenedByMap : false,
-        events: angular.isDefined(controlEvents) && angular.isArray(controlEvents) ? controlEvents : []
+        isEventsListenedByMap: mapListenEvents,
+        events: events
       };
     }
   }
 
   function removeEventsFromControl (control, events, isEventsListenedByMap, map) {
-    if (isEventsListenedByMap) {
-      events.map(function (eachEvent) {
-        map.off(eachEvent);
-      });
-    } else {
-      events.map(function (eachEvent) {
-        control.off(eachEvent);
-      });
-    }
+    var listener = isEventsListenedByMap ? map : control;
+
+    events.map(function (eachEvent) {
+      listener.off(eachEvent);
+    });
   }
 
   function removeAllControlsCreated (map) {
