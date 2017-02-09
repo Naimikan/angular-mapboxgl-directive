@@ -16,11 +16,11 @@ angular.module('mapboxgl-directive').factory('mapboxglControlsUtils', ['$window'
       name: 'attribution',
       constructor: mapboxgl.Attribution || mapboxgl.AttributionControl,
       pluginName: 'mapboxgl.' + (mapboxgl.Attribution ? mapboxgl.Attribution.name : mapboxgl.AttributionControl.name)
-    }, {
+    },/* {
       name: 'logo',
       constructor: mapboxgl.LogoControl,
       pluginName: 'mapboxgl.LogoControl'
-    }, {
+    }, */{
       name: 'geolocate',
       constructor: mapboxgl.Geolocate || mapboxgl.GeolocateControl,
       pluginName: 'mapboxgl.' + (mapboxgl.Geolocate ? mapboxgl.Geolocate.name : mapboxgl.GeolocateControl.name),
