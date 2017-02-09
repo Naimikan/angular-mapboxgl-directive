@@ -1,6 +1,8 @@
 'use strict';
 
+var loadGruntConfig = require('load-grunt-config');
+
 module.exports = function (grunt) {
-	require('load-grunt-config')(grunt);
+	loadGruntConfig(grunt);
 	grunt.config('package', grunt.file.readJSON('package.json'));
 };
