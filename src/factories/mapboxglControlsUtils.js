@@ -19,7 +19,7 @@ angular.module('mapboxgl-directive').factory('mapboxglControlsUtils', ['$window'
     }, {
       name: 'logo',
       constructor: mapboxgl.LogoControl,
-      pluginName: 'mapboxgl.LogoControl',
+      pluginName: 'mapboxgl.LogoControl'
     }, {
       name: 'geolocate',
       constructor: mapboxgl.Geolocate || mapboxgl.GeolocateControl,
