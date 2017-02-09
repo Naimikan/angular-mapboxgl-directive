@@ -229,33 +229,24 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     }
 
     var initObject = {
+      container: scope.mapboxglMapId,
+      style: scope.glStyle || mapboxglConstants.map.defaultStyle,
       center: mapboxglConstants.map.defaultCenter,
       zoom: angular.isDefined(scope.glZoom) && scope.glZoom !== null && angular.isDefined(scope.glZoom.value) && scope.glZoom.value !== null ? scope.glZoom.value : mapboxglConstants.map.defaultZoom,
-      style: scope.glStyle || mapboxglConstants.map.defaultStyle,
       hash: angular.isDefined(attrs.hash) ? mapboxglUtils.stringToBoolean(attrs.hash) : mapboxglConstants.map.defaultHash,
       bearingSnap: angular.isDefined(attrs.bearingSnap) ? mapboxglUtils.stringToNumber(attrs.bearingSnap) : mapboxglConstants.map.defaultBearingSnap,
+      logoPosition: angular.isDefined(attrs.logoPosition) ? attrs.logoPosition : mapboxglConstants.map.defaultLogoPosition,
       failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) ? mapboxglUtils.stringToBoolean(attrs.failIfMajorPerformanceCaveat) : mapboxglConstants.map.defaultFailIfMajorPerformanceCaveat,
       preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) ? mapboxglUtils.stringToBoolean(attrs.preserveDrawingBuffer) : mapboxglConstants.map.defaultPreserveDrawingBuffer,
       trackResize: angular.isDefined(attrs.trackResize) ? mapboxglUtils.stringToBoolean(attrs.trackResize) : mapboxglConstants.map.defaultTrackResize,
-      renderWorldCopies: angular.isDefined(attrs.renderWorldCopies) ? mapboxglUtils.stringToBoolean(attrs.renderWorldCopies) : mapboxglConstants.map.defaultRenderWorldCopies
+      renderWorldCopies: angular.isDefined(attrs.renderWorldCopies) ? mapboxglUtils.stringToBoolean(attrs.renderWorldCopies) : mapboxglConstants.map.defaultRenderWorldCopies,
+      attributionControl: false
     };
 
     mapboxglUtils.validateAndFormatCenter(scope.glCenter).then(function (newCenter) {
       if (newCenter) { initObject.center = newCenter; }
 
-      var mapboxGlMap = new mapboxgl.Map({
-        container: scope.mapboxglMapId,
-        style: initObject.style,
-        center: initObject.center,
-        zoom: initObject.zoom,
-        hash: initObject.hash,
-        bearingSnap: initObject.bearingSnap,
-        failIfMajorPerformanceCaveat: initObject.failIfMajorPerformanceCaveat,
-        preserveDrawingBuffer: initObject.preserveDrawingBuffer,
-        trackResize: initObject.trackResize,
-        renderWorldCopies: initObject.renderWorldCopies,
-        attributionControl: false
-      });
+      var mapboxGlMap = new mapboxgl.Map(initObject);
 
       mapboxglMapsData.addMap(scope.mapboxglMapId, mapboxGlMap);
 

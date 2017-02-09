@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.29.1 2017-02-08
+*  angular-mapboxgl-directive 0.30.0 2017-02-09
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -237,33 +237,24 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     }
 
     var initObject = {
+      container: scope.mapboxglMapId,
+      style: scope.glStyle || mapboxglConstants.map.defaultStyle,
       center: mapboxglConstants.map.defaultCenter,
       zoom: angular.isDefined(scope.glZoom) && scope.glZoom !== null && angular.isDefined(scope.glZoom.value) && scope.glZoom.value !== null ? scope.glZoom.value : mapboxglConstants.map.defaultZoom,
-      style: scope.glStyle || mapboxglConstants.map.defaultStyle,
       hash: angular.isDefined(attrs.hash) ? mapboxglUtils.stringToBoolean(attrs.hash) : mapboxglConstants.map.defaultHash,
       bearingSnap: angular.isDefined(attrs.bearingSnap) ? mapboxglUtils.stringToNumber(attrs.bearingSnap) : mapboxglConstants.map.defaultBearingSnap,
+      logoPosition: angular.isDefined(attrs.logoPosition) ? attrs.logoPosition : mapboxglConstants.map.defaultLogoPosition,
       failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) ? mapboxglUtils.stringToBoolean(attrs.failIfMajorPerformanceCaveat) : mapboxglConstants.map.defaultFailIfMajorPerformanceCaveat,
       preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) ? mapboxglUtils.stringToBoolean(attrs.preserveDrawingBuffer) : mapboxglConstants.map.defaultPreserveDrawingBuffer,
       trackResize: angular.isDefined(attrs.trackResize) ? mapboxglUtils.stringToBoolean(attrs.trackResize) : mapboxglConstants.map.defaultTrackResize,
-      renderWorldCopies: angular.isDefined(attrs.renderWorldCopies) ? mapboxglUtils.stringToBoolean(attrs.renderWorldCopies) : mapboxglConstants.map.defaultRenderWorldCopies
+      renderWorldCopies: angular.isDefined(attrs.renderWorldCopies) ? mapboxglUtils.stringToBoolean(attrs.renderWorldCopies) : mapboxglConstants.map.defaultRenderWorldCopies,
+      attributionControl: false
     };
 
     mapboxglUtils.validateAndFormatCenter(scope.glCenter).then(function (newCenter) {
       if (newCenter) { initObject.center = newCenter; }
 
-      var mapboxGlMap = new mapboxgl.Map({
-        container: scope.mapboxglMapId,
-        style: initObject.style,
-        center: initObject.center,
-        zoom: initObject.zoom,
-        hash: initObject.hash,
-        bearingSnap: initObject.bearingSnap,
-        failIfMajorPerformanceCaveat: initObject.failIfMajorPerformanceCaveat,
-        preserveDrawingBuffer: initObject.preserveDrawingBuffer,
-        trackResize: initObject.trackResize,
-        renderWorldCopies: initObject.renderWorldCopies,
-        attributionControl: false
-      });
+      var mapboxGlMap = new mapboxgl.Map(initObject);
 
       mapboxglMapsData.addMap(scope.mapboxglMapId, mapboxGlMap);
 
@@ -715,6 +706,195 @@ angular.module('mapboxgl-directive').factory('mapboxglAnimationUtils', ['$window
   };
 
   return mapboxglAnimationUtils;
+}]);
+
+angular.module('mapboxgl-directive').factory('mapboxglControlsUtils', ['$window', 'mapboxglUtils', function ($window, mapboxglUtils) {
+  var _controlsCreated = {
+    custom: []
+  };
+
+  var _controlsAvailables = [
+    {
+      name: 'navigation',
+      constructor: mapboxgl.Navigation || mapboxgl.NavigationControl,
+      pluginName: 'mapboxgl.' + (mapboxgl.Navigation ? mapboxgl.Navigation.name : mapboxgl.NavigationControl.name)
+    }, {
+      name: 'scale',
+      constructor: mapboxgl.Scale || mapboxgl.ScaleControl,
+      pluginName: 'mapboxgl.' + (mapboxgl.Scale ? mapboxgl.Scale.name : mapboxgl.ScaleControl.name)
+    }, {
+      name: 'attribution',
+      constructor: mapboxgl.Attribution || mapboxgl.AttributionControl,
+      pluginName: 'mapboxgl.' + (mapboxgl.Attribution ? mapboxgl.Attribution.name : mapboxgl.AttributionControl.name)
+    }, {
+      name: 'logo',
+      constructor: mapboxgl.LogoControl,
+      pluginName: 'mapboxgl.LogoControl',
+    }, {
+      name: 'geolocate',
+      constructor: mapboxgl.Geolocate || mapboxgl.GeolocateControl,
+      pluginName: 'mapboxgl.' + (mapboxgl.Geolocate ? mapboxgl.Geolocate.name : mapboxgl.GeolocateControl.name),
+      eventsExposedName: 'mapboxglGeolocate',
+      eventsAvailables: [
+        'geolocate',
+        'error'
+      ]
+    }, {
+      name: 'geocoder',
+      constructor: mapboxgl.Geocoder || $window.MapboxGeocoder,
+      pluginName: mapboxgl.Geocoder ? 'mapboxgl.Geocoder' : 'MapboxGeocoder',
+      eventsExposedName: 'mapboxglGeocoder',
+      eventsAvailables: [
+        'clear',
+        'loading',
+        'results',
+        'result',
+        'error'
+      ]
+    }, {
+      name: 'directions',
+      constructor: mapboxgl.Directions || $window.MapboxDirections,
+      pluginName: mapboxgl.Directions ? 'mapboxgl.Directions' : 'MapboxDirections',
+      eventsExposedName: 'mapboxglDirections',
+      eventsAvailables: [
+        'clear',
+        'loading',
+        'profile',
+        'origin',
+        'destination',
+        'route',
+        'error'
+      ]
+    }, {
+      name: 'draw',
+      constructor: mapboxgl.Draw || $window.MapboxDraw,
+      pluginName: mapboxgl.Draw ? 'mapboxgl.Draw' : 'MapboxDraw',
+      eventsExposedName: 'mapboxglDraw',
+      listenInMap: true,
+      eventsAvailables: [
+        'draw.create',
+        'draw.delete',
+        'draw.combine',
+        'draw.uncombine',
+        'draw.update',
+        'draw.selectionchange',
+        'draw.modechange',
+        'draw.render',
+        'draw.actionable'
+      ]
+    }
+  ];
+
+  function getControlsAvailables () {
+    return _controlsAvailables;
+  }
+
+  function getControlsCreated () {
+    return _controlsCreated;
+  }
+
+  function setControlsCreated (newControlsCreated) {
+    _controlsCreated = newControlsCreated;
+  }
+
+  function addNewControlCreated (controlName, newControl, isCustomControl, controlEvents, isEventsListenedByMap) {
+    if (isCustomControl) {
+      _controlsCreated.custom.push({
+        name: controlName || 'customControl_' + mapboxglUtils.generateGUID(),
+        control: newControl,
+        isEventsListenedByMap: angular.isDefined(isEventsListenedByMap) ? isEventsListenedByMap : false,
+        events: angular.isDefined(controlEvents) && angular.isArray(controlEvents) ? controlEvents : []
+      });
+    } else {
+      _controlsCreated[controlName] = {
+        control: newControl,
+        isEventsListenedByMap: angular.isDefined(isEventsListenedByMap) ? isEventsListenedByMap : false,
+        events: angular.isDefined(controlEvents) && angular.isArray(controlEvents) ? controlEvents : []
+      };
+    }
+  }
+
+  function removeEventsFromControl (control, events, isEventsListenedByMap, map) {
+    if (isEventsListenedByMap) {
+      events.map(function (eachEvent) {
+        map.off(eachEvent);
+      });
+    } else {
+      events.map(function (eachEvent) {
+        control.off(eachEvent);
+      });
+    }
+  }
+
+  function removeAllControlsCreated (map) {
+    for (var attribute in _controlsCreated) {
+      if (attribute !== 'custom') {
+        var controlToRemove = _controlsCreated[attribute];
+
+        removeEventsFromControl(controlToRemove.control, controlToRemove.events, controlToRemove.isEventsListenedByMap, map);
+
+        map.removeControl(controlToRemove.control);
+      } else {
+        var customControls = _controlsCreated[attribute];
+
+        for (var iterator = 0, length = customControls.length; iterator < length; iterator++) {
+          var eachCustomControl = customControls[iterator];
+
+          removeEventsFromControl(eachCustomControl.control, eachCustomControl.events, eachCustomControl.isEventsListenedByMap, map);
+
+          map.removeControl(eachCustomControl.control);
+        }
+      }
+    }
+
+    // Reset controls created
+    _controlsCreated = {
+      custom: []
+    };
+  }
+
+  function removeControlCreatedByName (map, controlName) {
+    var found = false, removed = false;
+
+    for (var attribute in _controlsCreated) {
+      if (controlName === attribute) {
+        found = _controlsCreated[attribute];
+      }
+    }
+
+    if (!found) {
+      _controlsCreated.custom.map(function (eachCustomControl) {
+        if (eachCustomControl.name === controlName) {
+          found = eachCustomControl.control;
+        }
+      });
+    }
+
+    if (found) {
+      try {
+        removeEventsFromControl(found.control, found.events, found.isEventsListenedByMap, map);
+
+        map.removeControl(found.control);
+        removed = true;
+      } catch (error) {
+        throw new Error('Error removing control \'' + controlName + '\' --> ' + error);
+      }
+    }
+
+    return removed;
+  }
+
+  var mapboxglControlsUtils = {
+    getControlsAvailables: getControlsAvailables,
+    getControlsCreated: getControlsCreated,
+    setControlsCreated: setControlsCreated,
+    addNewControlCreated: addNewControlCreated,
+    removeEventsFromControl: removeEventsFromControl,
+    removeAllControlsCreated: removeAllControlsCreated,
+    removeControlCreatedByName: removeControlCreatedByName
+  };
+
+  return mapboxglControlsUtils;
 }]);
 
 angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope', function ($rootScope) {
@@ -1600,6 +1780,7 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 		defaultPreserveDrawingBuffer: false,
 		defaultTrackResize: true,
 		defaultRenderWorldCopies: true,
+		defaultLogoPosition: 'bottom-left',
 
 		defaultPersistentGeojson: false,
 		defaultPersistentImage: false,
@@ -1724,112 +1905,13 @@ angular.module('mapboxgl-directive').directive('glClasses', [function () {
 	return directive;
 }]);
 
-angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', '$window', function ($rootScope, $window) {
+angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'mapboxglControlsUtils', function ($rootScope, mapboxglControlsUtils) {
 	function mapboxGlControlsDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
 		}
 
 		var mapboxglScope = controller.getMapboxGlScope();
-
-		var _controlsCreated = {
-	    custom: []
-	  };
-
-		var getControlsCreated = function () {
-	    return _controlsCreated;
-	  };
-
-	  var setControlsCreated = function (newControlsCreated) {
-	    _controlsCreated = newControlsCreated;
-	  };
-
-	  var addNewControlCreated = function (controlName, newControl, isCustomControl, controlEvents, isEventsListenedByMap) {
-	    if (isCustomControl) {
-	      _controlsCreated.custom.push({
-	        name: controlName || 'customControl_' + Date.now(),
-	        control: newControl,
-					isEventsListenedByMap: angular.isDefined(isEventsListenedByMap) ? isEventsListenedByMap : false,
-					events: angular.isDefined(controlEvents) && angular.isArray(controlEvents) ? controlEvents : []
-	      });
-	    } else {
-	      _controlsCreated[controlName] = {
-					control: newControl,
-					isEventsListenedByMap: angular.isDefined(isEventsListenedByMap) ? isEventsListenedByMap : false,
-					events: angular.isDefined(controlEvents) && angular.isArray(controlEvents) ? controlEvents : []
-				};
-	    }
-	  };
-
-		var removeEventsFromControl = function (control, events, isEventsListenedByMap, map) {
-			if (isEventsListenedByMap) {
-				events.map(function (eachEvent) {
-					map.off(eachEvent);
-				});
-			} else {
-				events.map(function (eachEvent) {
-					control.off(eachEvent);
-				});
-			}
-		};
-
-	  var removeAllControlsCreated = function (map) {
-	    for (var attribute in _controlsCreated) {
-	      if (attribute !== 'custom') {
-	        var controlToRemove = _controlsCreated[attribute];
-
-					removeEventsFromControl(controlToRemove.control, controlToRemove.events, controlToRemove.isEventsListenedByMap, map);
-
-					map.removeControl(controlToRemove.control);
-	      } else {
-	        var customControls = _controlsCreated[attribute];
-
-					for (var iterator = 0, length = customControls.length; iterator < length; iterator++) {
-						var eachCustomControl = customControls[iterator];
-
-						removeEventsFromControl(eachCustomControl.control, eachCustomControl.events, eachCustomControl.isEventsListenedByMap, map);
-
-						map.removeControl(eachCustomControl.control);
-					}
-	      }
-	    }
-
-	    // Reset controls created
-	    _controlsCreated = {
-	      custom: []
-	    };
-	  };
-
-	  var removeControlCreatedByName = function (map, controlName) {
-			var found = false, removed = false;
-
-			for (var attribute in _controlsCreated) {
-				if (controlName === attribute) {
-					found = _controlsCreated[attribute];
-				}
-			}
-
-			if (!found) {
-				_controlsCreated.custom.map(function (eachCustomControl) {
-					if (eachCustomControl.name === controlName) {
-						found = eachCustomControl.control;
-					}
-				});
-			}
-
-			if (found) {
-				try {
-					removeEventsFromControl(found.control, found.events, found.isEventsListenedByMap, map);
-
-					map.removeControl(found.control);
-					removed = true;
-				} catch (error) {
-					throw new Error('Error removing control \'' + controlName + '\' --> ' + error);
-				}
-			}
-
-			return removed;
-	  };
 
     /*
       controls: {
@@ -1860,83 +1942,21 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', '$wi
 				draw: {
 					enabled: true | false,
 					options: {}
+				},
+				logo: {
+					enabled: true | false,
+					options: {}
 				}
       }
     */
 
-		var controlsAvailables = [
-			{
-				name: 'navigation',
-				constructor: mapboxgl.Navigation || mapboxgl.NavigationControl,
-				pluginName: 'mapboxgl.' + (mapboxgl.Navigation ? mapboxgl.Navigation.name : mapboxgl.NavigationControl.name)
-			}, {
-				name: 'scale',
-				constructor: mapboxgl.Scale || mapboxgl.ScaleControl,
-				pluginName: 'mapboxgl.' + (mapboxgl.Scale ? mapboxgl.Scale.name : mapboxgl.ScaleControl.name)
-			}, {
-				name: 'attribution',
-				constructor: mapboxgl.Attribution || mapboxgl.AttributionControl,
-				pluginName: 'mapboxgl.' + (mapboxgl.Attribution ? mapboxgl.Attribution.name : mapboxgl.AttributionControl.name)
-			}, {
-				name: 'geolocate',
-				constructor: mapboxgl.Geolocate || mapboxgl.GeolocateControl,
-				pluginName: 'mapboxgl.' + (mapboxgl.Geolocate ? mapboxgl.Geolocate.name : mapboxgl.GeolocateControl.name),
-				eventsExposedName: 'mapboxglGeolocate',
-				eventsAvailables: [
-					'geolocate',
-					'error'
-				]
-			}, {
-				name: 'geocoder',
-				constructor: mapboxgl.Geocoder || $window.MapboxGeocoder,
-				pluginName: mapboxgl.Geocoder ? 'mapboxgl.Geocoder' : 'MapboxGeocoder',
-				eventsExposedName: 'mapboxglGeocoder',
-				eventsAvailables: [
-					'clear',
-					'loading',
-					'results',
-					'result',
-					'error'
-				]
-			}, {
-				name: 'directions',
-				constructor: mapboxgl.Directions || $window.MapboxDirections,
-				pluginName: mapboxgl.Directions ? 'mapboxgl.Directions' : 'MapboxDirections',
-				eventsExposedName: 'mapboxglDirections',
-				eventsAvailables: [
-					'clear',
-					'loading',
-					'profile',
-					'origin',
-					'destination',
-					'route',
-					'error'
-				]
-			}, {
-				name: 'draw',
-				constructor: mapboxgl.Draw || $window.MapboxDraw,
-				pluginName: mapboxgl.Draw ? 'mapboxgl.Draw' : 'MapboxDraw',
-				eventsExposedName: 'mapboxglDraw',
-				listenInMap: true,
-				eventsAvailables: [
-					'draw.create',
-					'draw.delete',
-					'draw.combine',
-					'draw.uncombine',
-					'draw.update',
-					'draw.selectionchange',
-					'draw.modechange',
-					'draw.render',
-					'draw.actionable'
-				]
-			}
-		];
+		var controlsAvailables = mapboxglControlsUtils.getControlsAvailables();
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glControls', function (controls) {
         if (angular.isDefined(controls)) {
 					// Remove all created controls
-					removeAllControlsCreated(map);
+					mapboxglControlsUtils.removeAllControlsCreated(map);
 
 					controlsAvailables.map(function (eachControlAvailable) {
 						if (angular.isDefined(controls[eachControlAvailable.name]) && angular.isDefined(controls[eachControlAvailable.name].enabled) && controls[eachControlAvailable.name].enabled) {
@@ -1944,7 +1964,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', '$wi
 								var ControlConstructor = eachControlAvailable.constructor.bind.apply(eachControlAvailable.constructor, controls[eachControlAvailable.name].options);
 								var control = new ControlConstructor(controls[eachControlAvailable.name].options);
 
-								addNewControlCreated(eachControlAvailable.name, control, false, eachControlAvailable.eventsAvailables, eachControlAvailable.listenInMap);
+								mapboxglControlsUtils.addNewControlCreated(eachControlAvailable.name, control, false, eachControlAvailable.eventsAvailables, eachControlAvailable.listenInMap);
 
 								if (angular.isDefined(eachControlAvailable.eventsAvailables) && angular.isDefined(eachControlAvailable.eventsExposedName)) {
 									var listener = eachControlAvailable.listenInMap ? map : control;
@@ -1962,7 +1982,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', '$wi
 
 								map.addControl(control, position);
 							} else {
-								throw new Error(eachControlAvailable.pluginName + ' plugin is not included.');
+								console.warn(eachControlAvailable.pluginName + ' plugin is not included.');
 							}
 	          }
 					});
@@ -1977,7 +1997,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', '$wi
 
 									var customControlEvents = angular.isArray(eachCustomControl.events) ? eachCustomControl.events : [];
 
-									addNewControlCreated(eachCustomControl.name, customControl, true, customControlEvents, eachCustomControl.listenInMap);
+									mapboxglControlsUtils.addNewControlCreated(eachCustomControl.name, customControl, true, customControlEvents, eachCustomControl.listenInMap);
 
 									var listener = eachCustomControl.listenInMap ? map : customControl;
 
@@ -1995,7 +2015,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', '$wi
 	              }
 	            });
 						} else {
-							throw new Error('\'custom\' must be an array');
+							console.error('\'custom\' must be an array');
 						}
           }
         }

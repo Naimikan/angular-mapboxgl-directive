@@ -10,6 +10,7 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 		defaultPreserveDrawingBuffer: false,
 		defaultTrackResize: true,
 		defaultRenderWorldCopies: true,
+		defaultLogoPosition: 'bottom-left',
 
 		defaultPersistentGeojson: false,
 		defaultPersistentImage: false,
