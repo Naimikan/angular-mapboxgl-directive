@@ -1,8 +1,8 @@
 {
   "name": "angular-mapboxgl-directive",
-  "version": "0.30.5",
+  "version": "0.30.6",
   "description": "An AngularJS directive for Mapbox GL",
-  "main": "Gruntfile.js",
+  "main": "dist/angular-mapboxgl-directive.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
