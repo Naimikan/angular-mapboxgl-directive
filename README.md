@@ -8,7 +8,7 @@
   <a href="LICENSE">
     <img src="https://img.shields.io/npm/l/angular-mapboxgl-directive.svg?style=flat-square" alt="license" />
   </a>
-  <a href="https://img.shields.io/cdnjs/v/angular-mapboxgl-directive.svg">
+  <a href="https://cdnjs.com/libraries/angular-mapboxgl-directive">
     <img src="https://img.shields.io/cdnjs/v/angular-mapboxgl-directive.svg?style=flat-square" alt="cdnjs version" />
   </a>
 </p>
