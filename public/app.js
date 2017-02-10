@@ -26,6 +26,8 @@
       value: $window.innerWidth
     };
 
+    $scope.glMaxBounds = [[-73.9876, 40.7661], [-73.9397, 40.8002]];
+
     $window.onresize = function (event) {
       $scope.$apply(function () {
         $scope.glHeight = event.target.innerHeight;
@@ -229,7 +231,7 @@
         properties: {
           radius: 8,
           animation: {
-            enabled: true,
+            enabled: false,
             animationData: {
               origin: routes[0].origin,
               destination: routes[0].destination,
@@ -379,7 +381,7 @@
               properties: {
                 radius: 6,
                 animation: {
-                  enabled: true,
+                  enabled: false,
                   animationFunction: function (map, sourceId, featureId, feature, animationData, deltaTime, end) {
                     feature.geometry.coordinates = [
                       Math.cos(deltaTime / 250) * 70,
@@ -403,7 +405,7 @@
               properties: {
                 radius: 6,
                 animation: {
-                  enabled: true,
+                  enabled: false,
                   animationFunction: function (map, sourceId, featureId, feature, animationData, timestamp, end) {
                     feature.geometry.coordinates = [
                       Math.cos(timestamp / 500) * 70,
