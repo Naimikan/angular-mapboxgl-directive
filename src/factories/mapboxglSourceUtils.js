@@ -130,6 +130,30 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
       }
     ]);
 
+    if (angular.isDefined(sourceObject.data)) {
+      if (angular.isDefined(sourceObject.data.features) && angular.isArray(sourceObject.data.features)) {
+        sourceObject.data.features = sourceObject.data.features.map(function (eachFeature) {
+          if (angular.isUndefined(eachFeature.properties)) {
+            eachFeature.properties = {};
+          }
+
+          if (angular.isUndefined(eachFeature.properties.featureId)) {
+            eachFeature.properties.featureId = mapboxglUtils.generateGUID();
+          }
+
+          return eachFeature;
+        });
+      } else {
+        if (angular.isUndefined(sourceObject.data.properties)) {
+          sourceObject.data.properties = {};
+        }
+
+        if (angular.isUndefined(sourceObject.data.properties.featureId)) {
+          sourceObject.data.properties.featureId = mapboxglUtils.generateGUID();
+        }
+      }
+    }
+
     var currentSource = map.getSource(sourceObject.id);
 
     mapboxglUtils.checkObjects([

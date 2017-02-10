@@ -150,10 +150,6 @@ angular.module('mapboxgl-directive').factory('mapboxglAnimationUtils', ['$window
       var indexOf = mapboxglUtils.arrayObjectIndexOf(_animationFunctionStack, featureId, 'featureId');
 
       if (indexOf !== -1) {
-        // angular.extend(_animationFunctionStack[indexOf], {
-        //   animationFunction: animationFunction
-        // });
-
         angular.extend(_animationFunctionStack[indexOf].animationParameters, {
           animationFunction: animationFunction,
           animationData: animationData

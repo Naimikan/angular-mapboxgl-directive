@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.30.4 2017-02-10
+*  angular-mapboxgl-directive 0.30.5 2017-02-10
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -648,10 +648,6 @@ angular.module('mapboxgl-directive').factory('mapboxglAnimationUtils', ['$window
       var indexOf = mapboxglUtils.arrayObjectIndexOf(_animationFunctionStack, featureId, 'featureId');
 
       if (indexOf !== -1) {
-        // angular.extend(_animationFunctionStack[indexOf], {
-        //   animationFunction: animationFunction
-        // });
-
         angular.extend(_animationFunctionStack[indexOf].animationParameters, {
           animationFunction: animationFunction,
           animationData: animationData
@@ -1560,6 +1556,30 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
         attributes: ['id', 'data']
       }
     ]);
+
+    if (angular.isDefined(sourceObject.data)) {
+      if (angular.isDefined(sourceObject.data.features) && angular.isArray(sourceObject.data.features)) {
+        sourceObject.data.features = sourceObject.data.features.map(function (eachFeature) {
+          if (angular.isUndefined(eachFeature.properties)) {
+            eachFeature.properties = {};
+          }
+
+          if (angular.isUndefined(eachFeature.properties.featureId)) {
+            eachFeature.properties.featureId = mapboxglUtils.generateGUID();
+          }
+
+          return eachFeature;
+        });
+      } else {
+        if (angular.isUndefined(sourceObject.data.properties)) {
+          sourceObject.data.properties = {};
+        }
+
+        if (angular.isUndefined(sourceObject.data.properties.featureId)) {
+          sourceObject.data.properties.featureId = mapboxglUtils.generateGUID();
+        }
+      }
+    }
 
     var currentSource = map.getSource(sourceObject.id);
 
