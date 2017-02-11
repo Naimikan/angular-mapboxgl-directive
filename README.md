@@ -2,14 +2,17 @@
   <a href="https://www.npmjs.com/package/angular-mapboxgl-directive">
     <img src="https://img.shields.io/npm/v/angular-mapboxgl-directive.svg?style=flat-square" alt="version" />
   </a>
+  <a href="https://bower.io/search/?q=angular-mapboxgl-directive">
+    <img src="https://img.shields.io/bower/v/angular-mapboxgl-directive.svg?style=flat-square" alt="bower version" />
+  </a>
+  <a href="https://cdnjs.com/libraries/angular-mapboxgl-directive">
+    <img src="https://img.shields.io/cdnjs/v/angular-mapboxgl-directive.svg?style=flat-square" alt="cdnjs version" />
+  </a>
   <a href="https://codeclimate.com/github/Naimikan/angular-mapboxgl-directive">
     <img src="https://codeclimate.com/github/Naimikan/angular-mapboxgl-directive/badges/gpa.svg" alt="codeclimate" />
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/npm/l/angular-mapboxgl-directive.svg?style=flat-square" alt="license" />
-  </a>
-  <a href="https://cdnjs.com/libraries/angular-mapboxgl-directive">
-    <img src="https://img.shields.io/cdnjs/v/angular-mapboxgl-directive.svg?style=flat-square" alt="cdnjs version" />
   </a>
 </p>
 
