@@ -13,17 +13,23 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 	}
 
 	function getPopupByLayerId (layerId) {
-		var popupsFiltered = _popupsCreated.filter(function (each) {
-			return each.layerId === layerId;
-		});
-
-		if (angular.isUndefined(layerId) || layerId === null) {
-			return popupsFiltered.map(function (each) {
-				return each.popupInstance;
+		if (angular.isDefined(layerId) && layerId !== null) {
+			var popupsFiltered = _popupsCreated.filter(function (each) {
+				return each.layerId === layerId;
 			});
-		} else {
+
 			if (popupsFiltered.length > 0) {
 				return popupsFiltered[0].popupInstance;
+			} else {
+				return false;
+			}
+		} else {
+			if (_popupsCreated.length > 0) {
+				return _popupsCreated.map(function (each) {
+					return each.popupInstance;
+				});
+			} else {
+				return false;
 			}
 		}
 	}
@@ -65,6 +71,12 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
     var popupOptions = object.options || {};
 
 		var popup = new mapboxgl.Popup(popupOptions).setLngLat(object.coordinates);
+
+		if (angular.isDefined(object.onClose) && object.onClose !== null && angular.isFunction(object.onClose)) {
+			popup.on('close', function (event) {
+				object.onClose(event, event.target);
+			});
+		}
 
 		// If HTML Element
 		if (object.html instanceof HTMLElement) {

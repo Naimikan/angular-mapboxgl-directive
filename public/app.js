@@ -229,7 +229,7 @@
         properties: {
           radius: 8,
           animation: {
-            enabled: true,
+            enabled: false,
             animationData: {
               origin: routes[0].origin,
               destination: routes[0].destination,
@@ -379,7 +379,7 @@
               properties: {
                 radius: 6,
                 animation: {
-                  enabled: true,
+                  enabled: false,
                   animationFunction: function (map, sourceId, featureId, feature, animationData, deltaTime, end) {
                     feature.geometry.coordinates = [
                       Math.cos(deltaTime / 250) * 70,
@@ -403,7 +403,7 @@
               properties: {
                 radius: 6,
                 animation: {
-                  enabled: true,
+                  enabled: false,
                   animationFunction: function (map, sourceId, featureId, feature, animationData, timestamp, end) {
                     feature.geometry.coordinates = [
                       Math.cos(timestamp / 500) * 70,
@@ -430,21 +430,27 @@
         type: 'circle',
         source: 'circles',
         paint: {
-          'circle-radius': {
-            type: 'identity',
-            property: 'radius'
-          },
+          'circle-radius': 15,
           'circle-color': '#FF620D'
+        },
+        popup: {
+          enabled: true,
+          onClick: {
+            message: 'Hi Click!',
+            onClose: function (event, popupClosed) {
+              console.log(event, popupClosed);
+            }
+          },
+          onMouseover: {
+            message: 'Hi Mouseover!'
+          }
         }
       }, {
         id: 'circles2',
         type: 'circle',
         source: 'circles2',
         paint: {
-          'circle-radius': {
-            type: 'identity',
-            property: 'radius'
-          },
+          'circle-radius': 12,
           'circle-color': '#006AFC'
         }
       }
