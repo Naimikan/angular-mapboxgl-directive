@@ -1,6 +1,32 @@
 angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUtils', 'mapboxglConstants', 'mapboxglAnimationUtils', '$q', function (mapboxglUtils, mapboxglConstants, mapboxglAnimationUtils, $q) {
   var _sourcesCreated = [];
 
+  function _checkAndCreateFeatureId (sourceData) {
+    if (angular.isDefined(sourceData)) {
+      if (angular.isDefined(sourceData.features) && angular.isArray(sourceData.features)) {
+        sourceData.features = sourceData.features.map(function (eachFeature) {
+          if (angular.isUndefined(eachFeature.properties)) {
+            eachFeature.properties = {};
+          }
+
+          if (angular.isUndefined(eachFeature.properties.featureId)) {
+            eachFeature.properties.featureId = mapboxglUtils.generateGUID();
+          }
+
+          return eachFeature;
+        });
+      } else {
+        if (angular.isUndefined(sourceData.properties)) {
+          sourceData.properties = {};
+        }
+
+        if (angular.isUndefined(sourceData.properties.featureId)) {
+          sourceData.properties.featureId = mapboxglUtils.generateGUID();
+        }
+      }
+    }
+  }
+
   function _createAnimationFunction (map, sourceId, featureId, feature) {
     var animationFunction = function (animationParameters) {
       animationParameters.animationFunction(animationParameters.map, animationParameters.sourceId, animationParameters.featureId, animationParameters.feature, animationParameters.animationData, animationParameters.deltaTime, animationParameters.end);
@@ -42,29 +68,7 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
       }
     }
 
-    if (angular.isDefined(tempObject.data)) {
-      if (angular.isDefined(tempObject.data.features) && angular.isArray(tempObject.data.features)) {
-        tempObject.data.features = tempObject.data.features.map(function (eachFeature) {
-          if (angular.isUndefined(eachFeature.properties)) {
-            eachFeature.properties = {};
-          }
-
-          if (angular.isUndefined(eachFeature.properties.featureId)) {
-            eachFeature.properties.featureId = mapboxglUtils.generateGUID();
-          }
-
-          return eachFeature;
-        });
-      } else {
-        if (angular.isUndefined(tempObject.data.properties)) {
-          tempObject.data.properties = {};
-        }
-
-        if (angular.isUndefined(tempObject.data.properties.featureId)) {
-          tempObject.data.properties.featureId = mapboxglUtils.generateGUID();
-        }
-      }
-    }
+    _checkAndCreateFeatureId(tempObject.data);
 
     map.addSource(sourceObject.id, tempObject);
     _sourcesCreated.push(sourceObject.id);
@@ -81,10 +85,6 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
     } else if (angular.isDefined(sourceCreated._data) && angular.isDefined(sourceCreated._data.properties) && angular.isDefined(sourceCreated._data.properties.animation) && angular.isDefined(sourceCreated._data.properties.animation.enabled) && sourceCreated._data.properties.animation.enabled && angular.isDefined(sourceCreated._data.properties.animation.animationFunction) && angular.isFunction(sourceCreated._data.properties.animation.animationFunction)) {
       _createAnimationFunction(map, sourceObject.id, sourceCreated._data.properties.featureId, sourceCreated._data);
     }
-
-    //mapboxglAnimationUtils.addSourceToAnimate(map, sourceObject.id, sourceCreated._data);
-
-    //mapboxglAnimationUtils.animateFunctionStack();
   }
 
   function existSourceById (sourceId) {
@@ -130,29 +130,7 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
       }
     ]);
 
-    if (angular.isDefined(sourceObject.data)) {
-      if (angular.isDefined(sourceObject.data.features) && angular.isArray(sourceObject.data.features)) {
-        sourceObject.data.features = sourceObject.data.features.map(function (eachFeature) {
-          if (angular.isUndefined(eachFeature.properties)) {
-            eachFeature.properties = {};
-          }
-
-          if (angular.isUndefined(eachFeature.properties.featureId)) {
-            eachFeature.properties.featureId = mapboxglUtils.generateGUID();
-          }
-
-          return eachFeature;
-        });
-      } else {
-        if (angular.isUndefined(sourceObject.data.properties)) {
-          sourceObject.data.properties = {};
-        }
-
-        if (angular.isUndefined(sourceObject.data.properties.featureId)) {
-          sourceObject.data.properties.featureId = mapboxglUtils.generateGUID();
-        }
-      }
-    }
+    _checkAndCreateFeatureId(sourceObject.data);
 
     var currentSource = map.getSource(sourceObject.id);
 
@@ -173,20 +151,12 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
           }
         }
       });
-
-      // mapboxglAnimationUtils.addSourceToAnimate(map, sourceObject.id, currentSource._data);
-      //
-      // mapboxglAnimationUtils.animateFunctionStack();
     } else if (angular.isDefined(currentSource._data) && angular.isDefined(currentSource._data.properties) && angular.isDefined(currentSource._data.properties.animation) && angular.isDefined(currentSource._data.properties.animation.enabled) && currentSource._data.properties.animation.enabled && angular.isDefined(currentSource._data.properties.animation.animationFunction) && angular.isFunction(currentSource._data.properties.animation.animationFunction)) {
       if (mapboxglAnimationUtils.existAnimationByFeatureId(currentSource._data.properties.featureId)) {
         mapboxglAnimationUtils.updateAnimationFunction(currentSource._data.properties.featureId, currentSource._data.properties.animation.animationFunction, currentSource._data.properties.animation.animationData);
       } else {
         _createAnimationFunction(map, sourceObject.id, currentSource._data.properties.featureId, currentSource._data);
       }
-
-      // mapboxglAnimationUtils.addSourceToAnimate(map, sourceObject.id, currentSource._data);
-      //
-      // mapboxglAnimationUtils.animateFunctionStack();
     } else {
       currentSource.setData(sourceObject.data);
     }
