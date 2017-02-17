@@ -4,7 +4,8 @@
   var examplesTypes = {
     styles: 'Styles',
     controls: 'Controls',
-    camera: 'Camera'
+    camera: 'Camera',
+    layers: 'Layers'
   };
 
   angular.module('app.Examples', [])
@@ -132,6 +133,30 @@
       templateUrl: 'javascripts/states/examples/examples_source/map_max_min_zoom/MapMinMaxZoomTemplate.html',
       controller: 'MapMinMaxZoomController',
       uiSref: 'examples.map_max_min_zoom'
+    }, {
+      name: 'add_circle_geojson',
+      title: 'Add a GeoJSON circle',
+      type: examplesTypes.layers,
+      description: 'Add a GeoJSON circle with glSources and glLayers directives',
+      templateUrl: 'javascripts/states/examples/examples_source/circle_geojson/CircleGeojsonTemplate.html',
+      controller: 'CircleGeojsonController',
+      uiSref: 'examples.add_circle_geojson'
+    }, {
+      name: 'add_line_geojson',
+      title: 'Add a GeoJSON line',
+      type: examplesTypes.layers,
+      description: 'Add a GeoJSON line with glSources and glLayers directives',
+      templateUrl: 'javascripts/states/examples/examples_source/line_geojson/LineGeojsonTemplate.html',
+      controller: 'LineGeojsonController',
+      uiSref: 'examples.add_line_geojson'
+    }, {
+      name: 'add_polygon_geojson',
+      title: 'Add a GeoJSON polygon',
+      type: examplesTypes.layers,
+      description: 'Add a GeoJSON polygon with glSources and glLayers directives',
+      templateUrl: 'javascripts/states/examples/examples_source/polygon_geojson/PolygonGeojsonTemplate.html',
+      controller: 'PolygonGeojsonController',
+      uiSref: 'examples.add_polygon_geojson'
     }
   ])
 

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+    <title></title>
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.31.0/angular-mapboxgl-directive.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.31.0/angular-mapboxgl-directive.min.js"></script>
+
+    <script>
+      var app = angular.module('app', ['mapboxgl-directive'])
+
+      .run([function () {
+        mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
+      }])
+
+      .controller('LineGeojsonController', ['$scope', function ($scope) {
+        $scope.glSources = [
+          {
+            id: 'routeSource',
+            type: 'geojson',
+            data: {
+               type: 'Feature',
+               geometry: {
+                  type: 'LineString',
+                  coordinates: [
+                     [-99.20003, 19.44236],
+                     [-99.20051, 19.441570000000002],
+                     [-99.2008, 19.44086],
+                     [-99.20108, 19.44033],
+                     [-99.203, 19.44005],
+                     [-99.20415, 19.44012],
+                     [-99.20513, 19.440170000000002],
+                     [-99.20795, 19.440360000000002],
+                     [-99.20779, 19.441940000000002],
+                     [-99.20768, 19.443270000000002],
+                     [-99.20764, 19.444360000000003],
+                     [-99.20746, 19.445350000000005],
+                     [-99.20746, 19.446380000000005]
+                  ]
+               }
+            }
+         }
+        ];
+
+        $scope.glLayers = [
+          {
+            id: 'routeLayer',
+            source: 'routeSource',
+            type: 'line',
+            paint: {
+              'line-width': 5,
+              'line-color': '#FF1A47'
+            }
+          }
+        ];
+      }]);
+    </script>
+  </head>
+  <body ng-controller="LineGeojsonController">
+    <div mapboxgl
+      gl-zoom="{ value: 15 }"
+      gl-center="{ lat: 19.44257, lng: -99.20415 }"
+      gl-sources="glSources"
+      gl-layers="glLayers">
+    </div>
+  </body>
+</html>
