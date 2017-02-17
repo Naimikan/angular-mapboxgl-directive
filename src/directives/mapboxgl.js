@@ -107,24 +107,35 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       },
 
       /* Loading Overlay */
-      changeLoadingMap: function (map, newValue) {
-        if (newValue) {
-          if (!this._elementDOM.hasClass('angular-mapboxgl-map-loading')) {
-            //this.getMap().then(function (map) {
-              map.getCanvas().style.opacity = 0.25;
-            //});
+      changeLoadingMap: function (newValue) {
+        var functionToExecute = newValue ? 'addClass' : 'removeClass';
+        var elements = this._elementDOM.find('div');
 
-            this._elementDOM.addClass('angular-mapboxgl-map-loading');
-          }
-        } else {
-          if (this._elementDOM.hasClass('angular-mapboxgl-map-loading')) {
-            //this.getMap().then(function (map) {
-              map.getCanvas().style.opacity = 1;
-            //});
+        for (var iterator = 0; iterator < elements.length; iterator++) {
+          var element = angular.element(elements[iterator]);
 
-            this._elementDOM.removeClass('angular-mapboxgl-map-loading');
+          if (element.hasClass('angular-mapboxgl-map-loader')) {
+            element[functionToExecute]('angular-mapboxgl-map-loading');
           }
         }
+
+        // if (newValue) {
+        //   if (!this._elementDOM.hasClass('angular-mapboxgl-map-loading')) {
+        //     //this.getMap().then(function (map) {
+        //       map.getCanvas().style.opacity = 0.25;
+        //     //});
+        //
+        //     this._elementDOM.addClass('angular-mapboxgl-map-loading');
+        //   }
+        // } else {
+        //   if (this._elementDOM.hasClass('angular-mapboxgl-map-loading')) {
+        //     //this.getMap().then(function (map) {
+        //       map.getCanvas().style.opacity = 1;
+        //     //});
+        //
+        //     this._elementDOM.removeClass('angular-mapboxgl-map-loading');
+        //   }
+        // }
       }
     });
   }
@@ -155,9 +166,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     }
 
     controller.setDOMElement(element);
-
+    controller.changeLoadingMap(true);
     scope.mapboxglMapId = attrs.id ? attrs.id : mapboxglUtils.generateMapId();
-
     element.attr('id', scope.mapboxglMapId);
 
     var updateWidth = function (map) {
@@ -167,7 +177,9 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
         element.css('width', attrs.width + 'px');
       }
 
-      map.resize();
+      if (angular.isDefined(map) && map !== null) {
+        map.resize();
+      }
     };
 
     var updateHeight = function (map) {
@@ -177,8 +189,13 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
         element.css('height', attrs.height + 'px');
       }
 
-      map.resize();
+      if (angular.isDefined(map) && map !== null) {
+        map.resize();
+      }
     };
+
+    updateWidth();
+    updateHeight();
 
     var updateLanguage = function (map) {
       if (angular.isDefined(attrs.language)) {
@@ -260,6 +277,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
         var map = event.target;
 
         controller._mapboxGlMap.resolve(map);
+        controller.changeLoadingMap(false);
 
         // Language
         scope.$watch(function () {
@@ -413,7 +431,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       persistentImage: '=',
       persistentVideo: '='
     },
-    template: '<div class="angular-mapboxgl-map"></div>',
+    template: '<div class="angular-mapboxgl-map"><div class="angular-mapboxgl-map-loader"><div class="spinner"><div class="double-bounce"></div><div class="double-bounce delayed"></div></div></div></div>',
     controller: mapboxGlDirectiveController,
     link: mapboxGlDirectiveLink
   };

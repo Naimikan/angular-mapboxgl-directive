@@ -22,16 +22,12 @@
 
   .controller('IndexController', ['$scope', '$window', '$timeout', 'mapboxglMapsData', '$compile', function ($scope, $window, $timeout, mapboxglMapsData, $compile) {
     $scope.glHeight = $window.innerHeight;
-    $scope.glWidth = {
-      value: $window.innerWidth
-    };
+    $scope.glWidth = $window.innerWidth;
 
     $window.onresize = function (event) {
       $scope.$apply(function () {
         $scope.glHeight = event.target.innerHeight;
-        $scope.glWidth = {
-          value: $window.innerWidth
-        };
+        $scope.glWidth = $window.innerWidth;
       });
     };
 
