@@ -9,14 +9,18 @@ angular.module('mapboxgl-directive').factory('mapboxglMapsData', ['mapboxglUtils
   }
 
   function removeMapById (mapId) {
-    var mapIndexOf = mapboxglUtils.arrayObjectIndexOf(_mapInstances, mapId, 'id');
+    _mapInstances = _mapInstances.filter(function (eachMap) {
+      return eachMap.id !== mapId;
+    });
 
-    if (mapIndexOf !== -1) {
-      var mapObject = _mapInstances[mapIndexOf];
-      mapObject.mapInstance.remove();
-
-      _mapInstances.splice(mapIndexOf, 1);
-    }
+    // var mapIndexOf = mapboxglUtils.arrayObjectIndexOf(_mapInstances, mapId, 'id');
+    //
+    // if (mapIndexOf !== -1) {
+    //   var mapObject = _mapInstances[mapIndexOf];
+    //   mapObject.mapInstance.remove();
+    //
+    //   _mapInstances.splice(mapIndexOf, 1);
+    // }
   }
 
   function removeAllMaps () {

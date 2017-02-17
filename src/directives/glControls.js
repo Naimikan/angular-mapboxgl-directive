@@ -114,6 +114,10 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'map
         }
 			});
 		});
+
+		scope.$on('$destroy', function () {
+			mapboxglControlsUtils.removeAllControlsCreated();
+		});
 	}
 
 	var directive = {

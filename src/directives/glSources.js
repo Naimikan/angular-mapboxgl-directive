@@ -69,6 +69,10 @@ angular.module('mapboxgl-directive').directive('glSources', ['mapboxglSourceUtil
         }
       }, true);
     });
+
+    scope.$on('$destroy', function () {
+      mapboxglSourceUtils.removeAllCreatedSources();
+    });
   }
 
   var directive = {

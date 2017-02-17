@@ -39,6 +39,10 @@ angular.module('mapboxgl-directive').directive('glMarkers', ['mapboxglMarkerUtil
         markersWatched(map, markers);
       });
     });
+
+    scope.$on('$destroy', function () {
+      // ToDo: remove all markers
+    });
   }
 
   var directive = {

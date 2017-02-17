@@ -168,6 +168,10 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
         }
       }, true);
     });
+
+    scope.$on('$destroy', function () {
+      mapboxglLayerUtils.removeAllCreatedLayers();
+    });
   }
 
   var directive = {

@@ -338,6 +338,9 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       });
 
       scope.$on('$destroy', function () {
+        mapboxglAnimationUtils.destroy();
+        mapboxglMapsData.removeMapById(scope.mapboxglMapId);
+
         mapboxGlMap.remove();
       });
 

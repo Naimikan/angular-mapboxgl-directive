@@ -45,6 +45,40 @@ angular.module('mapboxgl-directive').factory('mapboxglAnimationUtils', ['$window
     }
   }
 
+  function addAnimationFunction (sourceId, featureId, animationFunction, animationParameters) {
+    if (angular.isDefined(animationFunction) && angular.isFunction(animationFunction)) {
+      _animationFunctionStack.push({
+        sourceId: sourceId,
+        featureId: featureId,
+        animationFunction: animationFunction,
+        animationParameters: animationParameters
+      });
+    }
+  }
+
+  function updateAnimationFunction (featureId, animationFunction, animationData) {
+    if (angular.isDefined(animationFunction) && angular.isFunction(animationFunction)) {
+      var indexOf = mapboxglUtils.arrayObjectIndexOf(_animationFunctionStack, featureId, 'featureId');
+
+      if (indexOf !== -1) {
+        angular.extend(_animationFunctionStack[indexOf].animationParameters, {
+          animationFunction: animationFunction,
+          animationData: animationData
+        });
+      } else {
+        throw new Error('Feature ID doesn\'t exist');
+      }
+    }
+  }
+
+  function existAnimationByFeatureId (featureId) {
+    return mapboxglUtils.arrayObjectIndexOf(_animationFunctionStack, featureId, 'featureId') !== -1;
+  }
+
+  function removeAnimationStack () {
+    _animationFunctionStack = [];
+  }
+
   function removeAnimationBySourceId (sourceId) {
     _animationFunctionStack = _animationFunctionStack.filter(function (eachFunction) {
       return eachFunction.sourceId !== sourceId;
@@ -107,101 +141,21 @@ angular.module('mapboxgl-directive').factory('mapboxglAnimationUtils', ['$window
     window.cancelAnimationFrame(_animationId);
   }
 
-
-
-
-
-
-
-
-  function addSourceToAnimate (map, sourceId, data) {
-    var indexOfSource = mapboxglUtils.arrayObjectIndexOf(_sourcesAnimation, sourceId, 'sourceId');
-
-    if (indexOfSource === -1) {
-      _sourcesAnimation.push({
-        map: map,
-        sourceId: sourceId,
-        data: data
-      });
-    } else {
-      _sourcesAnimation[indexOfSource].data = data;
-    }
-  }
-
-  function updateAnimationSources () {
-    _sourcesAnimation.map(function (each) {
-      each.map.getSource(each.sourceId).setData(each.data);
-    });
-  }
-
-  function addAnimationFunction (sourceId, featureId, animationFunction, animationParameters) {
-    if (angular.isDefined(animationFunction) && angular.isFunction(animationFunction)) {
-      _animationFunctionStack.push({
-        sourceId: sourceId,
-        featureId: featureId,
-        animationFunction: animationFunction,
-        animationParameters: animationParameters
-      });
-    }
-  }
-
-  function updateAnimationFunction (featureId, animationFunction, animationData) {
-    if (angular.isDefined(animationFunction) && angular.isFunction(animationFunction)) {
-      var indexOf = mapboxglUtils.arrayObjectIndexOf(_animationFunctionStack, featureId, 'featureId');
-
-      if (indexOf !== -1) {
-        angular.extend(_animationFunctionStack[indexOf].animationParameters, {
-          animationFunction: animationFunction,
-          animationData: animationData
-        });
-      } else {
-        throw new Error('Feature ID doesn\'t exist');
-      }
-    }
-  }
-
-  function removeAnimationStack () {
-    _animationFunctionStack = [];
-  }
-
-  function requestAnimationFrameNeeded () {
-    _requestedAnimationFrame = true;
-  }
-
-  function existAnimationByFeatureId (featureId) {
-    return mapboxglUtils.arrayObjectIndexOf(_animationFunctionStack, featureId, 'featureId') !== -1;
-  }
-
-  function animateFunctionStack () {
-    var animate = function (timestamp) {
-      _animationFunctionStack.map(function (eachFunction) {
-        // Update timestamp
-        eachFunction.animationParameters.timestamp = timestamp;
-
-        eachFunction.animationFunction(eachFunction.animationParameters);
-      });
-
-      if (_requestedAnimationFrame) {
-        requestAnimationFrame(animate);
-      }
-    };
-
-    animate(0);
+  function destroy () {
+    stopAnimationLoop();
+    removeAnimationStack();
   }
 
   var mapboxglAnimationUtils = {
     initAnimationSystem: initAnimationSystem,
     addAnimationFunction: addAnimationFunction,
     updateAnimationFunction: updateAnimationFunction,
+    existAnimationByFeatureId: existAnimationByFeatureId,
     removeAnimationBySourceId: removeAnimationBySourceId,
     removeAnimationByFeatureId: removeAnimationByFeatureId,
     removeAnimationStack: removeAnimationStack,
-    requestAnimationFrameNeeded: requestAnimationFrameNeeded,
-    existAnimationByFeatureId: existAnimationByFeatureId,
-    addSourceToAnimate: addSourceToAnimate,
-    updateAnimationSources: updateAnimationSources,
-    animateFunctionStack: animateFunctionStack,
-    stopAnimationLoop: stopAnimationLoop
+    stopAnimationLoop: stopAnimationLoop,
+    destroy: destroy
   };
 
   return mapboxglAnimationUtils;

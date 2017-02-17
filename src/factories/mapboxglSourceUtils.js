@@ -166,10 +166,15 @@ angular.module('mapboxgl-directive').factory('mapboxglSourceUtils', ['mapboxglUt
     return _sourcesCreated;
   }
 
+  function removeAllCreatedSources () {
+    _sourcesCreated = [];
+  }
+
   var mapboxglSourceUtils = {
     createSourceByObject: createSourceByObject,
     existSourceById: existSourceById,
     removeSourceById: removeSourceById,
+    removeAllCreatedSources: removeAllCreatedSources,
     updateSourceByObject: updateSourceByObject,
     getCreatedSources: getCreatedSources
 	};

@@ -3,10 +3,6 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
   var _relationLayersPopups = [];
   var _relationLayersEvents = [];
 
-  function getCreatedLayers () {
-    return _layersCreated;
-  }
-
   /* Layer/Popup relation */
   function removePopupRelationByLayerId (layerId) {
     _relationLayersPopups = _relationLayersPopups.filter(function (each) {
@@ -201,12 +197,24 @@ angular.module('mapboxgl-directive').factory('mapboxglLayerUtils', ['mapboxglUti
     }
   }
 
+  function getCreatedLayers () {
+    return _layersCreated;
+  }
+
+  function removeAllCreatedLayers () {
+    removeAllPopupRelations();
+    removeAllEventRelations();
+
+    _layersCreated = [];
+  }
+
   var mapboxglLayerUtils = {
     createLayerByObject: createLayerByObject,
     existLayerById: existLayerById,
     removeLayerById: removeLayerById,
     updateLayerByObject: updateLayerByObject,
     getCreatedLayers: getCreatedLayers,
+    removeAllCreatedLayers: removeAllCreatedLayers,
     removeAllPopupRelations: removeAllPopupRelations,
     removePopupRelationByLayerId: removePopupRelationByLayerId,
     getPopupRelationByLayerId: getPopupRelationByLayerId,

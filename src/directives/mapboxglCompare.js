@@ -37,6 +37,8 @@ angular.module('mapboxgl-directive').directive('mapboxglCompare', ['mapboxglMaps
       var map2 = angular.element(children[1]);
       map2.addClass('compare-map');
 
+      scope.mapIds = [children[0].id, children[1].id];
+
       var mapboxgl1 = mapboxglMapsData.getMapById(children[0].id);
       var mapboxgl2 = mapboxglMapsData.getMapById(children[1].id);
 
@@ -48,6 +50,15 @@ angular.module('mapboxgl-directive').directive('mapboxglCompare', ['mapboxglMaps
         return map1[0].getAttribute('height');
       }, function () {
         element.css('height', map1.css('height'));
+      });
+
+      scope.$on('$destroy', function () {
+        scope.mapIds.map(function (eachMapId) {
+          var map = mapboxglMapsData.getMapById(eachMapId);
+          map.remove();
+
+          mapboxglMapsData.removeMapById(eachMapId);
+        });
       });
     });
   }
