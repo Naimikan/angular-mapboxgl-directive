@@ -183,10 +183,16 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     };
 
     var updateHeight = function (map) {
-      if (isNaN(attrs.height)) {
-        element.css('height', attrs.height);
+      var newHeight = attrs.height;
+
+      if (angular.isUndefined(newHeight) || newHeight !== null) {
+        newHeight = mapboxglConstants.map.defaultHeight;
+      }
+
+      if (isNaN(newHeight)) {
+        element.css('height', newHeight);
       } else {
-        element.css('height', attrs.height + 'px');
+        element.css('height', newHeight + 'px');
       }
 
       if (angular.isDefined(map) && map !== null) {

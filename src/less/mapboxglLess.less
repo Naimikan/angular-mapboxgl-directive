@@ -21,8 +21,39 @@
 }
 
 .angular-mapboxgl-map {
+  position: relative;
+
   .angular-mapboxgl-map-loader {
     // ...
+
+    .spinner {
+      display: none;
+      width: @spinnerWidth;
+      height: @spinnerHeight;
+      top: ~"calc(50% - (@{spinnerHeight} / 2))";
+      left: ~"calc(50% - (@{spinnerWidth} / 2))";
+      position: relative;
+      //margin: 100px auto;
+
+      .double-bounce {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: @spinnerColor;
+        opacity: @spinnerOpacity;
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+        animation: sk-bounce 2.0s infinite ease-in-out;
+
+        &.delayed {
+          -webkit-animation-delay: -1.0s;
+          animation-delay: -1.0s;
+        }
+      }
+    }
 
     &.angular-mapboxgl-map-loading {
       position: absolute;
@@ -33,31 +64,7 @@
       z-index: 9900;
 
       .spinner {
-        width: @spinnerWidth;
-        height: @spinnerHeight;
-        top: ~"calc(50% - (@{spinnerHeight} / 2))";
-        left: ~"calc(50% - (@{spinnerWidth} / 2))";
-        position: relative;
-        //margin: 100px auto;
-
-        .double-bounce {
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          background-color: @spinnerColor;
-          opacity: @spinnerOpacity;
-          position: absolute;
-          top: 0;
-          left: 0;
-
-          -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
-          animation: sk-bounce 2.0s infinite ease-in-out;
-
-          &.delayed {
-            -webkit-animation-delay: -1.0s;
-            animation-delay: -1.0s;
-          }
-        }
+        display: block;
       }
     }
   }
