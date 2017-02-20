@@ -116,22 +116,24 @@ angular.module('mapboxgl-directive').factory('mapboxglControlsUtils', ['$window'
   }
 
   function removeAllControlsCreated (map) {
-    for (var attribute in _controlsCreated) {
-      if (attribute !== 'custom') {
-        var controlToRemove = _controlsCreated[attribute];
+    if (angular.isDefined(map) && map !== null) {
+      for (var attribute in _controlsCreated) {
+        if (attribute !== 'custom') {
+          var controlToRemove = _controlsCreated[attribute];
 
-        removeEventsFromControl(controlToRemove.control, controlToRemove.events, controlToRemove.isEventsListenedByMap, map);
+          removeEventsFromControl(controlToRemove.control, controlToRemove.events, controlToRemove.isEventsListenedByMap, map);
 
-        map.removeControl(controlToRemove.control);
-      } else {
-        var customControls = _controlsCreated[attribute];
+          map.removeControl(controlToRemove.control);
+        } else {
+          var customControls = _controlsCreated[attribute];
 
-        for (var iterator = 0, length = customControls.length; iterator < length; iterator++) {
-          var eachCustomControl = customControls[iterator];
+          for (var iterator = 0, length = customControls.length; iterator < length; iterator++) {
+            var eachCustomControl = customControls[iterator];
 
-          removeEventsFromControl(eachCustomControl.control, eachCustomControl.events, eachCustomControl.isEventsListenedByMap, map);
+            removeEventsFromControl(eachCustomControl.control, eachCustomControl.events, eachCustomControl.isEventsListenedByMap, map);
 
-          map.removeControl(eachCustomControl.control);
+            map.removeControl(eachCustomControl.control);
+          }
         }
       }
     }

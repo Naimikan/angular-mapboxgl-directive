@@ -21,13 +21,15 @@
   }])
 
   .controller('IndexController', ['$scope', '$window', '$timeout', 'mapboxglMapsData', '$compile', function ($scope, $window, $timeout, mapboxglMapsData, $compile) {
-    $scope.glHeight = $window.innerHeight;
-    $scope.glWidth = $window.innerWidth;
+    // $scope.glHeight = $window.innerHeight;
+    // $scope.glWidth = $window.innerWidth;
+    $scope.glHeight = '450px';
+    $scope.glWidth = '450px';
 
     $window.onresize = function (event) {
       $scope.$apply(function () {
-        $scope.glHeight = event.target.innerHeight;
-        $scope.glWidth = $window.innerWidth;
+        // $scope.glHeight = event.target.innerHeight;
+        // $scope.glWidth = event.target.innerWidth;
       });
     };
 

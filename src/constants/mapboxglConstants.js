@@ -1,3 +1,5 @@
+angular.module('mapboxgl-directive').value('version', '0.32.1');
+
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 	map: {
 		defaultHeight: '450px',
@@ -23,7 +25,6 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 		defaultCluster: false,
 		defaultClusterRadius: 50
 	},
-
 	plugins: {
 		rtlPluginUrl: 'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.1.0/mapbox-gl-rtl-text.js'
 	}

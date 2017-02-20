@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.32.0 2017-02-17
+*  angular-mapboxgl-directive 0.32.1 2017-02-20
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -809,22 +809,24 @@ angular.module('mapboxgl-directive').factory('mapboxglControlsUtils', ['$window'
   }
 
   function removeAllControlsCreated (map) {
-    for (var attribute in _controlsCreated) {
-      if (attribute !== 'custom') {
-        var controlToRemove = _controlsCreated[attribute];
+    if (angular.isDefined(map) && map !== null) {
+      for (var attribute in _controlsCreated) {
+        if (attribute !== 'custom') {
+          var controlToRemove = _controlsCreated[attribute];
 
-        removeEventsFromControl(controlToRemove.control, controlToRemove.events, controlToRemove.isEventsListenedByMap, map);
+          removeEventsFromControl(controlToRemove.control, controlToRemove.events, controlToRemove.isEventsListenedByMap, map);
 
-        map.removeControl(controlToRemove.control);
-      } else {
-        var customControls = _controlsCreated[attribute];
+          map.removeControl(controlToRemove.control);
+        } else {
+          var customControls = _controlsCreated[attribute];
 
-        for (var iterator = 0, length = customControls.length; iterator < length; iterator++) {
-          var eachCustomControl = customControls[iterator];
+          for (var iterator = 0, length = customControls.length; iterator < length; iterator++) {
+            var eachCustomControl = customControls[iterator];
 
-          removeEventsFromControl(eachCustomControl.control, eachCustomControl.events, eachCustomControl.isEventsListenedByMap, map);
+            removeEventsFromControl(eachCustomControl.control, eachCustomControl.events, eachCustomControl.isEventsListenedByMap, map);
 
-          map.removeControl(eachCustomControl.control);
+            map.removeControl(eachCustomControl.control);
+          }
         }
       }
     }
@@ -1773,6 +1775,8 @@ angular.module('mapboxgl-directive').factory('mapboxglVideoUtils', ['mapboxglUti
   return mapboxglVideoUtils;
 }]);
 
+angular.module('mapboxgl-directive').value('version', '0.32.1');
+
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 	map: {
 		defaultHeight: '450px',
@@ -1798,7 +1802,6 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 		defaultCluster: false,
 		defaultClusterRadius: 50
 	},
-
 	plugins: {
 		rtlPluginUrl: 'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-rtl-text/v0.1.0/mapbox-gl-rtl-text.js'
 	}
