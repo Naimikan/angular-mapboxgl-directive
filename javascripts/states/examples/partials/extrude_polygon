@@ -17,7 +17,7 @@
         mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
       }])
 
-      .controller('PolygonGeojsonController', ['$scope', function ($scope) {
+      .controller('ExtrudePolygonController', ['$scope', function ($scope) {
         $scope.glSources = [
           {
             id: 'sourceTest',
@@ -65,20 +65,22 @@
           {
             id: 'layerTest',
             source: 'sourceTest',
-            type: 'fill',
+            type: 'fill-extrusion',
             paint: {
-              'fill-color': '#FF1A47',
-              'fill-opacity': 0.7,
-              'fill-outline-color': '#FF0033'
+              'fill-extrusion-color': '#FF1A47',
+              'fill-extrusion-opacity': 0.7,
+              'fill-extrusion-height': 15000,
+              'fill-extrusion-base': 0
             }
           }
         ];
       }]);
     </script>
   </head>
-  <body ng-controller="PolygonGeojsonController">
+  <body ng-controller="ExtrudePolygonController">
     <div mapboxgl
-      gl-zoom="{ value: 5 }"
+      gl-zoom="{ value: 6 }"
+      gl-pitch="{ value: 60 }"
       gl-center="{ lat: 45.137451890638886, lng: -68.13734351262877 }"
       gl-sources="glSources"
       gl-layers="glLayers">

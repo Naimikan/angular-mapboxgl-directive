@@ -24,6 +24,14 @@
     mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
   }])
 
+  .filter('unsafe', ['$sce', function ($sce) {
+    return function (value) {
+      if (value) {
+        return $sce.trustAsHtml(value);
+      }
+    };
+  }])
+
   .directive('fullHeight', ['$window', '$document', function ($window, $document) {
     function fullHeightDirectiveLink ($scope, $element, $attrs) {
       var documentHeight = $document[0].body.offsetHeight;

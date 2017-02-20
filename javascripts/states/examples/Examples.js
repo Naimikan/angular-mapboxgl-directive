@@ -22,6 +22,14 @@
       controller: 'SimpleMapController',
       uiSref: 'examples.simple_map'
     }, {
+      name: 'non_interactive_map',
+      title: 'Display a non-interactive map',
+      type: examplesTypes.styles,
+      description: 'Display a static map using glInteractive directive',
+      templateUrl: 'javascripts/states/examples/examples_source/non_interactive_map/NonInteractiveMapTemplate.html',
+      controller: 'NonInteractiveMapController',
+      uiSref: 'examples.non_interactive_map'
+    }, {
       name: 'show_navigation_control',
       title: 'Display Navigation control in a map',
       type: examplesTypes.controls,
@@ -157,6 +165,22 @@
       templateUrl: 'javascripts/states/examples/examples_source/polygon_geojson/PolygonGeojsonTemplate.html',
       controller: 'PolygonGeojsonController',
       uiSref: 'examples.add_polygon_geojson'
+    }, {
+      name: 'add_extrusion_polygon',
+      title: 'Extrude a GeoJSON polygon',
+      type: examplesTypes.layers,
+      description: 'Extrude a GeoJSON polygon with glSources and glLayers directives',
+      templateUrl: 'javascripts/states/examples/examples_source/extrude_polygon/ExtrudePolygonTemplate.html',
+      controller: 'ExtrudePolygonController',
+      uiSref: 'examples.add_extrusion_polygon'
+    }, {
+      name: 'move_point_route',
+      title: 'Move a point along a route',
+      type: examplesTypes.layers,
+      description: 'Animate a point along the distance of a route with <a href="http://turfjs.org/">Turf</a>',
+      templateUrl: 'javascripts/states/examples/examples_source/move_point_route/MovePointRouteTemplate.html',
+      controller: 'MovePointRouteController',
+      uiSref: 'examples.move_point_route'
     }
   ])
 

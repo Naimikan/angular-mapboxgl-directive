@@ -22,7 +22,7 @@
       <div class="panel panel-default">
         <div class="panel-heading">
           <h4 ng-bind="$state.current.data.title"></h4>
-          <em><small ng-bind="$state.current.data.description"></small></em>
+          <em><small ng-bind-html="$state.current.data.description | unsafe"></small></em>
         </div>
 
         <div class="panel-body" style="padding: 0">
