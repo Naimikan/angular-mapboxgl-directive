@@ -18,11 +18,17 @@ angular.module('mapboxgl-directive').directive('glInteractive', [function () {
 
     controller.getMap().then(function (map) {
       mapboxglScope.$watch('glInteractive', function (isInteractive) {
-        if (angular.isDefined(isInteractive) && typeof(isInteractive) === 'boolean') {
+        if (angular.isDefined(isInteractive) && isInteractive !== null && typeof(isInteractive) === 'boolean') {
           var functionToExecute = isInteractive ? 'enable' : 'disable';
 
           actionsAvailables.map(function (eachAction) {
             map[eachAction][functionToExecute]();
+          });
+
+          var cursorToShow = isInteractive ? 'auto' : 'default';
+
+          map.on('mousemove', function (event) {
+            map.getCanvas().style.cursor = cursorToShow;
           });
         }
       });

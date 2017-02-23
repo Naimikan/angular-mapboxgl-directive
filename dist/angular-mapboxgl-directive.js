@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.32.2 2017-02-20
+*  angular-mapboxgl-directive 0.32.2 2017-02-23
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -2222,11 +2222,17 @@ angular.module('mapboxgl-directive').directive('glInteractive', [function () {
 
     controller.getMap().then(function (map) {
       mapboxglScope.$watch('glInteractive', function (isInteractive) {
-        if (angular.isDefined(isInteractive) && typeof(isInteractive) === 'boolean') {
+        if (angular.isDefined(isInteractive) && isInteractive !== null && typeof(isInteractive) === 'boolean') {
           var functionToExecute = isInteractive ? 'enable' : 'disable';
 
           actionsAvailables.map(function (eachAction) {
             map[eachAction][functionToExecute]();
+          });
+
+          var cursorToShow = isInteractive ? 'auto' : 'default';
+
+          map.on('mousemove', function (event) {
+            map.getCanvas().style.cursor = cursorToShow;
           });
         }
       });
