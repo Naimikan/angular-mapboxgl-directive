@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').value('version', '0.32.2');
+angular.module('mapboxgl-directive').value('version', '0.32.3');
 
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 	map: {
