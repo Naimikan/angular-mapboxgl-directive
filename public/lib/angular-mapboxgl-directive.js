@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.32.2 2017-02-23
+*  angular-mapboxgl-directive 0.32.2 2017-02-24
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -193,7 +193,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     var updateHeight = function (map) {
       var newHeight = attrs.height;
 
-      if (angular.isUndefined(newHeight) || newHeight !== null) {
+      if (angular.isUndefined(newHeight) || newHeight === null) {
         newHeight = mapboxglConstants.map.defaultHeight;
       }
 
@@ -1378,7 +1378,9 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
     var popupOptions = object.options || {};
 
-		var popup = new mapboxgl.Popup(popupOptions).setLngLat(object.coordinates);
+		var popupCoordinates = object.coordinates === 'center' ? feature.geometry.coordinates : object.coordinates;
+
+		var popup = new mapboxgl.Popup(popupOptions).setLngLat(popupCoordinates);
 
 		if (angular.isDefined(object.onClose) && object.onClose !== null && angular.isFunction(object.onClose)) {
 			popup.on('close', function (event) {
@@ -1426,6 +1428,8 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
 		_popupsCreated.push({
 			popupInstance: popup,
+			isOnClick: object.isOnClick ? object.isOnClick : false,
+			isOnMouseover: object.isOnMouseover ? object.isOnMouseover : false,
 			layerId: feature.layer.id
 		});
 
@@ -2308,28 +2312,29 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
         if (features.length > 0) {
           var feature = features[0];
 
+          // GAL - It needs clarification
           // Check popup
-          var popupByLayer = mapboxglPopupUtils.getPopupByLayerId(feature.layer.id);
-
-          if (popupByLayer) {
-            if (!popupByLayer.isOpen()) {
-              popupByLayer.addTo(map);
-            }
-
-            popupByLayer.setLngLat(event.lngLat);
-          } else {
-            var popupObject = mapboxglLayerUtils.getPopupRelationByLayerId(feature.layer.id);
-
-            if (angular.isDefined(popupObject) && popupObject !== null && angular.isDefined(popupObject.onMouseover)) {
-              mapboxglPopupUtils.createPopupByObject(map, feature, {
-                coordinates: popupObject.onMouseover.coordinates || event.lngLat,
-                options: popupObject.onMouseover.options,
-                html: popupObject.onMouseover.message,
-                getScope: popupObject.onMouseover.getScope,
-                onClose: popupObject.onMouseover.onClose
-              });
-            }
-          }
+          // var popupByLayer = mapboxglPopupUtils.getPopupByLayerId(feature.layer.id);
+          //
+          // if (popupByLayer) {
+          //   if (!popupByLayer.isOpen()) {
+          //     popupByLayer.addTo(map);
+          //   }
+          //
+          //   popupByLayer.setLngLat(event.lngLat);
+          // } else {
+          //   var popupObject = mapboxglLayerUtils.getPopupRelationByLayerId(feature.layer.id);
+          //
+          //   if (angular.isDefined(popupObject) && popupObject !== null && angular.isDefined(popupObject.onMouseover)) {
+          //     mapboxglPopupUtils.createPopupByObject(map, feature, {
+          //       coordinates: popupObject.onMouseover.coordinates || event.lngLat,
+          //       options: popupObject.onMouseover.options,
+          //       html: popupObject.onMouseover.message,
+          //       getScope: popupObject.onMouseover.getScope,
+          //       onClose: popupObject.onMouseover.onClose
+          //     });
+          //   }
+          // }
 
           // Check events
           var layerEvents = mapboxglLayerUtils.getEventRelationByLayerId(feature.layer.id);

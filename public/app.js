@@ -21,15 +21,15 @@
   }])
 
   .controller('IndexController', ['$scope', '$window', '$timeout', 'mapboxglMapsData', '$compile', function ($scope, $window, $timeout, mapboxglMapsData, $compile) {
-    // $scope.glHeight = $window.innerHeight;
-    // $scope.glWidth = $window.innerWidth;
-    $scope.glHeight = '450px';
-    $scope.glWidth = '450px';
+    $scope.glHeight = $window.innerHeight;
+    $scope.glWidth = $window.innerWidth;
+    // $scope.glHeight = '450px';
+    // $scope.glWidth = '450px';
 
     $window.onresize = function (event) {
       $scope.$apply(function () {
-        // $scope.glHeight = event.target.innerHeight;
-        // $scope.glWidth = event.target.innerWidth;
+        $scope.glHeight = event.target.innerHeight;
+        $scope.glWidth = event.target.innerWidth;
       });
     };
 
@@ -372,10 +372,10 @@
               type: 'Feature',
               geometry: {
                 type: 'Point',
-                coordinates: routes[1].origin
+                coordinates: [2.15, 41.39]
               },
               properties: {
-                radius: 6,
+                radius: 'Feature 1',
                 animation: {
                   enabled: false,
                   animationFunction: function (map, sourceId, featureId, feature, animationData, deltaTime, end) {
@@ -399,7 +399,7 @@
                 coordinates: routes[1].origin
               },
               properties: {
-                radius: 6,
+                radius: 'Feature 2',
                 animation: {
                   enabled: false,
                   animationFunction: function (map, sourceId, featureId, feature, animationData, timestamp, end) {
@@ -434,13 +434,8 @@
         popup: {
           enabled: true,
           onClick: {
-            message: 'Hi Click!',
-            onClose: function (event, popupClosed) {
-              console.log(event, popupClosed);
-            }
-          },
-          onMouseover: {
-            message: 'Hi Mouseover!'
+            message: '<div class="metar-popup"><p>${radius}</p></div>',
+            coordinates: 'center'
           }
         }
       }, {
@@ -450,6 +445,22 @@
         paint: {
           'circle-radius': 12,
           'circle-color': '#006AFC'
+        },
+        popup: {
+          enabled: true,
+          onClick: {
+            message: '<div class="metar-popup"><p>${radius}</p></div>',
+            coordinates: 'center',
+            onClose: function (event, popupClosed) {
+              console.log(event, popupClosed);
+            }
+          }
+          // onMouseover: {
+          //   message: '<div class="metar-popup"><p>${radius}</p></div>',
+          //   onClose: function (event, popupClosed) {
+          //     console.log(event, popupClosed);
+          //   }
+          // }
         }
       }
     ];

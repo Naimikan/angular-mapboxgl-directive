@@ -70,7 +70,9 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
     var popupOptions = object.options || {};
 
-		var popup = new mapboxgl.Popup(popupOptions).setLngLat(object.coordinates);
+		var popupCoordinates = object.coordinates === 'center' ? feature.geometry.coordinates : object.coordinates;
+
+		var popup = new mapboxgl.Popup(popupOptions).setLngLat(popupCoordinates);
 
 		if (angular.isDefined(object.onClose) && object.onClose !== null && angular.isFunction(object.onClose)) {
 			popup.on('close', function (event) {
@@ -118,6 +120,8 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
 		_popupsCreated.push({
 			popupInstance: popup,
+			isOnClick: object.isOnClick ? object.isOnClick : false,
+			isOnMouseover: object.isOnMouseover ? object.isOnMouseover : false,
 			layerId: feature.layer.id
 		});
 

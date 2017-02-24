@@ -185,7 +185,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
     var updateHeight = function (map) {
       var newHeight = attrs.height;
 
-      if (angular.isUndefined(newHeight) || newHeight !== null) {
+      if (angular.isUndefined(newHeight) || newHeight === null) {
         newHeight = mapboxglConstants.map.defaultHeight;
       }
 
