@@ -20,7 +20,7 @@
     return directive;
   }])
 
-  .controller('IndexController', ['$scope', '$window', '$timeout', 'mapboxglMapsData', '$compile', function ($scope, $window, $timeout, mapboxglMapsData, $compile) {
+  .controller('IndexController', ['$scope', '$window', '$timeout', 'mapboxglMapsData', '$compile', 'version', function ($scope, $window, $timeout, mapboxglMapsData, $compile, version) {
     $scope.glHeight = $window.innerHeight;
     $scope.glWidth = $window.innerWidth;
     // $scope.glHeight = '450px';
@@ -178,6 +178,12 @@
       },
       geolocate: {
         enabled: true
+      },
+      fullscreen: {
+        enabled: true,
+        options: {
+          position: 'top-right'
+        }
       }
     };
 

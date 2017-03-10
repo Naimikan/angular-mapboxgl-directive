@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.32.3 2017-02-24
+*  angular-mapboxgl-directive 0.33.0 2017-03-10
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -741,6 +741,10 @@ angular.module('mapboxgl-directive').factory('mapboxglControlsUtils', ['$window'
         'error'
       ]
     }, {
+      name: 'fullscreen',
+      constructor: mapboxgl.FullscreenControl,
+      pluginName: 'mapboxgl.' + mapboxgl.FullscreenControl.name
+    }, {
       name: 'directions',
       constructor: mapboxgl.Directions || $window.MapboxDirections,
       pluginName: mapboxgl.Directions ? 'mapboxgl.Directions' : 'MapboxDirections',
@@ -893,43 +897,41 @@ angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope
     'webglcontextlost',
     'webglcontextrestored',
     'remove',
-    'mouseup',
-    'mousedown',
-    'mouseout',
-    'render',
-    'tiledataloading',
-    'movestart',
     'contextmenu',
-    'dblclick',
-    'click',
-    'touchcancel',
+    'styledata',
+    'data',
+    'error',
+    'moveend',
+    'move',
     'touchmove',
     'touchend',
-    'touchstart',
-    'sourcedataloading',
-    'styledataloading',
-    'mousemove',
+    'movestart',
+    'touchcancel',
     'load',
-    'move',
-    'moveend',
-    'error',
-    'data',
-    'styledata',
-    'sourcedata',
+    'sourcedataloading',
+    'dblclick',
+    'click',
+    'touchstart',
+    'mousemove',
+    'mouseup',
+    'mousedown',
+    'styledataloading',
     'dataloading',
-    'tiledata',
-    'zoomend',
+    'mouseout',
+    'render',
+    'sourcedata',
     'zoom',
+    'zoomend',
     'zoomstart',
     'boxzoomstart',
-    'boxzoomcancel',
     'boxzoomend',
-    'rotatestart',
+    'boxzoomcancel',
     'rotate',
+    'rotatestart',
     'rotateend',
-    'dragend',
     'drag',
     'dragstart',
+    'dragend',
     'pitch'
   ];
 
@@ -1785,7 +1787,12 @@ angular.module('mapboxgl-directive').factory('mapboxglVideoUtils', ['mapboxglUti
   return mapboxglVideoUtils;
 }]);
 
-angular.module('mapboxgl-directive').value('version', '0.32.3');
+angular.module('mapboxgl-directive').constant('version', {
+	full: '0.33.0',
+	major: 0,
+	minor: 33,
+	patch: 0
+});
 
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 	map: {
@@ -1953,6 +1960,10 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'map
 					enabled: true | false,
 					options: {}
         },
+				fullscreen: {
+					enabled: true | false,
+					options: {}
+			  },
 				directions: {
 					enabled: true | false,
 					options: {}
@@ -2568,7 +2579,7 @@ angular.module('mapboxgl-directive').directive('glMaxZoom', [function () {
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glMaxZoom', function (maxZoom) {
-				if (angular.isNumber(maxZoom) && (maxZoom >= 0 || maxZoom <= 20)) {
+				if (angular.isNumber(maxZoom) && (maxZoom >= 0 || maxZoom <= 22)) {
 					map.setMaxZoom(maxZoom);
 				} else {
 					throw new Error('Invalid max zoom');
@@ -2587,6 +2598,7 @@ angular.module('mapboxgl-directive').directive('glMaxZoom', [function () {
 
 	return directive;
 }]);
+
 angular.module('mapboxgl-directive').directive('glMinZoom', [function () {
 	function mapboxGlMinZoomDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {

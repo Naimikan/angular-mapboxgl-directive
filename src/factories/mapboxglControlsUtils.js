@@ -42,6 +42,10 @@ angular.module('mapboxgl-directive').factory('mapboxglControlsUtils', ['$window'
         'error'
       ]
     }, {
+      name: 'fullscreen',
+      constructor: mapboxgl.FullscreenControl,
+      pluginName: 'mapboxgl.' + mapboxgl.FullscreenControl.name
+    }, {
       name: 'directions',
       constructor: mapboxgl.Directions || $window.MapboxDirections,
       pluginName: mapboxgl.Directions ? 'mapboxgl.Directions' : 'MapboxDirections',

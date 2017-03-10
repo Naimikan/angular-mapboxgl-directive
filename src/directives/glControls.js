@@ -28,6 +28,10 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'map
 					enabled: true | false,
 					options: {}
         },
+				fullscreen: {
+					enabled: true | false,
+					options: {}
+			  },
 				directions: {
 					enabled: true | false,
 					options: {}
