@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.33.0 2017-03-10
+*  angular-mapboxgl-directive 0.33.1 2017-03-21
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -742,8 +742,8 @@ angular.module('mapboxgl-directive').factory('mapboxglControlsUtils', ['$window'
       ]
     }, {
       name: 'fullscreen',
-      constructor: mapboxgl.FullscreenControl,
-      pluginName: 'mapboxgl.' + mapboxgl.FullscreenControl.name
+      constructor: mapboxgl.FullscreenControl || undefined,
+      pluginName: mapboxgl.FullscreenControl ? 'mapboxgl.' + mapboxgl.FullscreenControl.name : 'mapboxgl.FullscreenControl'
     }, {
       name: 'directions',
       constructor: mapboxgl.Directions || $window.MapboxDirections,
@@ -1788,10 +1788,10 @@ angular.module('mapboxgl-directive').factory('mapboxglVideoUtils', ['mapboxglUti
 }]);
 
 angular.module('mapboxgl-directive').constant('version', {
-	full: '0.33.0',
+	full: '0.33.1',
 	major: 0,
 	minor: 33,
-	patch: 0
+	patch: 1
 });
 
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
