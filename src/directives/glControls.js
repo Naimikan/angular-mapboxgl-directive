@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'mapboxglControlsUtils', function ($rootScope, mapboxglControlsUtils) {
+angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'Utils', 'mapboxglControlsAvailables', function ($rootScope, Utils, mapboxglControlsAvailables) {
 	function mapboxGlControlsDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -6,62 +6,111 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'map
 
 		var mapboxglScope = controller.getMapboxGlScope();
 
-    /*
-      controls: {
-        navigation: {
-          enabled: true | false,
-					options: {}
-        },
-        scale: {
-          enabled: true | false,
-          options: {}
-        },
-        attribution: {
-          enabled: true | false,
-          options: {}
-        },
-        geolocate: {
-          enabled: true | false,
-          options: {}
-        },
-        geocoder: {
-					enabled: true | false,
-					options: {}
-        },
-				fullscreen: {
-					enabled: true | false,
-					options: {}
-			  },
-				directions: {
-					enabled: true | false,
-					options: {}
-				},
-				draw: {
-					enabled: true | false,
-					options: {}
-				},
-				logo: {
-					enabled: true | false,
-					options: {}
-				}
-      }
-    */
+    var _controlsCreated = {
+      custom: []
+    };
 
-		var controlsAvailables = mapboxglControlsUtils.getControlsAvailables();
+	  var addNewControlCreated = function (controlName, newControl, isCustomControl, controlEvents, isEventsListenedByMap) {
+	    var mapListenEvents = angular.isDefined(isEventsListenedByMap) ? isEventsListenedByMap : false;
+	    var events = angular.isDefined(controlEvents) && angular.isArray(controlEvents) ? controlEvents : [];
+
+	    if (isCustomControl) {
+	      _controlsCreated.custom.push({
+	        name: controlName || 'customControl_' + Utils.generateGUID(),
+	        control: newControl,
+	        isEventsListenedByMap: mapListenEvents,
+	        events: events
+	      });
+	    } else {
+	      _controlsCreated[controlName] = {
+	        control: newControl,
+	        isEventsListenedByMap: mapListenEvents,
+	        events: events
+	      };
+	    }
+	  };
+
+	  var removeEventsFromControl = function (control, events, isEventsListenedByMap, map) {
+	    var listener = isEventsListenedByMap ? map : control;
+
+	    events.map(function (eachEvent) {
+	      listener.off(eachEvent);
+	    });
+	  };
+
+	  var removeAllControlsCreated = function (map) {
+	    if (angular.isDefined(map) && map !== null) {
+	      for (var attribute in _controlsCreated) {
+	        if (attribute !== 'custom') {
+	          var controlToRemove = _controlsCreated[attribute];
+
+	          removeEventsFromControl(controlToRemove.control, controlToRemove.events, controlToRemove.isEventsListenedByMap, map);
+
+	          map.removeControl(controlToRemove.control);
+	        } else {
+	          var customControls = _controlsCreated[attribute];
+
+	          for (var iterator = 0, length = customControls.length; iterator < length; iterator++) {
+	            var eachCustomControl = customControls[iterator];
+
+	            removeEventsFromControl(eachCustomControl.control, eachCustomControl.events, eachCustomControl.isEventsListenedByMap, map);
+
+	            map.removeControl(eachCustomControl.control);
+	          }
+	        }
+	      }
+	    }
+
+	    // Reset controls created
+	    _controlsCreated = {
+	      custom: []
+	    };
+	  };
+
+	  var removeControlCreatedByName = function (map, controlName) {
+	    var found = false, removed = false;
+
+	    for (var attribute in _controlsCreated) {
+	      if (controlName === attribute) {
+	        found = _controlsCreated[attribute];
+	      }
+	    }
+
+	    if (!found) {
+	      _controlsCreated.custom.map(function (eachCustomControl) {
+	        if (eachCustomControl.name === controlName) {
+	          found = eachCustomControl.control;
+	        }
+	      });
+	    }
+
+	    if (found) {
+	      try {
+	        removeEventsFromControl(found.control, found.events, found.isEventsListenedByMap, map);
+
+	        map.removeControl(found.control);
+	        removed = true;
+	      } catch (error) {
+	        throw new Error('Error removing control \'' + controlName + '\' --> ' + error);
+	      }
+	    }
+
+	    return removed;
+	  };
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glControls', function (controls) {
         if (angular.isDefined(controls)) {
 					// Remove all created controls
-					mapboxglControlsUtils.removeAllControlsCreated(map);
+					removeAllControlsCreated(map);
 
-					controlsAvailables.map(function (eachControlAvailable) {
+					mapboxglControlsAvailables.map(function (eachControlAvailable) {
 						if (angular.isDefined(controls[eachControlAvailable.name]) && angular.isDefined(controls[eachControlAvailable.name].enabled) && controls[eachControlAvailable.name].enabled) {
 							if (angular.isDefined(eachControlAvailable.constructor) && angular.isFunction(eachControlAvailable.constructor)) {
 								var ControlConstructor = eachControlAvailable.constructor.bind.apply(eachControlAvailable.constructor, controls[eachControlAvailable.name].options);
 								var control = new ControlConstructor(controls[eachControlAvailable.name].options);
 
-								mapboxglControlsUtils.addNewControlCreated(eachControlAvailable.name, control, false, eachControlAvailable.eventsAvailables, eachControlAvailable.listenInMap);
+								addNewControlCreated(eachControlAvailable.name, control, false, eachControlAvailable.eventsAvailables, eachControlAvailable.listenInMap);
 
 								if (angular.isDefined(eachControlAvailable.eventsAvailables) && angular.isDefined(eachControlAvailable.eventsExposedName)) {
 									var listener = eachControlAvailable.listenInMap ? map : control;
@@ -94,7 +143,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'map
 
 									var customControlEvents = angular.isArray(eachCustomControl.events) ? eachCustomControl.events : [];
 
-									mapboxglControlsUtils.addNewControlCreated(eachCustomControl.name, customControl, true, customControlEvents, eachCustomControl.listenInMap);
+									addNewControlCreated(eachCustomControl.name, customControl, true, customControlEvents, eachCustomControl.listenInMap);
 
 									var listener = eachCustomControl.listenInMap ? map : customControl;
 
@@ -120,7 +169,7 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'map
 		});
 
 		scope.$on('$destroy', function () {
-			mapboxglControlsUtils.removeAllControlsCreated();
+			removeAllControlsCreated();
 		});
 	}
 

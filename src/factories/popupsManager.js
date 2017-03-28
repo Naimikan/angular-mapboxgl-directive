@@ -1,20 +1,22 @@
-angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUtils', 'mapboxglConstants', '$rootScope', '$compile', function (mapboxglUtils, mapboxglConstants, $rootScope, $compile) {
-	var _popupsCreated = [];
-
-	/*
+angular.module('mapboxgl-directive').factory('PopupsManager', ['Utils', 'mapboxglConstants', '$rootScope', '$compile', function (Utils, mapboxglConstants, $rootScope, $compile) {
+  /*
 		/\$\{(.+?)\}/g --> Lorem ${ipsum} lorem ${ipsum} --> ['${ipsum}', '${ipsum}']
 		/[^\$\{](.+)[^\}]/g --> ${ipsum} --> ipsum
 	*/
 	var _regexFindDollar = new RegExp(/\$\{(.+?)\}/g);
 	var _regexGetValueBetweenDollarClaudator = new RegExp(/[^\$\{](.+)[^\}]/g);
 
-	function getAllPopupsCreated () {
-		return _popupsCreated;
-	}
+  function PopupsManager () {
+    this.popupsCreated = [];
+  }
 
-	function getPopupByLayerId (layerId) {
-		if (angular.isDefined(layerId) && layerId !== null) {
-			var popupsFiltered = _popupsCreated.filter(function (each) {
+  PopupsManager.prototype.getAllPopupsCreated = function () {
+    return this.popupsCreated;
+  };
+
+  PopupsManager.prototype.getPopupByLayerId = function (layerId) {
+    if (angular.isDefined(layerId) && layerId !== null) {
+			var popupsFiltered = this.popupsCreated.filter(function (each) {
 				return each.layerId === layerId;
 			});
 
@@ -24,26 +26,26 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 				return false;
 			}
 		} else {
-			if (_popupsCreated.length > 0) {
-				return _popupsCreated.map(function (each) {
+			if (this.popupsCreated.length > 0) {
+				return this.popupsCreated.map(function (each) {
 					return each.popupInstance;
 				});
 			} else {
 				return false;
 			}
 		}
-	}
+  };
 
-	function removeAllPopupsCreated (map) {
-		_popupsCreated.map(function (eachPopup) {
+  PopupsManager.prototype.removeAllPopupsCreated = function () {
+    this.popupsCreated.map(function (eachPopup) {
 			eachPopup.popupInstance.remove();
 		});
 
-		_popupsCreated = [];
-	}
+		this.popupsCreated = [];
+  };
 
-	function removePopupByLayerId (map, layerId) {
-		var popupsByLayer = _popupsCreated.filter(function (eachPopup) {
+  PopupsManager.prototype.removePopupByLayerId = function (map, layerId) {
+    var popupsByLayer = this.popupsCreated.filter(function (eachPopup) {
 			return eachPopup.layerId === layerId;
 		});
 
@@ -51,13 +53,15 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 			eachPopup.popupInstance.remove();
 		});
 
-		_popupsCreated = _popupsCreated.filter(function (eachPopup) {
+		this.popupsCreated = this.popupsCreated.filter(function (eachPopup) {
 			return eachPopup.layerId !== layerId;
 		});
-	}
+  };
 
-	function createPopupByObject (map, feature, object) {
-		mapboxglUtils.checkObjects([
+  PopupsManager.prototype.createPopupByObject = function (map, feature, object) {
+    var self = this;
+
+    Utils.checkObjects([
       {
         name: 'Map',
         object: map
@@ -118,7 +122,7 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 
 		popup.addTo(map);
 
-		_popupsCreated.push({
+		self.popupsCreated.push({
 			popupInstance: popup,
 			isOnClick: object.isOnClick ? object.isOnClick : false,
 			isOnMouseover: object.isOnMouseover ? object.isOnMouseover : false,
@@ -126,15 +130,7 @@ angular.module('mapboxgl-directive').factory('mapboxglPopupUtils', ['mapboxglUti
 		});
 
     return popup;
-	}
+  };
 
-	var mapboxglPopupUtils = {
-		createPopupByObject: createPopupByObject,
-		getAllPopupsCreated: getAllPopupsCreated,
-		getPopupByLayerId: getPopupByLayerId,
-		removeAllPopupsCreated: removeAllPopupsCreated,
-		removePopupByLayerId: removePopupByLayerId
-	};
-
-	return mapboxglPopupUtils;
+  return PopupsManager;
 }]);

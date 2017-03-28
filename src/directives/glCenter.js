@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+angular.module('mapboxgl-directive').directive('glCenter', ['Utils', 'mapboxglConstants', function (Utils, mapboxglConstants) {
 	function mapboxGlCenterDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -8,7 +8,7 @@ angular.module('mapboxgl-directive').directive('glCenter', ['mapboxglUtils', 'ma
 
 		controller.getMap().then(function (map) {
 			mapboxglScope.$watch('glCenter', function (center, oldCenter) {
-				mapboxglUtils.validateAndFormatCenter(center).then(function (newCenter) {
+				Utils.validateAndFormatCenter(center).then(function (newCenter) {
 					if (newCenter) {
 						if (angular.isDefined(oldCenter) && center !== oldCenter) {
 							map.flyTo({ center: newCenter });

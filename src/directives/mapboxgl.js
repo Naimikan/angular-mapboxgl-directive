@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglUtils', 'mapboxglConstants', 'mapboxglEventsUtils', 'mapboxglMapsData', 'mapboxglAnimationUtils', function ($q, mapboxglUtils, mapboxglConstants, mapboxglEventsUtils, mapboxglMapsData, mapboxglAnimationUtils) {
+angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', 'mapboxglConstants', 'mapboxglEventsUtils', 'mapboxglMapsData', 'AnimationsManager', 'PopupsManager', function ($q, Utils, mapboxglConstants, mapboxglEventsUtils, mapboxglMapsData, AnimationsManager, PopupsManager) {
   function mapboxGlDirectiveController ($scope) {
     angular.extend(this, {
       _mapboxGlMap: $q.defer(),
@@ -10,6 +10,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       _persistentImage: mapboxglConstants.map.defaultPersistentImage,
       _persistentVideo: mapboxglConstants.map.defaultPersistentVideo,
       _elementDOM: null,
+      _animationManager: new AnimationsManager(),
+      _popupManager: new PopupsManager(),
 
       getMap: function () {
         return this._mapboxGlMap.promise;
@@ -21,6 +23,14 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
       getDOMElement: function () {
         return this._elementDOM;
+      },
+
+      getAnimationManager: function () {
+        return this._animationManager;
+      },
+
+      getPopupManager: function () {
+        return this._popupManager;
       },
 
       setDOMElement: function (elementDOM) {
@@ -157,7 +167,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       throw new Error('Your browser doesn\`t support Mapbox GL');
     }
 
-    if (angular.isDefined(attrs.rtlEnabled) && mapboxglUtils.stringToBoolean(attrs.rtlEnabled)) {
+    if (angular.isDefined(attrs.rtlEnabled) && Utils.stringToBoolean(attrs.rtlEnabled)) {
       if (mapboxgl.setRTLTextPlugin) {
         mapboxgl.setRTLTextPlugin(mapboxglConstants.plugins.rtlPluginUrl);
       } else {
@@ -167,7 +177,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
 
     controller.setDOMElement(element);
     controller.changeLoadingMap(true);
-    scope.mapboxglMapId = attrs.id ? attrs.id : mapboxglUtils.generateMapId();
+    scope.mapboxglMapId = attrs.id ? attrs.id : Utils.generateMapId();
     element.attr('id', scope.mapboxglMapId);
 
     var updateWidth = function (map) {
@@ -256,17 +266,17 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       style: scope.glStyle || mapboxglConstants.map.defaultStyle,
       center: mapboxglConstants.map.defaultCenter,
       zoom: angular.isDefined(scope.glZoom) && scope.glZoom !== null && angular.isDefined(scope.glZoom.value) && scope.glZoom.value !== null ? scope.glZoom.value : mapboxglConstants.map.defaultZoom,
-      hash: angular.isDefined(attrs.hash) ? mapboxglUtils.stringToBoolean(attrs.hash) : mapboxglConstants.map.defaultHash,
-      bearingSnap: angular.isDefined(attrs.bearingSnap) ? mapboxglUtils.stringToNumber(attrs.bearingSnap) : mapboxglConstants.map.defaultBearingSnap,
+      hash: angular.isDefined(attrs.hash) ? Utils.stringToBoolean(attrs.hash) : mapboxglConstants.map.defaultHash,
+      bearingSnap: angular.isDefined(attrs.bearingSnap) ? Utils.stringToNumber(attrs.bearingSnap) : mapboxglConstants.map.defaultBearingSnap,
       logoPosition: angular.isDefined(attrs.logoPosition) ? attrs.logoPosition : mapboxglConstants.map.defaultLogoPosition,
-      failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) ? mapboxglUtils.stringToBoolean(attrs.failIfMajorPerformanceCaveat) : mapboxglConstants.map.defaultFailIfMajorPerformanceCaveat,
-      preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) ? mapboxglUtils.stringToBoolean(attrs.preserveDrawingBuffer) : mapboxglConstants.map.defaultPreserveDrawingBuffer,
-      trackResize: angular.isDefined(attrs.trackResize) ? mapboxglUtils.stringToBoolean(attrs.trackResize) : mapboxglConstants.map.defaultTrackResize,
-      renderWorldCopies: angular.isDefined(attrs.renderWorldCopies) ? mapboxglUtils.stringToBoolean(attrs.renderWorldCopies) : mapboxglConstants.map.defaultRenderWorldCopies,
+      failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) ? Utils.stringToBoolean(attrs.failIfMajorPerformanceCaveat) : mapboxglConstants.map.defaultFailIfMajorPerformanceCaveat,
+      preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) ? Utils.stringToBoolean(attrs.preserveDrawingBuffer) : mapboxglConstants.map.defaultPreserveDrawingBuffer,
+      trackResize: angular.isDefined(attrs.trackResize) ? Utils.stringToBoolean(attrs.trackResize) : mapboxglConstants.map.defaultTrackResize,
+      renderWorldCopies: angular.isDefined(attrs.renderWorldCopies) ? Utils.stringToBoolean(attrs.renderWorldCopies) : mapboxglConstants.map.defaultRenderWorldCopies,
       attributionControl: false
     };
 
-    mapboxglUtils.validateAndFormatCenter(scope.glCenter).then(function (newCenter) {
+    Utils.validateAndFormatCenter(scope.glCenter).then(function (newCenter) {
       if (newCenter) { initObject.center = newCenter; }
 
       var mapboxGlMap = new mapboxgl.Map(initObject);
@@ -274,7 +284,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       mapboxglMapsData.addMap(scope.mapboxglMapId, mapboxGlMap);
 
       mapboxglEventsUtils.exposeMapEvents(mapboxGlMap);
-      mapboxglAnimationUtils.initAnimationSystem();
+      controller.getAnimationManager().initAnimationSystem();
 
       //scope.isLoading = true;
       //controller.changeLoadingMap(mapboxGlMap, scope.isLoading);
@@ -362,7 +372,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'mapboxglU
       });
 
       scope.$on('$destroy', function () {
-        mapboxglAnimationUtils.destroy();
+        controller.getAnimationManager().destroy();
         mapboxglMapsData.removeMapById(scope.mapboxglMapId);
 
         mapboxGlMap.remove();

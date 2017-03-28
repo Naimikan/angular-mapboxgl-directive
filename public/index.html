@@ -22,7 +22,17 @@
     <script src="app.js"></script>
   </head>
   <body ng-controller="IndexController" style="margin: 0;">
-    <div
+    <div ng-repeat="eachMap in maps">
+      <div
+        mapboxgl
+        id="{{eachMap.id}}"
+        gl-controls="eachMap.controls"
+        gl-sources="eachMap.sources"
+        gl-layers="eachMap.layers">
+      </div>
+    </div>
+
+    <!-- <div
       mapboxgl
       gl-controls="glControls"
       gl-style="glStyle"
@@ -33,7 +43,7 @@
       render-world-copies="false"
       rtl-enabled="true"
       width="{{glWidth}}"
-      height="{{glHeight}}"></div>
+      height="{{glHeight}}"></div> -->
 
 
     <!-- <div mapboxgl-compare compare-settings="{ mousemove: false }">

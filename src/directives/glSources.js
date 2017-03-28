@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').directive('glSources', ['mapboxglSourceUtils', '$timeout', '$q', function (mapboxglSourceUtils, $timeout, $q) {
+angular.module('mapboxgl-directive').directive('glSources', ['SourcesManager', '$timeout', '$q', function (SourcesManager, $timeout, $q) {
   function mapboxGlSourcesDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -6,11 +6,13 @@ angular.module('mapboxgl-directive').directive('glSources', ['mapboxglSourceUtil
 
 		var mapboxglScope = controller.getMapboxGlScope();
 
+    var sourceManager = new SourcesManager(controller.getAnimationManager());
+
     function createOrUpdateSource (map, sourceObject) {
-      if (mapboxglSourceUtils.existSourceById(sourceObject.id)) {
-        mapboxglSourceUtils.updateSourceByObject(map, sourceObject);
+      if (sourceManager.existSourceById(sourceObject.id)) {
+        sourceManager.updateSourceByObject(map, sourceObject);
       } else {
-        mapboxglSourceUtils.createSourceByObject(map, sourceObject);
+        sourceManager.createSourceByObject(map, sourceObject);
       }
     }
 
@@ -33,7 +35,7 @@ angular.module('mapboxgl-directive').directive('glSources', ['mapboxglSourceUtil
         return angular.isDefined(eachSourceId);
       });
 
-      var sourcesToBeRemoved = mapboxglSourceUtils.getCreatedSources();
+      var sourcesToBeRemoved = sourceManager.getCreatedSources();
 
       sourcesIds.map(function (eachSourceId) {
         sourcesToBeRemoved = sourcesToBeRemoved.filter(function (eachSourceToBeRemoved) {
@@ -42,7 +44,7 @@ angular.module('mapboxgl-directive').directive('glSources', ['mapboxglSourceUtil
       });
 
       sourcesToBeRemoved.map(function (eachSourceToBeRemoved) {
-        mapboxglSourceUtils.removeSourceById(map, eachSourceToBeRemoved);
+        sourceManager.removeSourceById(map, eachSourceToBeRemoved);
       });
 
       defer.resolve();
@@ -71,7 +73,7 @@ angular.module('mapboxgl-directive').directive('glSources', ['mapboxglSourceUtil
     });
 
     scope.$on('$destroy', function () {
-      mapboxglSourceUtils.removeAllCreatedSources();
+      sourceManager.removeAllCreatedSources();
     });
   }
 

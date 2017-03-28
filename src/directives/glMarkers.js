@@ -1,32 +1,23 @@
-angular.module('mapboxgl-directive').directive('glMarkers', ['mapboxglMarkerUtils', function (mapboxglMarkerUtils) {
+angular.module('mapboxgl-directive').directive('glMarkers', ['MarkersManager', function (MarkersManager) {
   function mapboxGlMarkersDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
 		}
 
 		var mapboxglScope = controller.getMapboxGlScope();
+    var popupsManager = controller.getPopupManager();
 
-    var _markersCreated = [];
-
-    var removeAllMarkersCreated = function () {
-      _markersCreated.map(function (eachMarker) {
-        eachMarker.remove();
-      });
-
-      _markersCreated = [];
-    };
+    var markerManager = new MarkersManager(popupsManager);
 
     var markersWatched = function (map, markers) {
       if (angular.isDefined(markers)) {
-        removeAllMarkersCreated();
+        markerManager.removeAllMarkersCreated();
 
         if (Object.prototype.toString.call(markers) === Object.prototype.toString.call({})) {
-          var markerCreated = mapboxglMarkerUtils.createMarkerByObject(map, markers);
-          _markersCreated.push(markerCreated);
+          markerManager.createMarkerByObject(map, markers);
         } else if (Object.prototype.toString.call(markers) === Object.prototype.toString.call([])) {
           markers.map(function (eachMarker) {
-            var eachMarkerCreated = mapboxglMarkerUtils.createMarkerByObject(map, eachMarker);
-            _markersCreated.push(eachMarkerCreated);
+            markerManager.createMarkerByObject(map, eachMarker);
           });
         } else {
           throw new Error('Invalid marker parameter');
@@ -42,6 +33,7 @@ angular.module('mapboxgl-directive').directive('glMarkers', ['mapboxglMarkerUtil
 
     scope.$on('$destroy', function () {
       // ToDo: remove all markers
+      markerManager.removeAllMarkersCreated();
     });
   }
 

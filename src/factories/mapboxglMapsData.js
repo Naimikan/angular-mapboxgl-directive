@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').factory('mapboxglMapsData', ['mapboxglUtils', function (mapboxglUtils) {
+angular.module('mapboxgl-directive').factory('mapboxglMapsData', ['Utils', function (Utils) {
   var _mapInstances = [];
 
   function addMap (mapId, mapInstance) {
@@ -13,7 +13,7 @@ angular.module('mapboxgl-directive').factory('mapboxglMapsData', ['mapboxglUtils
       return eachMap.id !== mapId;
     });
 
-    // var mapIndexOf = mapboxglUtils.arrayObjectIndexOf(_mapInstances, mapId, 'id');
+    // var mapIndexOf = Utils.arrayObjectIndexOf(_mapInstances, mapId, 'id');
     //
     // if (mapIndexOf !== -1) {
     //   var mapObject = _mapInstances[mapIndexOf];
@@ -36,7 +36,7 @@ angular.module('mapboxgl-directive').factory('mapboxglMapsData', ['mapboxglUtils
   }
 
   function getMapById (mapId) {
-    var mapIndexOf = mapboxglUtils.arrayObjectIndexOf(_mapInstances, mapId, 'id');
+    var mapIndexOf = Utils.arrayObjectIndexOf(_mapInstances, mapId, 'id');
 
     if (mapIndexOf !== -1) {
       return _mapInstances[mapIndexOf].mapInstance;

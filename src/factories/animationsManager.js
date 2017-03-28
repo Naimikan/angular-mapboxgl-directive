@@ -1,13 +1,13 @@
-angular.module('mapboxgl-directive').factory('mapboxglAnimationUtils', ['$window', '$q', 'mapboxglUtils', function ($window, $q, mapboxglUtils) {
-  var _animationFunctionStack = [];
-  var _requestedAnimationFrame = false;
-  var _sourcesAnimation = [];
-  var _animationId = null;
+angular.module('mapboxgl-directive').factory('AnimationsManager', ['$window', '$q', 'Utils', function ($window, $q, Utils) {
+  function AnimationsManager () {
+    this.animationFunctionStack = [];
+    this.animationId = null;
+  }
 
-  function _executeFunctionStack (deltaTime) {
+  AnimationsManager.prototype.executeFunctionStack = function (deltaTime) {
     var featuresBySource = {};
 
-    _animationFunctionStack.forEach(function (eachFunction) {
+    this.animationFunctionStack.forEach(function (eachFunction) {
       eachFunction.animationParameters.deltaTime = deltaTime;
 
       eachFunction.animationFunction(eachFunction.animationParameters);
@@ -23,9 +23,9 @@ angular.module('mapboxgl-directive').factory('mapboxglAnimationUtils', ['$window
     });
 
     return featuresBySource;
-  }
+  };
 
-  function _updateSourcesData (featuresBySource) {
+  AnimationsManager.prototype.updateSourcesData = function (featuresBySource) {
     for (var iterator in featuresBySource) {
       if (featuresBySource.hasOwnProperty(iterator)) {
         var map = featuresBySource[iterator].map;
@@ -43,25 +43,25 @@ angular.module('mapboxgl-directive').factory('mapboxglAnimationUtils', ['$window
         map.getSource(iterator).setData(data);
       }
     }
-  }
+  };
 
-  function addAnimationFunction (sourceId, featureId, animationFunction, animationParameters) {
+  AnimationsManager.prototype.addAnimationFunction = function (sourceId, featureId, animationFunction, animationParameters) {
     if (angular.isDefined(animationFunction) && angular.isFunction(animationFunction)) {
-      _animationFunctionStack.push({
+      this.animationFunctionStack.push({
         sourceId: sourceId,
         featureId: featureId,
         animationFunction: animationFunction,
         animationParameters: animationParameters
       });
     }
-  }
+  };
 
-  function updateAnimationFunction (featureId, animationFunction, animationData) {
+  AnimationsManager.prototype.updateAnimationFunction = function (featureId, animationFunction, animationData) {
     if (angular.isDefined(animationFunction) && angular.isFunction(animationFunction)) {
-      var indexOf = mapboxglUtils.arrayObjectIndexOf(_animationFunctionStack, featureId, 'featureId');
+      var indexOf = Utils.arrayObjectIndexOf(this.animationFunctionStack, featureId, 'featureId');
 
       if (indexOf !== -1) {
-        angular.extend(_animationFunctionStack[indexOf].animationParameters, {
+        angular.extend(this.animationFunctionStack[indexOf].animationParameters, {
           animationFunction: animationFunction,
           animationData: animationData
         });
@@ -69,29 +69,29 @@ angular.module('mapboxgl-directive').factory('mapboxglAnimationUtils', ['$window
         throw new Error('Feature ID doesn\'t exist');
       }
     }
-  }
+  };
 
-  function existAnimationByFeatureId (featureId) {
-    return mapboxglUtils.arrayObjectIndexOf(_animationFunctionStack, featureId, 'featureId') !== -1;
-  }
+  AnimationsManager.prototype.existAnimationByFeatureId = function (featureId) {
+    return Utils.arrayObjectIndexOf(this.animationFunctionStack, featureId, 'featureId') !== -1;
+  };
 
-  function removeAnimationStack () {
-    _animationFunctionStack = [];
-  }
+  AnimationsManager.prototype.removeAnimationStack = function () {
+    this.animationFunctionStack = [];
+  };
 
-  function removeAnimationBySourceId (sourceId) {
-    _animationFunctionStack = _animationFunctionStack.filter(function (eachFunction) {
+  AnimationsManager.prototype.removeAnimationBySourceId = function (sourceId) {
+    this.animationFunctionStack = this.animationFunctionStack.filter(function (eachFunction) {
       return eachFunction.sourceId !== sourceId;
     });
-  }
+  };
 
-  function removeAnimationByFeatureId (featureId) {
-    _animationFunctionStack = _animationFunctionStack.filter(function (eachFunction) {
+  AnimationsManager.prototype.removeAnimationByFeatureId = function (featureId) {
+    this.animationFunctionStack = this.animationFunctionStack.filter(function (eachFunction) {
       return eachFunction.featureId !== featureId;
     });
-  }
+  };
 
-  function initAnimationSystem () {
+  AnimationsManager.prototype.initAnimationSystem = function () {
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
 
@@ -120,43 +120,31 @@ angular.module('mapboxgl-directive').factory('mapboxglAnimationUtils', ['$window
       };
     }
 
-    var deltaTime = 0, lastFrameTimeMs = 0;
+    var deltaTime = 0, lastFrameTimeMs = 0, self = this;
 
     var animationLoop = function (timestamp) {
       deltaTime += timestamp - lastFrameTimeMs;
       lastFrameTimeMs = timestamp;
 
       // Get all animationFunctions and execute them
-      var featuresBySource = _executeFunctionStack(deltaTime);
+      var featuresBySource = self.executeFunctionStack(deltaTime);
       // Setdata of all animated sources
-      _updateSourcesData(featuresBySource);
+      self.updateSourcesData(featuresBySource);
 
-      _animationId = window.requestAnimationFrame(animationLoop);
+      self.animationId = window.requestAnimationFrame(animationLoop);
     };
 
-    _animationId = window.requestAnimationFrame(animationLoop);
-  }
-
-  function stopAnimationLoop () {
-    window.cancelAnimationFrame(_animationId);
-  }
-
-  function destroy () {
-    stopAnimationLoop();
-    removeAnimationStack();
-  }
-
-  var mapboxglAnimationUtils = {
-    initAnimationSystem: initAnimationSystem,
-    addAnimationFunction: addAnimationFunction,
-    updateAnimationFunction: updateAnimationFunction,
-    existAnimationByFeatureId: existAnimationByFeatureId,
-    removeAnimationBySourceId: removeAnimationBySourceId,
-    removeAnimationByFeatureId: removeAnimationByFeatureId,
-    removeAnimationStack: removeAnimationStack,
-    stopAnimationLoop: stopAnimationLoop,
-    destroy: destroy
+    self.animationId = window.requestAnimationFrame(animationLoop);
   };
 
-  return mapboxglAnimationUtils;
+  AnimationsManager.prototype.stopAnimationLoop = function () {
+    window.cancelAnimationFrame(this.animationId);
+  };
+
+  AnimationsManager.prototype.destroy = function () {
+    this.stopAnimationLoop();
+    this.removeAnimationStack();
+  };
+
+  return AnimationsManager;
 }]);

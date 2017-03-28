@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', function ($window, $q) {
+angular.module('mapboxgl-directive').factory('Utils', ['$window', '$q', function ($window, $q) {
 	/*
 		Generate Map ID by Date timestamp
 
@@ -71,27 +71,27 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 			if (!isNaN(convertedNumber)) {
 				return convertedNumber;
 			} else {
-				throw new Error('mapboxglUtils.stringToNumber --> Invalid stringValue');
+				throw new Error('Utils.stringToNumber --> Invalid stringValue');
 			}
 		}
 	}
 
 	function checkObjects (objectsArray) {
 		if (angular.isDefined(objectsArray) && angular.isArray(objectsArray)) {
-      objectsArray.map(function (eachObject) {
-        if (angular.isUndefined(eachObject.object) || eachObject.object === null) {
-          throw new Error(eachObject.name + ' is undefined');
-        }
+			objectsArray.map(function (eachObject) {
+				if (angular.isUndefined(eachObject.object) || eachObject.object === null) {
+					throw new Error(eachObject.name + ' is undefined');
+				}
 
-        if (angular.isDefined(eachObject.attributes) && angular.isArray(eachObject.attributes)) {
-          eachObject.attributes.map(function (eachAttribute) {
-            if (angular.isUndefined(eachObject.object[eachAttribute] || eachObject.object[eachAttribute] === null)) {
-              throw new Error(eachObject.name + ' ' + eachAttribute + ' is undefined');
-            }
-          });
-        }
-      });
-    }
+				if (angular.isDefined(eachObject.attributes) && angular.isArray(eachObject.attributes)) {
+					eachObject.attributes.map(function (eachAttribute) {
+						if (angular.isUndefined(eachObject.object[eachAttribute] || eachObject.object[eachAttribute] === null)) {
+							throw new Error(eachObject.name + ' ' + eachAttribute + ' is undefined');
+						}
+					});
+				}
+			});
+		}
 	}
 
 	function generateGUID () {
@@ -102,7 +102,7 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 		return generatePiece() + generatePiece() + '-' + generatePiece() + '-' + generatePiece() + '-' + generatePiece() + '-' + generatePiece() + generatePiece() + generatePiece();
 	}
 
-	var mapboxglUtils = {
+	var Utils = {
 		generateMapId: generateMapId,
 		validateAndFormatCenter: validateAndFormatCenter,
 		arrayObjectIndexOf: arrayObjectIndexOf,
@@ -112,5 +112,5 @@ angular.module('mapboxgl-directive').factory('mapboxglUtils', ['$window', '$q', 
 		generateGUID: generateGUID
 	};
 
-	return mapboxglUtils;
+	return Utils;
 }]);

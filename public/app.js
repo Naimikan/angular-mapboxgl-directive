@@ -43,6 +43,131 @@
       };
     };
 
+    $scope.maps = [
+      {
+        id: 'firstMap',
+        controls: {
+          navigation: {
+            enabled: true,
+            options: {
+              position: 'top-left'
+            }
+          }
+        },
+        sources: [
+          {
+            id: 'source1',
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  properties: {},
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [0, 0]
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        layers: [
+          {
+            id: 'layer1',
+            type: 'circle',
+            source: 'source1',
+            paint: {
+              'circle-radius': 5,
+              'circle-color': '#FFA222'
+            }
+          }
+        ]
+      }, {
+        id: 'secondMap',
+        controls: {
+          scale: {
+            enabled: true,
+            options: {
+              position: 'bottom-left'
+            }
+          }
+        },
+        sources: [
+          {
+            id: 'source1',
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  properties: {},
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [2, 2]
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        layers: [
+          {
+            id: 'layer1',
+            type: 'circle',
+            source: 'source1',
+            paint: {
+              'circle-radius': 5,
+              'circle-color': '#FF12A2'
+            }
+          }
+        ]
+      }, {
+        id: 'thirdMap',
+        controls: {
+          attribution: {
+            enabled: true,
+            options: {
+              compact: true
+            }
+          }
+        },
+        sources: [
+          {
+            id: 'source1',
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  properties: {},
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [6, 6]
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        layers: [
+          {
+            id: 'layer1',
+            type: 'circle',
+            source: 'source1',
+            paint: {
+              'circle-radius': 5,
+              'circle-color': '#FF87A2'
+            }
+          }
+        ]
+      }
+    ];
+
+
 
 
     $scope.persistentGeojson = true;

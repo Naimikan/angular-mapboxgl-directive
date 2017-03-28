@@ -1,6 +1,6 @@
-angular.module('mapboxgl-directive').factory('mapboxglVideoUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+angular.module('mapboxgl-directive').factory('mapboxglVideoUtils', ['Utils', 'mapboxglConstants', function (Utils, mapboxglConstants) {
   function createVideoByObject (map, object) {
-    mapboxglUtils.checkObjects([
+    Utils.checkObjects([
       {
         name: 'Map',
         object: map

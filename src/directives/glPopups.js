@@ -1,20 +1,21 @@
-angular.module('mapboxgl-directive').directive('glPopups', ['mapboxglPopupUtils', function (mapboxglPopupUtils) {
+angular.module('mapboxgl-directive').directive('glPopups', [function () {
   function mapboxGlPopupDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
 		}
 
 		var mapboxglScope = controller.getMapboxGlScope();
+    var popupsManager = controller.getPopupManager();
 
     var popupsWatched = function (map, popups) {
       if (angular.isDefined(popups)) {
-        mapboxglPopupUtils.removeAllPopupsCreated();
+        popupsManager.removeAllPopupsCreated();
 
         if (Object.prototype.toString.call(popups) === Object.prototype.toString.call({})) {
-          mapboxglPopupUtils.createPopupByObject(map, popups);
+          popupsManager.createPopupByObject(map, popups);
         } else if (Object.prototype.toString.call(popups) === Object.prototype.toString.call([])) {
           popups.map(function (eachPopup) {
-            mapboxglPopupUtils.createPopupByObject(map, eachPopup);
+            popupsManager.createPopupByObject(map, eachPopup);
           });
         } else {
           throw new Error('Invalid popup parameter');
@@ -29,7 +30,7 @@ angular.module('mapboxgl-directive').directive('glPopups', ['mapboxglPopupUtils'
     });
 
     scope.$on('$destroy', function () {
-      mapboxglPopupUtils.removeAllPopupsCreated();
+      popupsManager.removeAllPopupsCreated();
     });
   }
 

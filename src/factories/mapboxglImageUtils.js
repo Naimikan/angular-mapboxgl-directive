@@ -1,6 +1,6 @@
-angular.module('mapboxgl-directive').factory('mapboxglImageUtils', ['mapboxglUtils', 'mapboxglConstants', function (mapboxglUtils, mapboxglConstants) {
+angular.module('mapboxgl-directive').factory('mapboxglImageUtils', ['Utils', 'mapboxglConstants', function (Utils, mapboxglConstants) {
 	function createImageByObject (map, object) {
-		mapboxglUtils.checkObjects([
+		Utils.checkObjects([
       {
         name: 'Map',
         object: map

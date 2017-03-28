@@ -1,13 +1,16 @@
-angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils', 'mapboxglPopupUtils', '$timeout', '$q', function (mapboxglLayerUtils, mapboxglPopupUtils, $timeout, $q) {
+angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$timeout', '$q', function (LayersManager, $timeout, $q) {
   function mapboxGlLayersDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
 		}
 
 		var mapboxglScope = controller.getMapboxGlScope();
+    var popupsManager = controller.getPopupManager();
+
+    var layersManager = new LayersManager(popupsManager);
 
     function disableLayerEvents (map) {
-      mapboxglPopupUtils.removeAllPopupsCreated(map);
+      popupsManager.removeAllPopupsCreated(map);
 
       map.off('click');
       map.off('mousemove');
@@ -18,7 +21,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
         event.originalEvent.preventDefault();
         event.originalEvent.stopPropagation();
 
-        var allLayers = mapboxglLayerUtils.getCreatedLayers();
+        var allLayers = layersManager.getCreatedLayers();
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
 
@@ -26,10 +29,10 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
           var feature = features[0];
 
           // Check popup
-          var popupObject = mapboxglLayerUtils.getPopupRelationByLayerId(feature.layer.id);
+          var popupObject = layersManager.getPopupRelationByLayerId(feature.layer.id);
 
           if (angular.isDefined(popupObject) && popupObject !== null && angular.isDefined(popupObject.onClick)) {
-            mapboxglPopupUtils.createPopupByObject(map, feature, {
+            popupsManager.createPopupByObject(map, feature, {
               coordinates: popupObject.onClick.coordinates || event.lngLat,
               options: popupObject.onClick.options,
               html: popupObject.onClick.message,
@@ -39,7 +42,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
           }
 
           // Check events
-          var layerEvents = mapboxglLayerUtils.getEventRelationByLayerId(feature.layer.id);
+          var layerEvents = layersManager.getEventRelationByLayerId(feature.layer.id);
 
           if (angular.isDefined(layerEvents) && layerEvents !== null && angular.isDefined(layerEvents.onClick) && angular.isFunction(layerEvents.onClick)) {
             layerEvents.onClick(map, feature, features);
@@ -48,7 +51,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
       });
 
       map.on('mousemove', function (event) {
-        var allLayers = mapboxglLayerUtils.getCreatedLayers();
+        var allLayers = layersManager.getCreatedLayers();
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
         map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
@@ -58,7 +61,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
 
           // GAL - It needs clarification
           // Check popup
-          // var popupByLayer = mapboxglPopupUtils.getPopupByLayerId(feature.layer.id);
+          // var popupByLayer = popupsManager.getPopupByLayerId(feature.layer.id);
           //
           // if (popupByLayer) {
           //   if (!popupByLayer.isOpen()) {
@@ -67,10 +70,10 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
           //
           //   popupByLayer.setLngLat(event.lngLat);
           // } else {
-          //   var popupObject = mapboxglLayerUtils.getPopupRelationByLayerId(feature.layer.id);
+          //   var popupObject = layersManager.getPopupRelationByLayerId(feature.layer.id);
           //
           //   if (angular.isDefined(popupObject) && popupObject !== null && angular.isDefined(popupObject.onMouseover)) {
-          //     mapboxglPopupUtils.createPopupByObject(map, feature, {
+          //     popupsManager.createPopupByObject(map, feature, {
           //       coordinates: popupObject.onMouseover.coordinates || event.lngLat,
           //       options: popupObject.onMouseover.options,
           //       html: popupObject.onMouseover.message,
@@ -81,7 +84,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
           // }
 
           // Check events
-          var layerEvents = mapboxglLayerUtils.getEventRelationByLayerId(feature.layer.id);
+          var layerEvents = layersManager.getEventRelationByLayerId(feature.layer.id);
 
           if (angular.isDefined(layerEvents) && layerEvents !== null && angular.isDefined(layerEvents.onMouseover) && angular.isFunction(layerEvents.onMouseover)) {
             layerEvents.onMouseover(map, feature, features);
@@ -91,10 +94,10 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
     }
 
     function createOrUpdateLayer (map, layerObject) {
-      if (mapboxglLayerUtils.existLayerById(layerObject.id)) {
-        mapboxglLayerUtils.updateLayerByObject(map, layerObject);
+      if (layersManager.existLayerById(layerObject.id)) {
+        layersManager.updateLayerByObject(map, layerObject);
       } else {
-        mapboxglLayerUtils.createLayerByObject(map, layerObject);
+        layersManager.createLayerByObject(map, layerObject);
       }
 
       if (angular.isDefined(layerObject.animation) && angular.isDefined(layerObject.animation.enabled) && layerObject.animation.enabled) {
@@ -129,7 +132,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
         return angular.isDefined(eachLayerId);
       });
 
-      var layersToBeRemoved = mapboxglLayerUtils.getCreatedLayers();
+      var layersToBeRemoved = layersManager.getCreatedLayers();
 
       layersIds.map(function (eachLayerId) {
         layersToBeRemoved = layersToBeRemoved.filter(function (eachLayerToBeRemoved) {
@@ -138,7 +141,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
       });
 
       layersToBeRemoved.map(function (eachLayerToBeRemoved) {
-        mapboxglLayerUtils.removeLayerById(map, eachLayerToBeRemoved);
+        layersManager.removeLayerById(map, eachLayerToBeRemoved);
       });
 
       defer.resolve();
@@ -171,7 +174,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['mapboxglLayerUtils'
     });
 
     scope.$on('$destroy', function () {
-      mapboxglLayerUtils.removeAllCreatedLayers();
+      layersManager.removeAllCreatedLayers();
     });
   }
 
