@@ -7,47 +7,41 @@
     function CustomControl (options) {
       this.options = this.options || {};
 
-      mapboxgl.util.extend(this.options, options);
+      angular.extend(this.options, options);
     }
 
     CustomControl.prototype = new mapboxgl.Evented();
 
-    mapboxgl.util.extend(CustomControl.prototype, {
-      options: {
-        position: 'bottom-left'
-      },
+    CustomControl.prototype.onAdd = function (map) {
+      var self = this;
 
-      onAdd: function (map) {
-        var self = this;
+      self.map = map;
 
-        self.map = map;
+      var container = document.createElement('div');
+      container.className = 'mapboxgl-ctrl';
 
-        var container = document.createElement('div');
-        container.className = 'mapboxgl-ctrl';
+      map.getContainer().appendChild(container);
 
-        map.getContainer().appendChild(container);
+      var buttonContainer = document.createElement('div');
+      var button = document.createElement('button');
+      button.className = 'mapboxgl-ctrl-icon';
+      button.style.height = '30px';
+      button.style.width = '30px';
+      button.style['background-color'] = '#EF444D';
 
-        var buttonContainer = document.createElement('div');
-        var button = document.createElement('button');
-        button.className = 'mapboxgl-ctrl-icon';
-        button.style.height = '30px';
-        button.style.width = '30px';
-        button.style['background-color'] = '#EF444D';
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
 
-        button.addEventListener('click', function (event) {
-          event.preventDefault();
-          event.stopPropagation();
+        self.fire('buttonClicked', event);
+      });
 
-          self.fire('buttonClicked', event);
-        });
+      buttonContainer.appendChild(button);
 
-        buttonContainer.appendChild(button);
+      container.appendChild(buttonContainer);
 
-        container.appendChild(buttonContainer);
-
-        return container;
-      }
-    });
+      return container;
+    };
 
     $scope.glControls = {
       custom: [
