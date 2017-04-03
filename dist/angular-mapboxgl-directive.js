@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.34.0 2017-03-28
+*  angular-mapboxgl-directive 0.34.1 2017-04-03
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -1442,6 +1442,8 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
       }
     ]);
 
+    var flagToUpdateSource = false;
+
     if (angular.isDefined(currentSource._data) && angular.isDefined(currentSource._data.features) && angular.isArray(currentSource._data.features) && currentSource._data.features.length > 0) {
       currentSource._data.features.map(function (eachFeature, index) {
         if (angular.isDefined(eachFeature.properties) && angular.isDefined(eachFeature.properties.animation) && angular.isDefined(eachFeature.properties.animation.enabled) && eachFeature.properties.animation.enabled && angular.isDefined(eachFeature.properties.animation.animationFunction) && angular.isFunction(eachFeature.properties.animation.animationFunction)) {
@@ -1450,6 +1452,8 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
           } else {
             self.createAnimationFunction(map, sourceObject.id, eachFeature.properties.featureId, eachFeature);
           }
+        } else {
+          flagToUpdateSource = true;
         }
       });
     } else if (angular.isDefined(currentSource._data) && angular.isDefined(currentSource._data.properties) && angular.isDefined(currentSource._data.properties.animation) && angular.isDefined(currentSource._data.properties.animation.enabled) && currentSource._data.properties.animation.enabled && angular.isDefined(currentSource._data.properties.animation.animationFunction) && angular.isFunction(currentSource._data.properties.animation.animationFunction)) {
@@ -1459,6 +1463,10 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
         self.createAnimationFunction(map, sourceObject.id, currentSource._data.properties.featureId, currentSource._data);
       }
     } else {
+      flagToUpdateSource = true;
+    }
+
+    if (flagToUpdateSource) {
       currentSource.setData(sourceObject.data);
     }
   };
@@ -1592,10 +1600,10 @@ angular.module('mapboxgl-directive').factory('Utils', ['$window', '$q', function
 }]);
 
 angular.module('mapboxgl-directive').constant('version', {
-	full: '0.34.0',
+	full: '0.34.1',
 	major: 0,
 	minor: 34,
-	patch: 0
+	patch: 1
 });
 
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {

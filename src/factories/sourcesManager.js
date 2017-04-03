@@ -153,6 +153,8 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
       }
     ]);
 
+    var flagToUpdateSource = false;
+
     if (angular.isDefined(currentSource._data) && angular.isDefined(currentSource._data.features) && angular.isArray(currentSource._data.features) && currentSource._data.features.length > 0) {
       currentSource._data.features.map(function (eachFeature, index) {
         if (angular.isDefined(eachFeature.properties) && angular.isDefined(eachFeature.properties.animation) && angular.isDefined(eachFeature.properties.animation.enabled) && eachFeature.properties.animation.enabled && angular.isDefined(eachFeature.properties.animation.animationFunction) && angular.isFunction(eachFeature.properties.animation.animationFunction)) {
@@ -161,6 +163,8 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
           } else {
             self.createAnimationFunction(map, sourceObject.id, eachFeature.properties.featureId, eachFeature);
           }
+        } else {
+          flagToUpdateSource = true;
         }
       });
     } else if (angular.isDefined(currentSource._data) && angular.isDefined(currentSource._data.properties) && angular.isDefined(currentSource._data.properties.animation) && angular.isDefined(currentSource._data.properties.animation.enabled) && currentSource._data.properties.animation.enabled && angular.isDefined(currentSource._data.properties.animation.animationFunction) && angular.isFunction(currentSource._data.properties.animation.animationFunction)) {
@@ -170,6 +174,10 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
         self.createAnimationFunction(map, sourceObject.id, currentSource._data.properties.featureId, currentSource._data);
       }
     } else {
+      flagToUpdateSource = true;
+    }
+
+    if (flagToUpdateSource) {
       currentSource.setData(sourceObject.data);
     }
   };

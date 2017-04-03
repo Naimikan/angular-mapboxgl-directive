@@ -43,6 +43,17 @@
       };
     };
 
+    $scope.addMarker = function (map) {
+      map.sources[0].data.features.push({
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Point',
+          coordinates: [2, 41]
+        }
+      });
+    };
+
     $scope.maps = [
       {
         id: 'firstMap',

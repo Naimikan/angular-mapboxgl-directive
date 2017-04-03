@@ -23,6 +23,7 @@
   </head>
   <body ng-controller="IndexController" style="margin: 0;">
     <div ng-repeat="eachMap in maps">
+      <button type="button" class="btn btn-success" ng-click="addMarker(eachMap)">Add Marker</button>
       <div
         mapboxgl
         id="{{eachMap.id}}"
