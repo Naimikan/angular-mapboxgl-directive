@@ -1,6 +1,6 @@
 {
   "name": "angular-mapboxgl-directive",
-  "version": "0.34.1",
+  "version": "0.34.2",
   "description": "An AngularJS directive for Mapbox GL",
   "main": "dist/angular-mapboxgl-directive.min.js",
   "scripts": {
@@ -26,8 +26,8 @@
   },
   "homepage": "https://naimikan.github.io/angular-mapboxgl-directive/",
   "dependencies": {
-    "angular": "1.x",
-    "mapbox-gl": "^0.23.0"
+    "angular": ">=1.5",
+    "mapbox-gl": ">=0.23.0"
   },
   "devDependencies": {
     "connect-livereload": "^0.5.4",
