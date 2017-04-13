@@ -174,6 +174,22 @@
       controller: 'ExtrudePolygonController',
       uiSref: 'examples.add_extrusion_polygon'
     }, {
+      name: 'add_marker',
+      title: 'Add Markers',
+      type: examplesTypes.layers,
+      description: 'Use Markers to add icons in a map',
+      templateUrl: 'javascripts/states/examples/examples_source/add_marker/AddMarkerTemplate.html',
+      controller: 'AddMarkerController',
+      uiSref: 'examples.add_marker'
+    }, {
+      name: 'attach_popup_marker',
+      title: 'Attach a popup to a marker',
+      type: examplesTypes.layers,
+      description: 'Attach a popup to a marker instance',
+      templateUrl: 'javascripts/states/examples/examples_source/attach_popup_marker/AttachPopupMarkerTemplate.html',
+      controller: 'AttachPopupMarkerController',
+      uiSref: 'examples.attach_popup_marker'
+    }, {
       name: 'move_point_route',
       title: 'Move a point along a route',
       type: examplesTypes.layers,
