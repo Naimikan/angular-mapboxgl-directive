@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.34.2 2017-04-07
+*  angular-mapboxgl-directive 0.35.0 2017-04-14
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -953,7 +953,9 @@ angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope
     'drag',
     'dragstart',
     'dragend',
-    'pitch'
+    'pitch',
+    'pitchstart',
+    'pitchend'
   ];
 
   function exposeMapEvents (map) {
@@ -1210,7 +1212,7 @@ angular.module('mapboxgl-directive').factory('PopupsManager', ['Utils', 'mapboxg
 		});
   };
 
-  PopupsManager.prototype.createPopupByObject = function (map, feature, object) {
+  PopupsManager.prototype.createPopupByObject = function (map, object, feature) {
     var self = this;
 
     Utils.checkObjects([
@@ -1600,10 +1602,10 @@ angular.module('mapboxgl-directive').factory('Utils', ['$window', '$q', function
 }]);
 
 angular.module('mapboxgl-directive').constant('version', {
-	full: '0.34.2',
+	full: '0.35.0',
 	major: 0,
-	minor: 34,
-	patch: 2
+	minor: 35,
+	patch: 0
 });
 
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
@@ -2236,13 +2238,13 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
           var popupObject = layersManager.getPopupRelationByLayerId(feature.layer.id);
 
           if (angular.isDefined(popupObject) && popupObject !== null && angular.isDefined(popupObject.onClick)) {
-            popupsManager.createPopupByObject(map, feature, {
+            popupsManager.createPopupByObject(map, {
               coordinates: popupObject.onClick.coordinates || event.lngLat,
               options: popupObject.onClick.options,
               html: popupObject.onClick.message,
               getScope: popupObject.onClick.getScope,
               onClose: popupObject.onClick.onClose
-            });
+            }, feature);
           }
 
           // Check events
@@ -2277,13 +2279,13 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
           //   var popupObject = layersManager.getPopupRelationByLayerId(feature.layer.id);
           //
           //   if (angular.isDefined(popupObject) && popupObject !== null && angular.isDefined(popupObject.onMouseover)) {
-          //     popupsManager.createPopupByObject(map, feature, {
+          //     popupsManager.createPopupByObject(map, {
           //       coordinates: popupObject.onMouseover.coordinates || event.lngLat,
           //       options: popupObject.onMouseover.options,
           //       html: popupObject.onMouseover.message,
           //       getScope: popupObject.onMouseover.getScope,
           //       onClose: popupObject.onMouseover.onClose
-          //     });
+          //     }, feature);
           //   }
           // }
 

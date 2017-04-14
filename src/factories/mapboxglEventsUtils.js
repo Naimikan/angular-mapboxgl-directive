@@ -39,7 +39,9 @@ angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope
     'drag',
     'dragstart',
     'dragend',
-    'pitch'
+    'pitch',
+    'pitchstart',
+    'pitchend'
   ];
 
   function exposeMapEvents (map) {

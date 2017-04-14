@@ -58,7 +58,7 @@ angular.module('mapboxgl-directive').factory('PopupsManager', ['Utils', 'mapboxg
 		});
   };
 
-  PopupsManager.prototype.createPopupByObject = function (map, feature, object) {
+  PopupsManager.prototype.createPopupByObject = function (map, object, feature) {
     var self = this;
 
     Utils.checkObjects([

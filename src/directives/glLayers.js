@@ -32,13 +32,13 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
           var popupObject = layersManager.getPopupRelationByLayerId(feature.layer.id);
 
           if (angular.isDefined(popupObject) && popupObject !== null && angular.isDefined(popupObject.onClick)) {
-            popupsManager.createPopupByObject(map, feature, {
+            popupsManager.createPopupByObject(map, {
               coordinates: popupObject.onClick.coordinates || event.lngLat,
               options: popupObject.onClick.options,
               html: popupObject.onClick.message,
               getScope: popupObject.onClick.getScope,
               onClose: popupObject.onClick.onClose
-            });
+            }, feature);
           }
 
           // Check events
@@ -73,13 +73,13 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
           //   var popupObject = layersManager.getPopupRelationByLayerId(feature.layer.id);
           //
           //   if (angular.isDefined(popupObject) && popupObject !== null && angular.isDefined(popupObject.onMouseover)) {
-          //     popupsManager.createPopupByObject(map, feature, {
+          //     popupsManager.createPopupByObject(map, {
           //       coordinates: popupObject.onMouseover.coordinates || event.lngLat,
           //       options: popupObject.onMouseover.options,
           //       html: popupObject.onMouseover.message,
           //       getScope: popupObject.onMouseover.getScope,
           //       onClose: popupObject.onMouseover.onClose
-          //     });
+          //     }, feature);
           //   }
           // }
 
