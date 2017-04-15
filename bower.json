@@ -29,6 +29,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular": ">=1.5"
+    "angular": ">=1.5",
+    "mapbox-gl": ">=0.23.0"
   }
 }
