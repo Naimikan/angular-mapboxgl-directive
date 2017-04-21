@@ -22,7 +22,7 @@
     <script src="app.js"></script>
   </head>
   <body ng-controller="IndexController" style="margin: 0;">
-    <div ng-repeat="eachMap in maps">
+    <!-- <div ng-repeat="eachMap in maps">
       <button type="button" class="btn btn-success" ng-click="addMarker(eachMap)">Add Marker</button>
       <div
         mapboxgl
@@ -31,20 +31,20 @@
         gl-sources="eachMap.sources"
         gl-layers="eachMap.layers">
       </div>
-    </div>
+    </div> -->
 
-    <!-- <div
+    <div
       mapboxgl
       gl-controls="glControls"
       gl-style="glStyle"
       gl-center="glCenter"
-      gl-sources="glSources"
-      gl-layers="glLayers"
+      gl-markers="glMarkers"
       gl-zoom="glZoom"
+      gl-popups="glPopups"
       render-world-copies="false"
       rtl-enabled="true"
       width="{{glWidth}}"
-      height="{{glHeight}}"></div> -->
+      height="{{glHeight}}"></div>
 
 
     <!-- <div mapboxgl-compare compare-settings="{ mousemove: false }">

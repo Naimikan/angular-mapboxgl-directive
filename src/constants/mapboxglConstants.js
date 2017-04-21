@@ -1,7 +1,7 @@
 angular.module('mapboxgl-directive').constant('version', {
-	full: '0.35.0',
+	full: '0.36.0',
 	major: 0,
-	minor: 35,
+	minor: 36,
 	patch: 0
 });
 
@@ -17,11 +17,7 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 		defaultPreserveDrawingBuffer: false,
 		defaultTrackResize: true,
 		defaultRenderWorldCopies: true,
-		defaultLogoPosition: 'bottom-left',
-
-		defaultPersistentGeojson: false,
-		defaultPersistentImage: false,
-		defaultPersistentVideo: false
+		defaultLogoPosition: 'bottom-left'
 	},
 	source: {
 		defaultMaxZoom: 18,

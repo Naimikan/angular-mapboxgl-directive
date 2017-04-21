@@ -12,10 +12,12 @@ angular.module('mapboxgl-directive').directive('glPopups', [function () {
         popupsManager.removeAllPopupsCreated();
 
         if (Object.prototype.toString.call(popups) === Object.prototype.toString.call({})) {
-          popupsManager.createPopupByObject(map, popups);
+          var popup = popupsManager.createPopupByObject(popups);
+          popup.addTo(map);
         } else if (Object.prototype.toString.call(popups) === Object.prototype.toString.call([])) {
           popups.map(function (eachPopup) {
-            popupsManager.createPopupByObject(map, eachPopup);
+            var popupEach = popupsManager.createPopupByObject(eachPopup);
+            popupEach.addTo(map);
           });
         } else {
           throw new Error('Invalid popup parameter');

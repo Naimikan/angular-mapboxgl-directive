@@ -23,16 +23,7 @@ angular.module('mapboxgl-directive').directive('glImage', ['mapboxglImageUtils',
     };
 
     scope.$on('mapboxglMap:styleChanged', function () {
-      if (controller.isImagePersistent()) {
-        var allImageObjects = angular.copy(controller.getImageObjects());
-        controller.removeImageObjects();
-
-        controller.getMap().then(function (map) {
-					imagenWatched(map, controller, allImageObjects);
-        });
-      } else {
-        controller.removeImageObjects();
-      }
+			
     });
 
 		controller.getMap().then(function (map) {

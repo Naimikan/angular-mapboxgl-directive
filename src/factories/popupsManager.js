@@ -6,8 +6,9 @@ angular.module('mapboxgl-directive').factory('PopupsManager', ['Utils', 'mapboxg
 	var _regexFindDollar = new RegExp(/\$\{(.+?)\}/g);
 	var _regexGetValueBetweenDollarClaudator = new RegExp(/[^\$\{](.+)[^\}]/g);
 
-  function PopupsManager () {
+  function PopupsManager (mapInstance) {
     this.popupsCreated = [];
+    this.mapInstance = mapInstance;
   }
 
   PopupsManager.prototype.getAllPopupsCreated = function () {
@@ -44,7 +45,7 @@ angular.module('mapboxgl-directive').factory('PopupsManager', ['Utils', 'mapboxg
 		this.popupsCreated = [];
   };
 
-  PopupsManager.prototype.removePopupByLayerId = function (map, layerId) {
+  PopupsManager.prototype.removePopupByLayerId = function (layerId) {
     var popupsByLayer = this.popupsCreated.filter(function (eachPopup) {
 			return eachPopup.layerId === layerId;
 		});
@@ -58,41 +59,14 @@ angular.module('mapboxgl-directive').factory('PopupsManager', ['Utils', 'mapboxg
 		});
   };
 
-  PopupsManager.prototype.createPopupByObject = function (map, object, feature) {
-    var self = this;
+  PopupsManager.prototype.generatePopupMessage = function (object, feature) {
+    var popupMessage = angular.copy(object.message);
 
-    Utils.checkObjects([
-      {
-        name: 'Map',
-        object: map
-      }, {
-        name: 'Object',
-        object: object,
-        attributes: ['coordinates', 'html']
-      }
-    ]);
-
-    var popupOptions = object.options || {};
-
-		var popupCoordinates = object.coordinates === 'center' ? feature.geometry.coordinates : object.coordinates;
-
-		var popup = new mapboxgl.Popup(popupOptions).setLngLat(popupCoordinates);
-
-		if (angular.isDefined(object.onClose) && object.onClose !== null && angular.isFunction(object.onClose)) {
-			popup.on('close', function (event) {
-				object.onClose(event, event.target);
-			});
-		}
-
-		// If HTML Element
-		if (object.html instanceof HTMLElement) {
-			popup.setDOMContent(object.html);
-		} else {
-			var templateScope = angular.isDefined(object.getScope) && angular.isFunction(object.getScope) ? object.getScope() : $rootScope;
-			var htmlCopy = angular.copy(object.html);
-
-			if (_regexFindDollar.test(object.html)) {
-				var allMatches = object.html.match(_regexFindDollar);
+    if (popupMessage instanceof HTMLElement) {
+      return popupMessage;
+    } else if (angular.isDefined(feature) && feature !== null) {
+      if (_regexFindDollar.test(object.message)) {
+				var allMatches = object.message.match(_regexFindDollar);
 
 				if (allMatches.length > 0) {
 					allMatches.forEach(function (eachMatch) {
@@ -102,7 +76,7 @@ angular.module('mapboxgl-directive').factory('PopupsManager', ['Utils', 'mapboxg
 							var regexValue = tempMatch[0];
 
 							if (feature.properties.hasOwnProperty(regexValue)) {
-								htmlCopy = htmlCopy.replace(eachMatch, feature.properties[regexValue]);
+								popupMessage = popupMessage.replace(eachMatch, feature.properties[regexValue]);
 							} else {
 								throw new Error('Property "' + regexValue + '" isn\'t exist in source "' + feature.layer.source + '"');
 							}
@@ -110,24 +84,72 @@ angular.module('mapboxgl-directive').factory('PopupsManager', ['Utils', 'mapboxg
 					});
 				}
 			}
+    }
 
-			try {
-				var templateHtmlElement = $compile(htmlCopy)(templateScope)[0];
+    var templateScope = angular.isDefined(object.getScope) && angular.isFunction(object.getScope) ? object.getScope() : $rootScope;
 
-				popup.setDOMContent(templateHtmlElement);
-			} catch (error) {
-				popup.setHTML(htmlCopy);
-			}
+    try {
+      var templateHtmlElement = $compile(popupMessage)(templateScope)[0];
+
+      return templateHtmlElement;
+    } catch (error) {
+      return popupMessage;
+    }
+  };
+
+  PopupsManager.prototype.createPopupByObject = function (object, feature) {
+    var self = this;
+
+    Utils.checkObjects([
+      {
+        name: 'Map',
+        object: this.mapInstance
+      }, {
+        name: 'Object',
+        object: object,
+        attributes: ['message']
+      }
+    ]);
+
+    var popup = new mapboxgl.Popup(object.options || {});
+
+    if (angular.isDefined(object.coordinates) && object.coordinates !== null) {
+      var popupCoordinates = object.coordinates;
+
+      if (angular.isDefined(feature) && feature !== null) {
+        popupCoordinates = popupCoordinates === 'center' ? feature.geometry.coordinates : popupCoordinates;
+      }
+
+      if (popupCoordinates !== 'center') {
+        popup.setLngLat(popupCoordinates);
+      }
+    }
+
+		if (angular.isDefined(object.onClose) && object.onClose !== null && angular.isFunction(object.onClose)) {
+			popup.on('close', function (event) {
+				object.onClose(event, event.target);
+			});
 		}
 
-		popup.addTo(map);
+    var popupMessage = self.generatePopupMessage(object, feature);
 
-		self.popupsCreated.push({
-			popupInstance: popup,
+    if (popupMessage instanceof HTMLElement) {
+      popup.setDOMContent(popupMessage);
+    } else {
+      popup.setHTML(popupMessage);
+    }
+
+    var popupCreated = {
+      popupInstance: popup,
 			isOnClick: object.isOnClick ? object.isOnClick : false,
-			isOnMouseover: object.isOnMouseover ? object.isOnMouseover : false,
-			layerId: feature.layer.id
-		});
+			isOnMouseover: object.isOnMouseover ? object.isOnMouseover : false
+    };
+
+    if (angular.isDefined(feature) && feature !== null) {
+      popupCreated.layerId = feature.layer.id;
+    }
+
+		self.popupsCreated.push(popupCreated);
 
     return popup;
   };

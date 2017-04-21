@@ -1,17 +1,12 @@
 angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', 'mapboxglConstants', 'mapboxglEventsUtils', 'mapboxglMapsData', 'AnimationsManager', 'PopupsManager', function ($q, Utils, mapboxglConstants, mapboxglEventsUtils, mapboxglMapsData, AnimationsManager, PopupsManager) {
   function mapboxGlDirectiveController ($scope) {
+    var mapboxGlMap = $q.defer();
+
     angular.extend(this, {
-      _mapboxGlMap: $q.defer(),
-      _geojsonObjects: [],
-      _imageObjects: [],
-      _videoObjects: [],
-      _markerObjects: [],
-      _persistentGeojson: mapboxglConstants.map.defaultPersistentGeojson,
-      _persistentImage: mapboxglConstants.map.defaultPersistentImage,
-      _persistentVideo: mapboxglConstants.map.defaultPersistentVideo,
+      _mapboxGlMap: mapboxGlMap,
       _elementDOM: null,
-      _animationManager: new AnimationsManager(),
-      _popupManager: new PopupsManager(),
+      _animationManager: new AnimationsManager(mapboxGlMap),
+      _popupManager: new PopupsManager(mapboxGlMap),
 
       getMap: function () {
         return this._mapboxGlMap.promise;
@@ -37,85 +32,6 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
         this._elementDOM = elementDOM;
       },
 
-      /* Geojson */
-      getGeojsonObjects: function () {
-        return this._geojsonObjects;
-      },
-
-      addGeojsonObject: function (geojsonObject) {
-        this._geojsonObjects.push(geojsonObject);
-      },
-
-      removeGeojsonObjects: function () {
-        this._geojsonObjects = [];
-      },
-
-      /* Image */
-      getImageObjects: function () {
-        return this._imageObjects;
-      },
-
-      addImageObject: function (imageObject) {
-        this._imageObjects.push(imageObject);
-      },
-
-      removeImageObjects: function () {
-        this._imageObjects = [];
-      },
-
-      /* Video */
-      getVideoObjects: function () {
-        return this._videoObjects;
-      },
-
-      addVideoObject: function (videoObject) {
-        this._videoObjects.push(videoObject);
-      },
-
-      removeVideoObjects: function () {
-        this._videoObjects = [];
-      },
-
-      /* Markers */
-      getMarkerObjects: function () {
-        return this._markerObjects;
-      },
-
-      addMarkerObject: function (markerObject) {
-        this._markerObjects.push(markerObject);
-      },
-
-      removeMarkerObjects: function () {
-        this._markerObjects = [];
-      },
-
-      /* Persistent Geojson */
-      isGeojsonPersistent: function () {
-        return this._persistentGeojson;
-      },
-
-      setPersistentGeojson: function (persistentGeojson) {
-        this._persistentGeojson = persistentGeojson;
-      },
-
-      /* Persistent Image */
-      isImagePersistent: function () {
-        return this._persistentImage;
-      },
-
-      setPersistentImage: function (persistentImage) {
-        this._persistentImage = persistentImage;
-      },
-
-      /* Persistent Video */
-      isVideoPersistent: function () {
-        return this._persistentVideo;
-      },
-
-      setPersistentVideo: function (persistentVideo) {
-        this._persistentVideo = persistentVideo;
-      },
-
       /* Loading Overlay */
       changeLoadingMap: function (newValue) {
         var functionToExecute = newValue ? 'addClass' : 'removeClass';
@@ -128,24 +44,6 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
             element[functionToExecute]('angular-mapboxgl-map-loading');
           }
         }
-
-        // if (newValue) {
-        //   if (!this._elementDOM.hasClass('angular-mapboxgl-map-loading')) {
-        //     //this.getMap().then(function (map) {
-        //       map.getCanvas().style.opacity = 0.25;
-        //     //});
-        //
-        //     this._elementDOM.addClass('angular-mapboxgl-map-loading');
-        //   }
-        // } else {
-        //   if (this._elementDOM.hasClass('angular-mapboxgl-map-loading')) {
-        //     //this.getMap().then(function (map) {
-        //       map.getCanvas().style.opacity = 1;
-        //     //});
-        //
-        //     this._elementDOM.removeClass('angular-mapboxgl-map-loading');
-        //   }
-        // }
       }
     });
   }
@@ -218,48 +116,6 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
         map.setLayoutProperty('country-label-lg', 'text-field', '{name_' + attrs.language + '}');
       }
     };
-
-    if (angular.isDefined(scope.persistentGeojson) && typeof(scope.persistentGeojson) === 'boolean') {
-      controller.setPersistentGeojson(scope.persistentGeojson);
-
-      scope.$watch(function () {
-        return scope.persistentGeojson;
-      }, function () {
-        if (typeof(scope.persistentGeojson) === 'boolean') {
-          controller.setPersistentGeojson(scope.persistentGeojson);
-        } else {
-          throw new Error('Invalid parameter');
-        }
-      });
-    }
-
-    if (angular.isDefined(scope.persistentImage) && typeof(scope.persistentImage) === 'boolean') {
-      controller.setPersistentImage(scope.persistentImage);
-
-      scope.$watch(function () {
-        return scope.persistentImage;
-      }, function () {
-        if (typeof(scope.persistentImage) === 'boolean') {
-          controller.setPersistentImage(scope.persistentImage);
-        } else {
-          throw new Error('Invalid parameter');
-        }
-      });
-    }
-
-    if (angular.isDefined(scope.persistentVideo) && typeof(scope.persistentVideo) === 'boolean') {
-      controller.setPersistentVideo(scope.persistentVideo);
-
-      scope.$watch(function () {
-        return scope.persistentVideo;
-      }, function () {
-        if (typeof(scope.persistentVideo) === 'boolean') {
-          controller.setPersistentVideo(scope.persistentVideo);
-        } else {
-          throw new Error('Invalid parameter');
-        }
-      });
-    }
 
     var initObject = {
       container: scope.mapboxglMapId,
@@ -441,11 +297,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
       glSources: '=',
       glStyle: '=',
       glVideo: '=',
-      glZoom: '=',
-
-      persistentGeojson: '=',
-      persistentImage: '=',
-      persistentVideo: '='
+      glZoom: '='
     },
     template: '<div class="angular-mapboxgl-map"><div class="angular-mapboxgl-map-loader"><div class="spinner"><div class="double-bounce"></div><div class="double-bounce delayed"></div></div></div></div>',
     controller: mapboxGlDirectiveController,

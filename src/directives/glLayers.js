@@ -7,8 +7,6 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
 		var mapboxglScope = controller.getMapboxGlScope();
     var popupsManager = controller.getPopupManager();
 
-    var layersManager = new LayersManager(popupsManager);
-
     function disableLayerEvents (map) {
       popupsManager.removeAllPopupsCreated(map);
 
@@ -21,7 +19,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
         event.originalEvent.preventDefault();
         event.originalEvent.stopPropagation();
 
-        var allLayers = layersManager.getCreatedLayers();
+        var allLayers = scope.layersManager.getCreatedLayers();
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
 
@@ -29,20 +27,22 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
           var feature = features[0];
 
           // Check popup
-          var popupObject = layersManager.getPopupRelationByLayerId(feature.layer.id);
+          var popupObject = scope.layersManager.getPopupRelationByLayerId(feature.layer.id);
 
           if (angular.isDefined(popupObject) && popupObject !== null && angular.isDefined(popupObject.onClick)) {
-            popupsManager.createPopupByObject(map, {
+            var popup = popupsManager.createPopupByObject({
               coordinates: popupObject.onClick.coordinates || event.lngLat,
               options: popupObject.onClick.options,
-              html: popupObject.onClick.message,
+              message: popupObject.onClick.message,
               getScope: popupObject.onClick.getScope,
               onClose: popupObject.onClick.onClose
             }, feature);
+
+            popup.addTo(map);
           }
 
           // Check events
-          var layerEvents = layersManager.getEventRelationByLayerId(feature.layer.id);
+          var layerEvents = scope.layersManager.getEventRelationByLayerId(feature.layer.id);
 
           if (angular.isDefined(layerEvents) && layerEvents !== null && angular.isDefined(layerEvents.onClick) && angular.isFunction(layerEvents.onClick)) {
             layerEvents.onClick(map, feature, features);
@@ -51,7 +51,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
       });
 
       map.on('mousemove', function (event) {
-        var allLayers = layersManager.getCreatedLayers();
+        var allLayers = scope.layersManager.getCreatedLayers();
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
         map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
@@ -70,21 +70,25 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
           //
           //   popupByLayer.setLngLat(event.lngLat);
           // } else {
-          //   var popupObject = layersManager.getPopupRelationByLayerId(feature.layer.id);
+          //   var popupObject = scope.layersManager.getPopupRelationByLayerId(feature.layer.id);
           //
           //   if (angular.isDefined(popupObject) && popupObject !== null && angular.isDefined(popupObject.onMouseover)) {
-          //     popupsManager.createPopupByObject(map, {
+          //     popupsManager.createPopupByObject({
           //       coordinates: popupObject.onMouseover.coordinates || event.lngLat,
           //       options: popupObject.onMouseover.options,
-          //       html: popupObject.onMouseover.message,
+          //       message: popupObject.onMouseover.message,
           //       getScope: popupObject.onMouseover.getScope,
           //       onClose: popupObject.onMouseover.onClose
-          //     }, feature);
+          //     }, {
+          //       coordinates: feature.geometry.coordinates,
+          //       properties: feature.properties,
+          //       source: 'source \'' + feature.layer.source + '\''
+          //     });
           //   }
           // }
 
           // Check events
-          var layerEvents = layersManager.getEventRelationByLayerId(feature.layer.id);
+          var layerEvents = scope.layersManager.getEventRelationByLayerId(feature.layer.id);
 
           if (angular.isDefined(layerEvents) && layerEvents !== null && angular.isDefined(layerEvents.onMouseover) && angular.isFunction(layerEvents.onMouseover)) {
             layerEvents.onMouseover(map, feature, features);
@@ -94,10 +98,10 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
     }
 
     function createOrUpdateLayer (map, layerObject) {
-      if (layersManager.existLayerById(layerObject.id)) {
-        layersManager.updateLayerByObject(map, layerObject);
+      if (scope.layersManager.existLayerById(layerObject.id)) {
+        scope.layersManager.updateLayerByObject(layerObject);
       } else {
-        layersManager.createLayerByObject(map, layerObject);
+        scope.layersManager.createLayerByObject(layerObject);
       }
 
       if (angular.isDefined(layerObject.animation) && angular.isDefined(layerObject.animation.enabled) && layerObject.animation.enabled) {
@@ -113,7 +117,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
       }
     }
 
-    function checkLayersToBeRemoved (map, layers) {
+    function checkLayersToBeRemoved (layers) {
       var defer = $q.defer();
 
       var layersIds = [];
@@ -132,7 +136,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
         return angular.isDefined(eachLayerId);
       });
 
-      var layersToBeRemoved = layersManager.getCreatedLayers();
+      var layersToBeRemoved = scope.layersManager.getCreatedLayers();
 
       layersIds.map(function (eachLayerId) {
         layersToBeRemoved = layersToBeRemoved.filter(function (eachLayerToBeRemoved) {
@@ -141,7 +145,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
       });
 
       layersToBeRemoved.map(function (eachLayerToBeRemoved) {
-        layersManager.removeLayerById(map, eachLayerToBeRemoved);
+        scope.layersManager.removeLayerById(eachLayerToBeRemoved);
       });
 
       defer.resolve();
@@ -149,32 +153,42 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
       return defer.promise;
     }
 
+    function layersWatched (map, layerObjects) {
+      if (angular.isDefined(layerObjects) && layerObjects !== null) {
+        disableLayerEvents(map);
+
+        checkLayersToBeRemoved(layerObjects).then(function () {
+          if (Object.prototype.toString.call(layerObjects) === Object.prototype.toString.call([])) {
+            layerObjects.map(function (eachLayer) {
+              createOrUpdateLayer(map, eachLayer);
+            });
+          } else if (Object.prototype.toString.call(layerObjects) === Object.prototype.toString.call({})) {
+            createOrUpdateLayer(map, layerObjects);
+          } else {
+            throw new Error('Invalid layers parameter');
+          }
+
+          enableLayerEvents(map);
+        }).catch(function (error) {
+          throw error;
+        });
+      }
+    }
+
     controller.getMap().then(function (map) {
+      scope.layersManager = new LayersManager(map, popupsManager);
+
       mapboxglScope.$watch('glLayers', function (layers) {
-        if (angular.isDefined(layers)) {
-          disableLayerEvents(map);
-
-          checkLayersToBeRemoved(map, layers).then(function () {
-            if (Object.prototype.toString.call(layers) === Object.prototype.toString.call([])) {
-              layers.map(function (eachLayer) {
-                createOrUpdateLayer(map, eachLayer);
-              });
-            } else if (Object.prototype.toString.call(layers) === Object.prototype.toString.call({})) {
-              createOrUpdateLayer(map, layers);
-            } else {
-              throw new Error('Invalid layers parameter');
-            }
-
-            enableLayerEvents(map);
-          }).catch(function (error) {
-            throw error;
-          });
-        }
+        layersWatched(map, layers);
       }, true);
     });
 
+    scope.$on('mapboxglMap:styleChanged', function () {
+      scope.layersManager.removeAllCreatedLayers();
+    });
+
     scope.$on('$destroy', function () {
-      layersManager.removeAllCreatedLayers();
+      scope.layersManager.removeAllCreatedLayers();
     });
   }
 

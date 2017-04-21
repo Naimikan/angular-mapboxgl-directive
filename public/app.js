@@ -178,14 +178,12 @@
       }
     ];
 
-
-
-
-    $scope.persistentGeojson = true;
-    $scope.persistentImage = true;
-
     $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
-    $scope.glStyle2 = 'mapbox://styles/mapbox/dark-v9'
+    $scope.glStyle2 = 'mapbox://styles/mapbox/streets-v9'
+
+    // $timeout(function () {
+    //   $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
+    // }, 6000, true);
 
     $scope.deleteButtonClick = function (event) {
       console.log(event);
@@ -265,22 +263,42 @@
       value: 0
     };
 
+    $scope.glPopups = {
+      coordinates: [-99, 19],
+      message: 'Popup using glPopups directive'
+    };
+
     var el = document.createElement('div');
     el.className = 'marker';
     el.style.backgroundImage = 'url(https://placekitten.com/g/60/60/)';
     el.style.width = '60px';
     el.style.height = '60px';
+    el.style.cursor = 'pointer';
 
     var el2 = document.createElement('div');
     el2.className = 'marker';
     el2.style.backgroundImage = 'url(https://placekitten.com/g/50/50/)';
     el2.style.width = '50px';
     el2.style.height = '50px';
+    el2.style.cursor = 'pointer';
 
     $scope.glMarkers = [
       {
         coordinates: [-3, 45],
-        element: el
+        element: el,
+        options: {
+          offset: [-25, -25]
+        },
+        popup: {
+          enabled: true,
+          message: '<div test-directive></div>',
+          getScope: function () {
+            return $scope;
+          },
+          options: {
+            offset: 35
+          }
+        }
       }, {
         coordinates: [-2, 37],
         element: el2

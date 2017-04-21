@@ -7,17 +7,15 @@ angular.module('mapboxgl-directive').directive('glMarkers', ['MarkersManager', f
 		var mapboxglScope = controller.getMapboxGlScope();
     var popupsManager = controller.getPopupManager();
 
-    var markerManager = new MarkersManager(popupsManager);
-
-    var markersWatched = function (map, markers) {
+    var markersWatched = function (markers) {
       if (angular.isDefined(markers)) {
-        markerManager.removeAllMarkersCreated();
+        scope.markerManager.removeAllMarkersCreated();
 
         if (Object.prototype.toString.call(markers) === Object.prototype.toString.call({})) {
-          markerManager.createMarkerByObject(map, markers);
+          scope.markerManager.createMarkerByObject(markers);
         } else if (Object.prototype.toString.call(markers) === Object.prototype.toString.call([])) {
           markers.map(function (eachMarker) {
-            markerManager.createMarkerByObject(map, eachMarker);
+            scope.markerManager.createMarkerByObject(eachMarker);
           });
         } else {
           throw new Error('Invalid marker parameter');
@@ -26,14 +24,16 @@ angular.module('mapboxgl-directive').directive('glMarkers', ['MarkersManager', f
     };
 
     controller.getMap().then(function (map) {
+      scope.markerManager = new MarkersManager(map, popupsManager);
+
       mapboxglScope.$watchCollection('glMarkers', function (markers) {
-        markersWatched(map, markers);
+        markersWatched(markers);
       });
     });
 
     scope.$on('$destroy', function () {
       // ToDo: remove all markers
-      markerManager.removeAllMarkersCreated();
+      scope.markerManager.removeAllMarkersCreated();
     });
   }
 

@@ -1,6 +1,7 @@
 angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxglConstants', function (Utils, mapboxglConstants) {
-  function LayersManager (popupManager) {
+  function LayersManager (mapInstance, popupManager) {
     this.layersCreated = [];
+    this.mapInstance = mapInstance;
     this.relationLayersPopups = [];
     this.relationLayersEvents = [];
 
@@ -53,11 +54,11 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
     }
   };
 
-  LayersManager.prototype.createLayerByObject = function (map, layerObject) {
+  LayersManager.prototype.createLayerByObject = function (layerObject) {
     Utils.checkObjects([
       {
         name: 'Map',
-        object: map
+        object: this.mapInstance
       }, {
         name: 'Layer object',
         object: layerObject,
@@ -83,7 +84,7 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
 
     var before = angular.isDefined(layerObject.before) ? layerObject.before : undefined;
 
-    map.addLayer(tempObject, before);
+    this.mapInstance.addLayer(tempObject, before);
 
     this.layersCreated.push(layerObject.id);
 
@@ -104,16 +105,18 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
     return angular.isDefined(layerId) && layerId !== null && this.layersCreated.indexOf(layerId) !== -1;
   };
 
-  LayersManager.prototype.removeLayerById = function (map, layerId) {
+  LayersManager.prototype.removeLayerById = function (layerId) {
     Utils.checkObjects([
       {
         name: 'Map',
-        object: map
+        object: this.mapInstance
       }
     ]);
 
     if (this.existLayerById(layerId)) {
-      map.removeLayer(layerId);
+      if (this.mapInstance.getLayer(layerId)) {
+        this.mapInstance.removeLayer(layerId);
+      }
 
       this.layersCreated = this.layersCreated.filter(function (eachLayerCreated) {
         return eachLayerCreated !== layerId;
@@ -127,11 +130,11 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
     }
   };
 
-  LayersManager.prototype.updateLayerByObject = function (map, layerObject) {
+  LayersManager.prototype.updateLayerByObject = function (layerObject) {
     Utils.checkObjects([
       {
         name: 'Map',
-        object: map
+        object: this.mapInstance
       }, {
         name: 'Layer object',
         object: layerObject,
@@ -141,17 +144,17 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
 
     // Before layer property
     if (angular.isDefined(layerObject.before) && layerObject.before !== null) {
-      map.moveLayer(layerObject.id, layerObject.before);
+      this.mapInstance.moveLayer(layerObject.id, layerObject.before);
     }
 
     // Filter property
     if (angular.isDefined(layerObject.filter) && layerObject.filter !== null && angular.isArray(layerObject.filter)) {
-      map.setFilter(layerObject.id, layerObject.filter);
+      this.mapInstance.setFilter(layerObject.id, layerObject.filter);
     }
 
     // Minzoom and maxzoom properties
-    var currentLayer = map.getLayer(layerObject.id);
-    map.setLayerZoomRange(layerObject.id, layerObject.minzoom || currentLayer.minzoom, layerObject.maxzoom || currentLayer.maxzoom);
+    var currentLayer = this.mapInstance.getLayer(layerObject.id);
+    this.mapInstance.setLayerZoomRange(layerObject.id, layerObject.minzoom || currentLayer.minzoom, layerObject.maxzoom || currentLayer.maxzoom);
 
     // Popup property
     if (angular.isDefined(layerObject.popup) && layerObject.popup !== null) {
@@ -178,10 +181,10 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
     if (angular.isDefined(layerObject.paint) && layerObject.paint !== null) {
       for (var eachPaintProperty in layerObject.paint) {
         if (layerObject.paint.hasOwnProperty(eachPaintProperty)) {
-          var layerPaintProperty = map.getPaintProperty(layerObject.id, eachPaintProperty);
+          var layerPaintProperty = this.mapInstance.getPaintProperty(layerObject.id, eachPaintProperty);
 
           if (layerPaintProperty !== layerObject.paint[eachPaintProperty]) {
-            map.setPaintProperty(layerObject.id, eachPaintProperty, layerObject.paint[eachPaintProperty]);
+            this.mapInstance.setPaintProperty(layerObject.id, eachPaintProperty, layerObject.paint[eachPaintProperty]);
           }
         }
       }
@@ -191,10 +194,10 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
     if (angular.isDefined(layerObject.layout) && layerObject.layout !== null) {
       for (var eachLayoutProperty in layerObject.layout) {
         if (layerObject.layout.hasOwnProperty(eachLayoutProperty)) {
-          var layerLayoutProperty = map.getLayoutProperty(layerObject.id, eachLayoutProperty);
+          var layerLayoutProperty = this.mapInstance.getLayoutProperty(layerObject.id, eachLayoutProperty);
 
           if (layerLayoutProperty !== layerObject.layout[eachLayoutProperty]) {
-            map.setLayoutProperty(layerObject.id, eachLayoutProperty, layerObject.layout[eachLayoutProperty]);
+            this.mapInstance.setLayoutProperty(layerObject.id, eachLayoutProperty, layerObject.layout[eachLayoutProperty]);
           }
         }
       }
@@ -206,10 +209,16 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
   };
 
   LayersManager.prototype.removeAllCreatedLayers = function () {
-    this.removeAllPopupRelations();
-    this.removeAllEventRelations();
+    var self = this;
 
-    this.layersCreated = [];
+    self.layersCreated.map(function (eachLayerId) {
+      self.removeLayerById(eachLayerId);
+    });
+
+    // this.removeAllPopupRelations();
+    // this.removeAllEventRelations();
+    //
+    // this.layersCreated = [];
   };
 
   return LayersManager;

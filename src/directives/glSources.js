@@ -6,17 +6,15 @@ angular.module('mapboxgl-directive').directive('glSources', ['SourcesManager', '
 
 		var mapboxglScope = controller.getMapboxGlScope();
 
-    var sourceManager = new SourcesManager(controller.getAnimationManager());
-
-    function createOrUpdateSource (map, sourceObject) {
-      if (sourceManager.existSourceById(sourceObject.id)) {
-        sourceManager.updateSourceByObject(map, sourceObject);
+    function createOrUpdateSource (sourceObject) {
+      if (scope.sourceManager.existSourceById(sourceObject.id)) {
+        scope.sourceManager.updateSourceByObject(sourceObject);
       } else {
-        sourceManager.createSourceByObject(map, sourceObject);
+        scope.sourceManager.createSourceByObject(sourceObject);
       }
     }
 
-    function checkSourcesToBeRemoved (map, sources) {
+    function checkSourcesToBeRemoved (sources) {
       var defer = $q.defer();
 
       var sourcesIds = [];
@@ -35,7 +33,7 @@ angular.module('mapboxgl-directive').directive('glSources', ['SourcesManager', '
         return angular.isDefined(eachSourceId);
       });
 
-      var sourcesToBeRemoved = sourceManager.getCreatedSources();
+      var sourcesToBeRemoved = scope.sourceManager.getCreatedSources();
 
       sourcesIds.map(function (eachSourceId) {
         sourcesToBeRemoved = sourcesToBeRemoved.filter(function (eachSourceToBeRemoved) {
@@ -44,7 +42,7 @@ angular.module('mapboxgl-directive').directive('glSources', ['SourcesManager', '
       });
 
       sourcesToBeRemoved.map(function (eachSourceToBeRemoved) {
-        sourceManager.removeSourceById(map, eachSourceToBeRemoved);
+        scope.sourceManager.removeSourceById(eachSourceToBeRemoved);
       });
 
       defer.resolve();
@@ -52,28 +50,38 @@ angular.module('mapboxgl-directive').directive('glSources', ['SourcesManager', '
       return defer.promise;
     }
 
+    function sourcesWatched (sourceObjects) {
+      if (angular.isDefined(sourceObjects)) {
+        checkSourcesToBeRemoved(sourceObjects).then(function () {
+          if (Object.prototype.toString.call(sourceObjects) === Object.prototype.toString.call([])) {
+            sourceObjects.map(function (eachSource) {
+              createOrUpdateSource(eachSource);
+            });
+          } else if (Object.prototype.toString.call(sourceObjects) === Object.prototype.toString.call({})) {
+            createOrUpdateSource(sourceObjects);
+          } else {
+            throw new Error('Invalid sources parameter');
+          }
+        }).catch(function (error) {
+          throw error;
+        });
+      }
+    }
+
     controller.getMap().then(function (map) {
+      scope.sourceManager = new SourcesManager(map, controller.getAnimationManager());
+
       mapboxglScope.$watch('glSources', function (sources) {
-        if (angular.isDefined(sources)) {
-          checkSourcesToBeRemoved(map, sources).then(function () {
-            if (Object.prototype.toString.call(sources) === Object.prototype.toString.call([])) {
-              sources.map(function (eachSource) {
-                createOrUpdateSource(map, eachSource);
-              });
-            } else if (Object.prototype.toString.call(sources) === Object.prototype.toString.call({})) {
-              createOrUpdateSource(map, sources);
-            } else {
-              throw new Error('Invalid sources parameter');
-            }
-          }).catch(function (error) {
-            throw error;
-          });
-        }
+        sourcesWatched(sources);
       }, true);
     });
 
+    scope.$on('mapboxglMap:styleChanged', function () {
+      scope.sourceManager.removeAllCreatedSources();
+    });
+
     scope.$on('$destroy', function () {
-      sourceManager.removeAllCreatedSources();
+      scope.sourceManager.removeAllCreatedSources();
     });
   }
 
