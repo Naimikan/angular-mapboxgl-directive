@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+    <title></title>
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v0.36.0/mapbox-gl.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.36.0/angular-mapboxgl-directive.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.36.0/mapbox-gl.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.36.0/angular-mapboxgl-directive.min.js"></script>
+
+    <script>
+      var app = angular.module('app', ['mapboxgl-directive'])
+
+      .run([function () {
+        mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
+      }])
+
+      .controller('AttachPopupMarkerController', ['$scope', function ($scope) {
+        function createElement (iconSize) {
+          var element = document.createElement('div');
+          element.style.backgroundImage = 'url(https://placekitten.com/g/' + iconSize.width + '/' + iconSize.height + '/)';
+          element.style.width = iconSize.width + 'px';
+          element.style.height = iconSize.height + 'px';
+          element.style.borderRadius = '50%';
+
+          return element;
+        }
+
+        $scope.glMarkers = [
+          {
+            coordinates: [-99.20415, 19.42257],
+            element: createElement({
+              width: 50,
+              height: 50
+            }),
+            options: {
+              offset: [-25, -25]
+            },
+            popup: {
+              enabled: true,
+              message: 'Marker 1 message',
+              options: {
+                offset: 25
+              }
+            }
+          }, {
+            coordinates: [-99.10415, 19.44257],
+            element: createElement({
+              width: 40,
+              height: 40
+            }),
+            options: {
+              offset: [-20, -20]
+            },
+            popup: {
+              enabled: true,
+              message: 'Marker 2 Message',
+              options: {
+                offset: 20
+              }
+            }
+          }
+        ];
+      }]);
+    </script>
+  </head>
+  <body ng-controller="AttachPopupMarkerController">
+    <div
+      mapboxgl
+      gl-zoom="{ value: 9 }"
+      gl-center="{ lat: 19.44257, lng: -99.20415 }"
+      gl-markers="glMarkers">
+    </div>
+  </body>
+</html>

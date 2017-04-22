@@ -193,10 +193,18 @@
       name: 'move_point_route',
       title: 'Move a point along a route',
       type: examplesTypes.layers,
-      description: 'Animate a point along the distance of a route with <a href="http://turfjs.org/">Turf</a>',
+      description: 'Animate a point along the distance of a route with <a href="http://turfjs.org/">TurfJS</a>',
       templateUrl: 'javascripts/states/examples/examples_source/move_point_route/MovePointRouteTemplate.html',
       controller: 'MovePointRouteController',
       uiSref: 'examples.move_point_route'
+    }, {
+      name: 'add_popup',
+      title: 'Add a popup in a map',
+      type: examplesTypes.layers,
+      description: 'Add a popup in a map using glPopups directive',
+      templateUrl: 'javascripts/states/examples/examples_source/add_popup/AddPopupTemplate.html',
+      controller: 'AddPopupController',
+      uiSref: 'examples.add_popup'
     }
   ])
 

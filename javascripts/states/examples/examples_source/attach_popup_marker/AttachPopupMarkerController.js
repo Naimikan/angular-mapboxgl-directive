@@ -21,24 +21,30 @@
           width: 50,
           height: 50
         }),
+        options: {
+          offset: [-25, -25]
+        },
         popup: {
           enabled: true,
-          onClick: {
-            coordinates: 'center',
-            message: 'Marker 1 Message'
+          message: 'Marker 1 message',
+          options: {
+            offset: 25
           }
         }
       }, {
         coordinates: [-99.10415, 19.44257],
         element: createElement({
-          width: 35,
-          height: 35
+          width: 40,
+          height: 40
         }),
+        options: {
+          offset: [-20, -20]
+        },
         popup: {
           enabled: true,
-          onClick: {
-            coordinates: 'center',
-            message: 'Marker 2 Message'
+          message: 'Marker 2 Message',
+          options: {
+            offset: 20
           }
         }
       }
