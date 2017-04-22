@@ -1,3 +1,8 @@
+## 0.36.1 (April 22, 2017)
+
+#### Bug fixes
+- Fix update language #24
+
 ## 0.36.0 (April 21, 2017)
 
 #### Breaking changes

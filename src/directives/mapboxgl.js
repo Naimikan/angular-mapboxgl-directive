@@ -155,13 +155,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
         scope.$watch(function () {
           return attrs.language;
         }, function () {
-          if (map.loaded()) {
-            updateLanguage(map);
-          } else {
-            map.on('load', function () {
-              updateLanguage(map);
-            });
-          }
+          updateLanguage(map);
         });
 
         // showCollisionBoxes

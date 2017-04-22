@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.36.0 2017-04-21
+*  angular-mapboxgl-directive 0.36.1 2017-04-22
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -163,13 +163,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
         scope.$watch(function () {
           return attrs.language;
         }, function () {
-          if (map.loaded()) {
-            updateLanguage(map);
-          } else {
-            map.on('load', function () {
-              updateLanguage(map);
-            });
-          }
+          updateLanguage(map);
         });
 
         // showCollisionBoxes
@@ -1509,10 +1503,10 @@ angular.module('mapboxgl-directive').factory('Utils', ['$window', '$q', function
 }]);
 
 angular.module('mapboxgl-directive').constant('version', {
-	full: '0.36.0',
+	full: '0.36.1',
 	major: 0,
 	minor: 36,
-	patch: 0
+	patch: 1
 });
 
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
