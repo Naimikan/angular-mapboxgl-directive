@@ -1,3 +1,8 @@
+## 0.37.0 (May 12, 2017)
+
+#### Improvements
+- Add support for Mapbox GL v0.37.0
+
 ## 0.36.1 (April 22, 2017)
 
 #### Bug fixes
