@@ -338,6 +338,12 @@
         options: {
           position: 'top-right'
         }
+      },
+      language: {
+        enabled: true,
+        options: {
+          defaultLanguage: 'fr'
+        }
       }
     };
 

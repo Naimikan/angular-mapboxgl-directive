@@ -1,7 +1,7 @@
 angular.module('mapboxgl-directive').constant('version', {
-	full: '0.37.0',
+	full: '0.38.0',
 	major: 0,
-	minor: 37,
+	minor: 38,
 	patch: 0
 });
 
@@ -69,6 +69,10 @@ angular.module('mapboxgl-directive').constant('mapboxglControlsAvailables', [
 			'result',
 			'error'
 		]
+	}, {
+		name: 'language',
+		constructor: window.MapboxLanguage || undefined,
+		pluginName: 'MapboxLanguage'
 	}, {
 		name: 'fullscreen',
 		constructor: mapboxgl.FullscreenControl || undefined,
