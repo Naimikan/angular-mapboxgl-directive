@@ -1,3 +1,9 @@
+## 0.38.0 (Jul 11, 2017)
+
+#### Improvements
+- Add support for Mapbox GL v0.38.0
+- Add support for MapboxLanguage plugin
+
 ## 0.37.0 (May 12, 2017)
 
 #### Improvements
