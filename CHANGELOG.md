@@ -1,3 +1,9 @@
+## 0.39.0 (Aug 1, 2017)
+
+#### Improvements
+- Add support for Mapbox GL v0.39.1
+- Add `trackuserlocationstart` and `trackuserlocationend` events in `GeolocateControl`
+
 ## 0.38.0 (Jul 11, 2017)
 
 #### Improvements

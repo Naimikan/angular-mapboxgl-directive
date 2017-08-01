@@ -1,7 +1,7 @@
 angular.module('mapboxgl-directive').constant('version', {
-	full: '0.38.0',
+	full: '0.39.0',
 	major: 0,
-	minor: 38,
+	minor: 39,
 	patch: 0
 });
 
@@ -55,7 +55,9 @@ angular.module('mapboxgl-directive').constant('mapboxglControlsAvailables', [
 		eventsExposedName: 'mapboxglGeolocate',
 		eventsAvailables: [
 			'geolocate',
-			'error'
+			'error',
+			'trackuserlocationstart',
+			'trackuserlocationend'
 		]
 	}, {
 		name: 'geocoder',
