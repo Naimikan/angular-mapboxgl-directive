@@ -175,9 +175,9 @@
       uiSref: 'examples.add_extrusion_polygon'
     }, {
       name: 'add_marker',
-      title: 'Add Markers',
+      title: 'Add markers',
       type: examplesTypes.layers,
-      description: 'Use Markers to add icons in a map',
+      description: 'Use markers to add icons in a map',
       templateUrl: 'javascripts/states/examples/examples_source/add_marker/AddMarkerTemplate.html',
       controller: 'AddMarkerController',
       uiSref: 'examples.add_marker'
@@ -205,6 +205,14 @@
       templateUrl: 'javascripts/states/examples/examples_source/add_popup/AddPopupTemplate.html',
       controller: 'AddPopupController',
       uiSref: 'examples.add_popup'
+    }, {
+      name: 'max_bounds',
+      title: 'Set max bounds',
+      type: examplesTypes.camera,
+      description: 'Set map maximum bounds using glMaxBounds directive',
+      templateUrl: 'javascripts/states/examples/examples_source/max_bounds/MaxBoundsTemplate.html',
+      controller: 'MaxBoundsController',
+      uiSref: 'examples.max_bounds'
     }
   ])
 
