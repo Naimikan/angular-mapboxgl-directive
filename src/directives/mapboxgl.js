@@ -7,6 +7,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
       _elementDOM: null,
       _animationManager: new AnimationsManager(mapboxGlMap),
       _popupManager: new PopupsManager(mapboxGlMap),
+      _isPersistent: false,
 
       getMap: function () {
         return this._mapboxGlMap.promise;
@@ -30,6 +31,14 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
 
       setDOMElement: function (elementDOM) {
         this._elementDOM = elementDOM;
+      },
+
+      setIsPersistent: function (isPersistent) {
+        this._isPersistent = isPersistent;
+      },
+
+      isPersistent: function () {
+        return this._isPersistent;
       },
 
       /* Loading Overlay */
@@ -71,6 +80,10 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
       } else {
         throw new Error('Your version of Mapbox GL doesn\`t support "setRTLTextPlugin" function.');
       }
+    }
+
+    if (angular.isDefined(attrs.persistent) && Utils.stringToBoolean(attrs.persistent)) {
+      controller.setIsPersistent(Utils.stringToBoolean(attrs.persistent));
     }
 
     controller.setDOMElement(element);

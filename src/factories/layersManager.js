@@ -10,6 +10,14 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
     }
   }
 
+  LayersManager.prototype.recreateLayers = function () {
+    var self = this;
+
+    self.layersCreated.map(function (eachLayer) {
+      self.createLayerByObject(eachLayer.layerObject);
+    });
+  };
+
   LayersManager.prototype.removePopupRelationByLayerId = function (layerId) {
     this.relationLayersPopups = this.relationLayersPopups.filter(function (each) {
       return each.layerId !== layerId;
@@ -86,7 +94,10 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
 
     this.mapInstance.addLayer(tempObject, before);
 
-    this.layersCreated.push(layerObject.id);
+    this.layersCreated.push({
+      layerId: layerObject.id,
+      layerObject: layerObject
+    });
 
     // Add popup relation
     this.relationLayersPopups.push({
@@ -102,7 +113,7 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
   };
 
   LayersManager.prototype.existLayerById = function (layerId) {
-    return angular.isDefined(layerId) && layerId !== null && this.layersCreated.indexOf(layerId) !== -1;
+    return angular.isDefined(layerId) && layerId !== null && this.layersCreated.filter(function (e) { return e.layerId === layerId; }).length > 0;
   };
 
   LayersManager.prototype.removeLayerById = function (layerId) {
@@ -119,7 +130,7 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
       }
 
       this.layersCreated = this.layersCreated.filter(function (eachLayerCreated) {
-        return eachLayerCreated !== layerId;
+        return eachLayerCreated.layerId !== layerId;
       });
 
       this.popupManager.removePopupByLayerId(layerId);
@@ -211,8 +222,8 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
   LayersManager.prototype.removeAllCreatedLayers = function () {
     var self = this;
 
-    self.layersCreated.map(function (eachLayerId) {
-      self.removeLayerById(eachLayerId);
+    self.layersCreated.map(function (eachLayer) {
+      self.removeLayerById(eachLayer.layerId);
     });
 
     // this.removeAllPopupRelations();

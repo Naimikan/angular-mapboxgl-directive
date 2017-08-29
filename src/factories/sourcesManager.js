@@ -8,6 +8,14 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
     }
   }
 
+  SourcesManager.prototype.recreateSources = function () {
+    var self = this;
+
+    self.sourcesCreated.map(function (eachSource) {
+      self.createSourceByObject(eachSource.sourceObject);
+    });
+  };
+
   SourcesManager.prototype.checkAndCreateFeatureId = function (sourceData) {
     if (angular.isDefined(sourceData)) {
       if (angular.isDefined(sourceData.features) && angular.isArray(sourceData.features)) {
@@ -82,7 +90,13 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
     self.checkAndCreateFeatureId(tempObject.data);
 
     this.mapInstance.addSource(sourceObject.id, tempObject);
-    self.sourcesCreated.push(sourceObject.id);
+
+    tempObject.id = sourceObject.id;
+
+    self.sourcesCreated.push({
+      sourceId: sourceObject.id,
+      sourceObject: tempObject
+    });
 
     // Check animations
     var sourceCreated = this.mapInstance.getSource(sourceObject.id);
@@ -102,7 +116,7 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
     var exist = false;
 
     if (angular.isDefined(sourceId) && sourceId !== null) {
-      exist = this.sourcesCreated.indexOf(sourceId) !== -1 ? true : false;
+      exist = this.sourcesCreated.filter(function (e) { return e.sourceId === sourceId; }).length > 0 ? true : false;
     }
 
     return exist;
@@ -120,11 +134,11 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
       if (this.mapInstance.getSource(sourceId)) {
         this.mapInstance.removeSource(sourceId);
       }
-      
+
       this.animationManager.removeAnimationBySourceId(sourceId);
 
       this.sourcesCreated = this.sourcesCreated.filter(function (eachSourceCreated) {
-        return eachSourceCreated !== sourceId;
+        return eachSourceCreated.sourceId !== sourceId;
       });
     } else {
       throw new Error('Invalid source ID');
@@ -192,8 +206,8 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
   SourcesManager.prototype.removeAllCreatedSources = function () {
     var self = this;
 
-    self.sourcesCreated.map(function (eachSourceId) {
-      self.removeSourceById(eachSourceId);
+    self.sourcesCreated.map(function (eachSource) {
+      self.removeSourceById(eachSource.sourceId);
     });
 
     // this.sourcesCreated = [];

@@ -371,10 +371,10 @@
       lng: -2
     };
 
-    /*$timeout(function () {
+    $timeout(function () {
       $scope.glStyle = 'mapbox://styles/mapbox/streets-v9';
       $scope.glStyle2 = 'mapbox://styles/mapbox/streets-v9';
-    }, 6000, true);*/
+    }, 6000, true);
 
     $scope.glZoom = {
       value: 0

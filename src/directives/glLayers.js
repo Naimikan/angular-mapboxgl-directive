@@ -19,7 +19,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
         event.originalEvent.preventDefault();
         event.originalEvent.stopPropagation();
 
-        var allLayers = scope.layersManager.getCreatedLayers();
+        var allLayers = scope.layersManager.getCreatedLayers().map(function (e) { return e.layerId; });
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
 
@@ -51,7 +51,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
       });
 
       map.on('mousemove', function (event) {
-        var allLayers = scope.layersManager.getCreatedLayers();
+        var allLayers = scope.layersManager.getCreatedLayers().map(function (e) { return e.layerId; });
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
         map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
@@ -140,12 +140,12 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
 
       layersIds.map(function (eachLayerId) {
         layersToBeRemoved = layersToBeRemoved.filter(function (eachLayerToBeRemoved) {
-          return eachLayerToBeRemoved !== eachLayerId;
+          return eachLayerToBeRemoved.layerId !== eachLayerId;
         });
       });
 
       layersToBeRemoved.map(function (eachLayerToBeRemoved) {
-        scope.layersManager.removeLayerById(eachLayerToBeRemoved);
+        scope.layersManager.removeLayerById(eachLayerToBeRemoved.layerId);
       });
 
       defer.resolve();
@@ -184,7 +184,11 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
     });
 
     scope.$on('mapboxglMap:styleChanged', function () {
-      scope.layersManager.removeAllCreatedLayers();
+      if (controller.isPersistent()) {
+        scope.layersManager.recreateLayers();
+      } else {
+        scope.layersManager.removeAllCreatedLayers();
+      }
     });
 
     scope.$on('$destroy', function () {

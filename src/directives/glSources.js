@@ -37,12 +37,12 @@ angular.module('mapboxgl-directive').directive('glSources', ['SourcesManager', '
 
       sourcesIds.map(function (eachSourceId) {
         sourcesToBeRemoved = sourcesToBeRemoved.filter(function (eachSourceToBeRemoved) {
-          return eachSourceToBeRemoved !== eachSourceId;
+          return eachSourceToBeRemoved.sourceId !== eachSourceId;
         });
       });
 
       sourcesToBeRemoved.map(function (eachSourceToBeRemoved) {
-        scope.sourceManager.removeSourceById(eachSourceToBeRemoved);
+        scope.sourceManager.removeSourceById(eachSourceToBeRemoved.sourceId);
       });
 
       defer.resolve();
@@ -77,7 +77,11 @@ angular.module('mapboxgl-directive').directive('glSources', ['SourcesManager', '
     });
 
     scope.$on('mapboxglMap:styleChanged', function () {
-      scope.sourceManager.removeAllCreatedSources();
+      if (controller.isPersistent()) {
+        scope.sourceManager.recreateSources();
+      } else {
+        scope.sourceManager.removeAllCreatedSources();
+      }
     });
 
     scope.$on('$destroy', function () {

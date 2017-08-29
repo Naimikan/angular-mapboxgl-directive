@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.39.0 2017-08-01
+*  angular-mapboxgl-directive 0.40.0 2017-08-29
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -15,6 +15,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
       _elementDOM: null,
       _animationManager: new AnimationsManager(mapboxGlMap),
       _popupManager: new PopupsManager(mapboxGlMap),
+      _isPersistent: false,
 
       getMap: function () {
         return this._mapboxGlMap.promise;
@@ -38,6 +39,14 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
 
       setDOMElement: function (elementDOM) {
         this._elementDOM = elementDOM;
+      },
+
+      setIsPersistent: function (isPersistent) {
+        this._isPersistent = isPersistent;
+      },
+
+      isPersistent: function () {
+        return this._isPersistent;
       },
 
       /* Loading Overlay */
@@ -79,6 +88,10 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
       } else {
         throw new Error('Your version of Mapbox GL doesn\`t support "setRTLTextPlugin" function.');
       }
+    }
+
+    if (angular.isDefined(attrs.persistent) && Utils.stringToBoolean(attrs.persistent)) {
+      controller.setIsPersistent(Utils.stringToBoolean(attrs.persistent));
     }
 
     controller.setDOMElement(element);
@@ -553,6 +566,14 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
     }
   }
 
+  LayersManager.prototype.recreateLayers = function () {
+    var self = this;
+
+    self.layersCreated.map(function (eachLayer) {
+      self.createLayerByObject(eachLayer.layerObject);
+    });
+  };
+
   LayersManager.prototype.removePopupRelationByLayerId = function (layerId) {
     this.relationLayersPopups = this.relationLayersPopups.filter(function (each) {
       return each.layerId !== layerId;
@@ -629,7 +650,10 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
 
     this.mapInstance.addLayer(tempObject, before);
 
-    this.layersCreated.push(layerObject.id);
+    this.layersCreated.push({
+      layerId: layerObject.id,
+      layerObject: layerObject
+    });
 
     // Add popup relation
     this.relationLayersPopups.push({
@@ -645,7 +669,7 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
   };
 
   LayersManager.prototype.existLayerById = function (layerId) {
-    return angular.isDefined(layerId) && layerId !== null && this.layersCreated.indexOf(layerId) !== -1;
+    return angular.isDefined(layerId) && layerId !== null && this.layersCreated.filter(function (e) { return e.layerId === layerId; }).length > 0;
   };
 
   LayersManager.prototype.removeLayerById = function (layerId) {
@@ -662,7 +686,7 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
       }
 
       this.layersCreated = this.layersCreated.filter(function (eachLayerCreated) {
-        return eachLayerCreated !== layerId;
+        return eachLayerCreated.layerId !== layerId;
       });
 
       this.popupManager.removePopupByLayerId(layerId);
@@ -754,8 +778,8 @@ angular.module('mapboxgl-directive').factory('LayersManager', ['Utils', 'mapboxg
   LayersManager.prototype.removeAllCreatedLayers = function () {
     var self = this;
 
-    self.layersCreated.map(function (eachLayerId) {
-      self.removeLayerById(eachLayerId);
+    self.layersCreated.map(function (eachLayer) {
+      self.removeLayerById(eachLayer.layerId);
     });
 
     // this.removeAllPopupRelations();
@@ -1191,6 +1215,14 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
     }
   }
 
+  SourcesManager.prototype.recreateSources = function () {
+    var self = this;
+
+    self.sourcesCreated.map(function (eachSource) {
+      self.createSourceByObject(eachSource.sourceObject);
+    });
+  };
+
   SourcesManager.prototype.checkAndCreateFeatureId = function (sourceData) {
     if (angular.isDefined(sourceData)) {
       if (angular.isDefined(sourceData.features) && angular.isArray(sourceData.features)) {
@@ -1265,7 +1297,13 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
     self.checkAndCreateFeatureId(tempObject.data);
 
     this.mapInstance.addSource(sourceObject.id, tempObject);
-    self.sourcesCreated.push(sourceObject.id);
+
+    tempObject.id = sourceObject.id;
+
+    self.sourcesCreated.push({
+      sourceId: sourceObject.id,
+      sourceObject: tempObject
+    });
 
     // Check animations
     var sourceCreated = this.mapInstance.getSource(sourceObject.id);
@@ -1285,7 +1323,7 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
     var exist = false;
 
     if (angular.isDefined(sourceId) && sourceId !== null) {
-      exist = this.sourcesCreated.indexOf(sourceId) !== -1 ? true : false;
+      exist = this.sourcesCreated.filter(function (e) { return e.sourceId === sourceId; }).length > 0 ? true : false;
     }
 
     return exist;
@@ -1303,11 +1341,11 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
       if (this.mapInstance.getSource(sourceId)) {
         this.mapInstance.removeSource(sourceId);
       }
-      
+
       this.animationManager.removeAnimationBySourceId(sourceId);
 
       this.sourcesCreated = this.sourcesCreated.filter(function (eachSourceCreated) {
-        return eachSourceCreated !== sourceId;
+        return eachSourceCreated.sourceId !== sourceId;
       });
     } else {
       throw new Error('Invalid source ID');
@@ -1375,8 +1413,8 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
   SourcesManager.prototype.removeAllCreatedSources = function () {
     var self = this;
 
-    self.sourcesCreated.map(function (eachSourceId) {
-      self.removeSourceById(eachSourceId);
+    self.sourcesCreated.map(function (eachSource) {
+      self.removeSourceById(eachSource.sourceId);
     });
 
     // this.sourcesCreated = [];
@@ -1503,9 +1541,9 @@ angular.module('mapboxgl-directive').factory('Utils', ['$window', '$q', function
 }]);
 
 angular.module('mapboxgl-directive').constant('version', {
-	full: '0.39.0',
+	full: '0.40.0',
 	major: 0,
-	minor: 39,
+	minor: 40,
 	patch: 0
 });
 
@@ -2119,7 +2157,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
         event.originalEvent.preventDefault();
         event.originalEvent.stopPropagation();
 
-        var allLayers = scope.layersManager.getCreatedLayers();
+        var allLayers = scope.layersManager.getCreatedLayers().map(function (e) { return e.layerId; });
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
 
@@ -2151,7 +2189,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
       });
 
       map.on('mousemove', function (event) {
-        var allLayers = scope.layersManager.getCreatedLayers();
+        var allLayers = scope.layersManager.getCreatedLayers().map(function (e) { return e.layerId; });
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
         map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
@@ -2240,12 +2278,12 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
 
       layersIds.map(function (eachLayerId) {
         layersToBeRemoved = layersToBeRemoved.filter(function (eachLayerToBeRemoved) {
-          return eachLayerToBeRemoved !== eachLayerId;
+          return eachLayerToBeRemoved.layerId !== eachLayerId;
         });
       });
 
       layersToBeRemoved.map(function (eachLayerToBeRemoved) {
-        scope.layersManager.removeLayerById(eachLayerToBeRemoved);
+        scope.layersManager.removeLayerById(eachLayerToBeRemoved.layerId);
       });
 
       defer.resolve();
@@ -2284,7 +2322,11 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
     });
 
     scope.$on('mapboxglMap:styleChanged', function () {
-      scope.layersManager.removeAllCreatedLayers();
+      if (controller.isPersistent()) {
+        scope.layersManager.recreateLayers();
+      } else {
+        scope.layersManager.removeAllCreatedLayers();
+      }
     });
 
     scope.$on('$destroy', function () {
@@ -2590,12 +2632,12 @@ angular.module('mapboxgl-directive').directive('glSources', ['SourcesManager', '
 
       sourcesIds.map(function (eachSourceId) {
         sourcesToBeRemoved = sourcesToBeRemoved.filter(function (eachSourceToBeRemoved) {
-          return eachSourceToBeRemoved !== eachSourceId;
+          return eachSourceToBeRemoved.sourceId !== eachSourceId;
         });
       });
 
       sourcesToBeRemoved.map(function (eachSourceToBeRemoved) {
-        scope.sourceManager.removeSourceById(eachSourceToBeRemoved);
+        scope.sourceManager.removeSourceById(eachSourceToBeRemoved.sourceId);
       });
 
       defer.resolve();
@@ -2630,7 +2672,11 @@ angular.module('mapboxgl-directive').directive('glSources', ['SourcesManager', '
     });
 
     scope.$on('mapboxglMap:styleChanged', function () {
-      scope.sourceManager.removeAllCreatedSources();
+      if (controller.isPersistent()) {
+        scope.sourceManager.recreateSources();
+      } else {
+        scope.sourceManager.removeAllCreatedSources();
+      }
     });
 
     scope.$on('$destroy', function () {
