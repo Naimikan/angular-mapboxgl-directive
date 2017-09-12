@@ -164,6 +164,8 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'Uti
 							console.error('\'custom\' must be an array');
 						}
           }
+
+					$rootScope.$broadcast('mapboxglMap:controlsRendered', _controlsCreated);
         }
 			});
 		});

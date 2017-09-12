@@ -309,6 +309,10 @@
     var htmlButton = '<button class="btn btn-primary" ng-click="deleteButtonClick($event);">aasgioagg</button>';
     var compiledHtml = $compile(htmlButton)($scope);
 
+    $scope.$on('mapboxglMap:controlsRendered', function (event, controlsRendered) {
+      console.log(controlsRendered);
+    });
+
     $scope.$on('mapboxglMap:load', function (event, mapboxglMapEvent) {
       console.log(event, mapboxglMapEvent);
 

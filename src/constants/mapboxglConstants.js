@@ -1,7 +1,7 @@
 angular.module('mapboxgl-directive').constant('version', {
-	full: '0.40.0',
+	full: '0.41.0',
 	major: 0,
-	minor: 40,
+	minor: 41,
 	patch: 0
 });
 
