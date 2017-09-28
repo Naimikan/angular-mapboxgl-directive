@@ -32,8 +32,10 @@ angular.module('mapboxgl-directive').directive('glMarkers', ['MarkersManager', f
     });
 
     scope.$on('$destroy', function () {
-      // ToDo: remove all markers
-      scope.markerManager.removeAllMarkersCreated();
+      if (angular.isDefined(scope.markerManager)) {
+        // ToDo: remove all markers
+        scope.markerManager.removeAllMarkersCreated();
+      }
     });
   }
 
