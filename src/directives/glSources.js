@@ -85,7 +85,9 @@ angular.module('mapboxgl-directive').directive('glSources', ['SourcesManager', '
     });
 
     scope.$on('$destroy', function () {
-      scope.sourceManager.removeAllCreatedSources();
+      if (angular.isDefined(scope.sourceManager)) {
+        scope.sourceManager.removeAllCreatedSources();
+      }
     });
   }
 

@@ -192,7 +192,9 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
     });
 
     scope.$on('$destroy', function () {
-      scope.layersManager.removeAllCreatedLayers();
+      if (angular.isDefined(scope.layersManager)) {
+        scope.layersManager.removeAllCreatedLayers();
+      }
     });
   }
 
