@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.41.0 2017-09-28
+*  angular-mapboxgl-directive 0.41.0 2017-11-11
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -243,7 +243,14 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
       });
 
       scope.$on('$destroy', function () {
-        controller.getAnimationManager().destroy();
+        if (angular.isDefined(controller.getAnimationManager())) {
+          controller.getAnimationManager().destroy();
+        }
+
+        if (angular.isDefined(controller.getPopupManager())) {
+          controller.getPopupManager().removeAllPopupsCreated();
+        }
+
         mapboxglMapsData.removeMapById(scope.mapboxglMapId);
 
         mapboxGlMap.remove();
@@ -1761,7 +1768,7 @@ angular.module('mapboxgl-directive').directive('glClasses', [function () {
 	return directive;
 }]);
 
-angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'Utils', 'mapboxglControlsAvailables', function ($rootScope, Utils, mapboxglControlsAvailables) {
+angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'Utils', 'mapboxglControlsAvailables', '$timeout', function ($rootScope, Utils, mapboxglControlsAvailables, $timeout) {
 	function mapboxGlControlsDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -1772,6 +1779,8 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'Uti
     var _controlsCreated = {
       custom: []
     };
+
+		var drawFeaturesAdded = false, drawControlAdded = false;
 
 	  var addNewControlCreated = function (controlName, newControl, isCustomControl, controlEvents, isEventsListenedByMap) {
 	    var mapListenEvents = angular.isDefined(isEventsListenedByMap) ? isEventsListenedByMap : false;
@@ -1890,6 +1899,23 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'Uti
 								var position = controls[eachControlAvailable.name].options && controls[eachControlAvailable.name].options.position ? controls[eachControlAvailable.name].options.position : undefined;
 
 								map.addControl(control, position);
+
+								if (eachControlAvailable.name === 'draw' && controls[eachControlAvailable.name].features && Array.isArray(controls[eachControlAvailable.name].features) && controls[eachControlAvailable.name].features.length > 0) {
+									var featureIds = [];
+
+									controls[eachControlAvailable.name].features.map(function (eachFeature) {
+										var thisFeatureId = control.add(eachFeature);
+										featureIds = featureIds.concat(thisFeatureId);
+									});
+
+									control.changeMode(control.modes.SIMPLE_SELECT, {
+										featureIds: featureIds
+									});
+
+									$timeout(function () {
+										control.changeMode(control.modes.SIMPLE_SELECT);
+									}, 400, true);
+								}
 							} else {
 								console.warn(eachControlAvailable.pluginName + ' plugin is not included.');
 							}

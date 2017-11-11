@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'Utils', 'mapboxglControlsAvailables', function ($rootScope, Utils, mapboxglControlsAvailables) {
+angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'Utils', 'mapboxglControlsAvailables', '$timeout', function ($rootScope, Utils, mapboxglControlsAvailables, $timeout) {
 	function mapboxGlControlsDirectiveLink (scope, element, attrs, controller) {
 		if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -9,6 +9,8 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'Uti
     var _controlsCreated = {
       custom: []
     };
+
+		var drawFeaturesAdded = false, drawControlAdded = false;
 
 	  var addNewControlCreated = function (controlName, newControl, isCustomControl, controlEvents, isEventsListenedByMap) {
 	    var mapListenEvents = angular.isDefined(isEventsListenedByMap) ? isEventsListenedByMap : false;
@@ -127,6 +129,23 @@ angular.module('mapboxgl-directive').directive('glControls', ['$rootScope', 'Uti
 								var position = controls[eachControlAvailable.name].options && controls[eachControlAvailable.name].options.position ? controls[eachControlAvailable.name].options.position : undefined;
 
 								map.addControl(control, position);
+
+								if (eachControlAvailable.name === 'draw' && controls[eachControlAvailable.name].features && Array.isArray(controls[eachControlAvailable.name].features) && controls[eachControlAvailable.name].features.length > 0) {
+									var featureIds = [];
+
+									controls[eachControlAvailable.name].features.map(function (eachFeature) {
+										var thisFeatureId = control.add(eachFeature);
+										featureIds = featureIds.concat(thisFeatureId);
+									});
+
+									control.changeMode(control.modes.SIMPLE_SELECT, {
+										featureIds: featureIds
+									});
+
+									$timeout(function () {
+										control.changeMode(control.modes.SIMPLE_SELECT);
+									}, 400, true);
+								}
 							} else {
 								console.warn(eachControlAvailable.pluginName + ' plugin is not included.');
 							}

@@ -1,3 +1,9 @@
+## 0.42.0 (Nov 11, 2017)
+
+## Improvements
+- Add `features` attribute in `glControls.draw` #32, #37
+- Add `mapboxglMap:controlsRendered` event
+
 ## 0.39.0 (Aug 1, 2017)
 
 #### Improvements

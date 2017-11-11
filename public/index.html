@@ -2,25 +2,37 @@
   <head>
     <title>Test Server - angular-mapboxgl-directive</title>
 
-    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css" rel="stylesheet" />
+    <!-- <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.css" rel="stylesheet" />
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.2/mapbox-gl-directions.css' type='text/css' />
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.css' type='text/css' />
     <link href="css/angular-mapboxgl-directive.css" rel="stylesheet" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js"></script>
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.js"></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.js'></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.2/mapbox-gl-directions.js'></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-language/v0.9.0/mapbox-gl-language.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v0.19.0/mapbox-gl-draw.js'></script>
 
     <script src='https://cdnjs.cloudflare.com/ajax/libs/Turf.js/3.0.14/turf.min.js'></script>
 
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.js'></script>
-    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css' type='text/css' />
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v0.19.0/mapbox-gl-draw.css' type='text/css' />
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.0.1/mapbox-gl-geocoder.css' type='text/css' /> -->
 
+    <link href="lib/mapbox-gl.css" rel="stylesheet" />
+    <link href="lib/mapbox-gl-draw.css" rel="stylesheet" />
+
+    <script src="lib/angular.js"></script>
+    <script src="lib/mapbox-gl.js"></script>
+    <script src="lib/mapbox-gl-draw.js"></script>
     <script src="lib/angular-mapboxgl-directive.js"></script>
 
     <script src="app.js"></script>
+
+    <style>
+      #myMap { width: 100%; height: 100%; }
+    </style>
   </head>
   <body ng-controller="IndexController" style="margin: 0;">
     <!-- <div ng-repeat="eachMap in maps">
@@ -48,16 +60,16 @@
       width="{{glWidth}}"
       height="{{glHeight}}"></div> -->
 
+      <!-- gl-center="[-77.04, 38.907]" -->
       <mapboxgl
         gl-style="glStyle"
         id="<map_id>"
         gl-controls="glControls"
         persistent="true"
-        gl-center="[-77.04, 38.907]"
-        gl-min-zoom="11.15"
-        gl-max-zoom="18"
-        gl-layers="testLayers"
-        gl-sources="testSources">
+        gl-center="[13.039363527599079, 46.31987713071527]"
+        gl-zoom="{ value: 8.2 }"
+        width="{{glWidth}}"
+        height="{{glHeight}}">
       </mapboxgl>
 
     <!-- <div mapboxgl-compare compare-settings="{ mousemove: false }">

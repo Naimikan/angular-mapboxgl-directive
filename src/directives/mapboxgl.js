@@ -235,7 +235,14 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
       });
 
       scope.$on('$destroy', function () {
-        controller.getAnimationManager().destroy();
+        if (angular.isDefined(controller.getAnimationManager())) {
+          controller.getAnimationManager().destroy();
+        }
+
+        if (angular.isDefined(controller.getPopupManager())) {
+          controller.getPopupManager().removeAllPopupsCreated();
+        }
+
         mapboxglMapsData.removeMapById(scope.mapboxglMapId);
 
         mapboxGlMap.remove();
@@ -277,7 +284,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
         }
       }); */
     }).catch(function (error) {
-
+      console.error(error),
     });
   }
 
