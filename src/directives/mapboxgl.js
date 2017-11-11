@@ -284,7 +284,7 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
         }
       }); */
     }).catch(function (error) {
-      console.error(error),
+      console.error(error);
     });
   }
 
