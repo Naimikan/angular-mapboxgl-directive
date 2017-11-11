@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.42.1 2017-11-11
+*  angular-mapboxgl-directive 0.43.0 2017-11-11
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -1232,25 +1232,27 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
 
   SourcesManager.prototype.checkAndCreateFeatureId = function (sourceData) {
     if (angular.isDefined(sourceData)) {
-      if (angular.isDefined(sourceData.features) && angular.isArray(sourceData.features)) {
-        sourceData.features = sourceData.features.map(function (eachFeature) {
-          if (angular.isUndefined(eachFeature.properties)) {
-            eachFeature.properties = {};
+      if (!Utils.isUrl(sourceData)) {
+        if (angular.isDefined(sourceData.features) && angular.isArray(sourceData.features)) {
+          sourceData.features = sourceData.features.map(function (eachFeature) {
+            if (angular.isUndefined(eachFeature.properties)) {
+              eachFeature.properties = {};
+            }
+
+            if (angular.isUndefined(eachFeature.properties.featureId)) {
+              eachFeature.properties.featureId = Utils.generateGUID();
+            }
+
+            return eachFeature;
+          });
+        } else {
+          if (angular.isUndefined(sourceData.properties)) {
+            sourceData.properties = {};
           }
 
-          if (angular.isUndefined(eachFeature.properties.featureId)) {
-            eachFeature.properties.featureId = Utils.generateGUID();
+          if (angular.isUndefined(sourceData.properties.featureId)) {
+            sourceData.properties.featureId = Utils.generateGUID();
           }
-
-          return eachFeature;
-        });
-      } else {
-        if (angular.isUndefined(sourceData.properties)) {
-          sourceData.properties = {};
-        }
-
-        if (angular.isUndefined(sourceData.properties.featureId)) {
-          sourceData.properties.featureId = Utils.generateGUID();
         }
       }
     }
@@ -1534,6 +1536,10 @@ angular.module('mapboxgl-directive').factory('Utils', ['$window', '$q', function
 		return generatePiece() + generatePiece() + '-' + generatePiece() + '-' + generatePiece() + '-' + generatePiece() + '-' + generatePiece() + generatePiece() + generatePiece();
 	}
 
+	function isUrl (urlString) {
+		return /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/.test(urlString);
+	}
+
 	var Utils = {
 		generateMapId: generateMapId,
 		validateAndFormatCenter: validateAndFormatCenter,
@@ -1541,17 +1547,18 @@ angular.module('mapboxgl-directive').factory('Utils', ['$window', '$q', function
 		stringToBoolean: stringToBoolean,
 		stringToNumber: stringToNumber,
 		checkObjects: checkObjects,
-		generateGUID: generateGUID
+		generateGUID: generateGUID,
+		isUrl: isUrl
 	};
 
 	return Utils;
 }]);
 
 angular.module('mapboxgl-directive').constant('version', {
-	full: '0.42.1',
+	full: '0.43.0',
 	major: 0,
-	minor: 42,
-	patch: 1
+	minor: 43,
+	patch: 0
 });
 
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {

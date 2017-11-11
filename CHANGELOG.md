@@ -1,3 +1,8 @@
+## 0.43.0 (Nov 11, 2017)
+
+## Improvements
+- Add support for url format in source.data property
+
 ## 0.42.0 (Nov 11, 2017)
 
 ## Improvements

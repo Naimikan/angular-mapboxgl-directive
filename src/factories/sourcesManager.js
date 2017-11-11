@@ -18,25 +18,27 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
 
   SourcesManager.prototype.checkAndCreateFeatureId = function (sourceData) {
     if (angular.isDefined(sourceData)) {
-      if (angular.isDefined(sourceData.features) && angular.isArray(sourceData.features)) {
-        sourceData.features = sourceData.features.map(function (eachFeature) {
-          if (angular.isUndefined(eachFeature.properties)) {
-            eachFeature.properties = {};
+      if (!Utils.isUrl(sourceData)) {
+        if (angular.isDefined(sourceData.features) && angular.isArray(sourceData.features)) {
+          sourceData.features = sourceData.features.map(function (eachFeature) {
+            if (angular.isUndefined(eachFeature.properties)) {
+              eachFeature.properties = {};
+            }
+
+            if (angular.isUndefined(eachFeature.properties.featureId)) {
+              eachFeature.properties.featureId = Utils.generateGUID();
+            }
+
+            return eachFeature;
+          });
+        } else {
+          if (angular.isUndefined(sourceData.properties)) {
+            sourceData.properties = {};
           }
 
-          if (angular.isUndefined(eachFeature.properties.featureId)) {
-            eachFeature.properties.featureId = Utils.generateGUID();
+          if (angular.isUndefined(sourceData.properties.featureId)) {
+            sourceData.properties.featureId = Utils.generateGUID();
           }
-
-          return eachFeature;
-        });
-      } else {
-        if (angular.isUndefined(sourceData.properties)) {
-          sourceData.properties = {};
-        }
-
-        if (angular.isUndefined(sourceData.properties.featureId)) {
-          sourceData.properties.featureId = Utils.generateGUID();
         }
       }
     }

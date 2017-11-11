@@ -102,6 +102,10 @@ angular.module('mapboxgl-directive').factory('Utils', ['$window', '$q', function
 		return generatePiece() + generatePiece() + '-' + generatePiece() + '-' + generatePiece() + '-' + generatePiece() + '-' + generatePiece() + generatePiece() + generatePiece();
 	}
 
+	function isUrl (urlString) {
+		return /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/.test(urlString);
+	}
+
 	var Utils = {
 		generateMapId: generateMapId,
 		validateAndFormatCenter: validateAndFormatCenter,
@@ -109,7 +113,8 @@ angular.module('mapboxgl-directive').factory('Utils', ['$window', '$q', function
 		stringToBoolean: stringToBoolean,
 		stringToNumber: stringToNumber,
 		checkObjects: checkObjects,
-		generateGUID: generateGUID
+		generateGUID: generateGUID,
+		isUrl: isUrl
 	};
 
 	return Utils;
