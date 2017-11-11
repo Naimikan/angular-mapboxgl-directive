@@ -1,0 +1,8 @@
+title: angular-mapboxgl-directive
+description: Angular directive for Mapbox GL
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-cayman
+
+gems:
+  - jekyll-mentions
