@@ -1,13 +1,13 @@
 (function (angular) {
   'use strict';
 
-  angular.module('app.Home')
+  angular.module('app')
 
   .directive('navigationLinks', ['$timeout', function ($timeout) {
     return {
       restrict: 'EA',
       scope: true,
-      templateUrl: 'javascripts/states/home/directives/NavigationLinksDirectiveTemplate.html',
+      templateUrl: 'javascripts/directives/NavigationLinksDirectiveTemplate.html',
       link: function (scope, element, attrs) {
         scope.navigationLinks = [
           {

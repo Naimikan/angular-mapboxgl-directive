@@ -1,13 +1,13 @@
 (function (angular) {
   'use strict';
 
-  angular.module('app.Home')
+  angular.module('app')
 
   .directive('pageHeader', ['$window', function ($window) {
     return {
       restrict: 'EA',
       scope: true,
-      templateUrl: 'javascripts/states/home/directives/HeaderDirectiveTemplate.html',
+      templateUrl: 'javascripts/directives/HeaderDirectiveTemplate.html',
       link: function (scope, element, attrs) {
         var header = angular.element(element[0].getElementsByClassName('bg'));
         var maxScroll = $window.innerHeight * 0.75;

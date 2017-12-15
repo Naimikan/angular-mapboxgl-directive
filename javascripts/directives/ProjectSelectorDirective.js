@@ -1,13 +1,13 @@
 (function (angular) {
   'use strict';
 
-  angular.module('app.Home')
+  angular.module('app')
 
   .directive('projectSelector', ['$timeout', function ($timeout) {
     return {
       restrict: 'EA',
       scope: true,
-      templateUrl: 'javascripts/states/home/directives/ProjectSelectorDirectiveTemplate.html',
+      templateUrl: 'javascripts/directives/ProjectSelectorDirectiveTemplate.html',
       link: function (scope, element, attrs) {
         scope.projects = [
           {
