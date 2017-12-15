@@ -5,12 +5,12 @@
 
   .controller('HomeController', ['$scope', function ($scope) {
     $scope.glCenter = {
-      lat: 78.374,
-      lng: -3.849
+      lat: 44.96479793033101,
+      lng: -25.2685546875
     };
 
     $scope.glZoom = {
-      value: 2
+      value: 4
     };
 
     $scope.glHandlers = {
