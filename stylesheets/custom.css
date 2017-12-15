@@ -30,7 +30,7 @@ body {
   overflow: hidden;
 }
 
-.header .header-container .naimikan-projects {
+.header .header-container .project-selector {
   position: fixed;
   padding-left: 25px;
   padding-right: 40px;
@@ -40,7 +40,7 @@ body {
   overflow: hidden;
 }
 
-.header .header-container .naimikan-projects::after {
+.header .header-container .project-selector::after {
   content: '\25BE';
   display: block;
   position: absolute;
@@ -49,14 +49,14 @@ body {
   color: #00E5D2;
 }
 
-.header .header-container .naimikan-projects .project {
+.header .header-container .project-selector .project {
   width: 100%;
   text-transform: uppercase;
   letter-spacing: 5px;
   font-weight: 700;
 }
 
-.header .header-container .naimikan-projects .project a {
+.header .header-container .project-selector .project a {
   width: 100%;
   color: #CDCDCD;
   outline: none;
