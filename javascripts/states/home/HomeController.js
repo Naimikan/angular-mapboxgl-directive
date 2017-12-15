@@ -7,7 +7,7 @@
     $scope.glStyle = 'mapbox://styles/mapbox/dark-v9';
 
     $scope.glCenter = {
-      lat: 48.96479793033101,
+      lat: 44.96479793033101,
       lng: 14.2685546875
     };
 
