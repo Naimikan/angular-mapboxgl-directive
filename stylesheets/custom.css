@@ -5,11 +5,18 @@ body {
   margin: 0;
 }
 
-.map-container {
+.header-container {
   margin-bottom: 10px;
   height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: #FF6D19;
   background: linear-gradient(#FFA916, #FF6D19);
+}
+
+.header-container .header-info {
+  
 }
 
 .title {
