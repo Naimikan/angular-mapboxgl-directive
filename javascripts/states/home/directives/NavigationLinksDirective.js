@@ -16,9 +16,6 @@
           }, {
             href: '',
             name: 'Examples'
-          }, {
-            href: 'https://github.com/Naimikan/angular-mapboxgl-directive',
-            name: 'Github'
           }
         ];
       }
