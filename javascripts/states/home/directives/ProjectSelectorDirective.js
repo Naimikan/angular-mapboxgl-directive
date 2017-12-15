@@ -7,7 +7,7 @@
     return {
       restrict: 'EA',
       scope: true,
-      templateUrl: 'javascripts/states/home/ProjectSelectorDirectiveTemplate.html',
+      templateUrl: 'javascripts/states/home/directives/ProjectSelectorDirectiveTemplate.html',
       link: function (scope, element, attrs) {
         $scope.projects = [
           {
