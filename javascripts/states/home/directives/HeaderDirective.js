@@ -13,7 +13,7 @@
         var range = 200;
 
         angular.element($window).bind('scroll', function (e) {
-          var scrollTop = angular.element(this).pageYOffset;
+          var scrollTop = this.pageYOffset;
           var height = header.outerHeight();
           var offset = height / 2;
           var calc = 1 - (scrollTop - offset + range) / range;
