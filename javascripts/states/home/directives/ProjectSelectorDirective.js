@@ -3,7 +3,7 @@
 
   angular.module('app.Home')
 
-  .directive('projectSelector', [function () {
+  .directive('projectSelector', ['$timeout', function ($timeout) {
     return {
       restrict: 'EA',
       scope: true,
@@ -18,6 +18,10 @@
             name: 'vue2-mapboxgl-component'
           }
         ];
+
+        $timeout(function () {
+          console.log(element)
+        }, 0);
       }
     };
   }]);
