@@ -8,6 +8,8 @@ body {
 .map-container {
   margin-bottom: 10px;
   height: 100vh;
+  background: #FF6D19;
+  background: linear-gradient(#FFA916, #FF6D19);
 }
 
 .title {
