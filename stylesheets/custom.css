@@ -16,6 +16,12 @@ a {
   padding: 0 !important;
 }
 
+.section-text {
+  line-height: 1.5;
+  font-size: 15px;
+  color: #716e6e;
+}
+
 .home section {
   padding: 50px 0;
   position: relative;
