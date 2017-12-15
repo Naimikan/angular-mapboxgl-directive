@@ -5,8 +5,9 @@
 <header class="header">
   <div class="header-container">
     <div class="naimikan-projects">
-      <div class="project"><a href="https://naimikan.github.io/angular-mapboxgl-directive">angular-mapboxgl-directive</a></div>
-      <div class="project"><a href="https://naimikan.github.io/vue2-mapboxgl-component">vue2-mapboxgl-component</a></div>
+      <div ng-repeat="project in projects" class="project">
+        <a href="{{project.href}}" ng-bind="project.name"></a>
+      </div>
     </div>
   </div>
 </header>

@@ -16,5 +16,15 @@
     $scope.glHandlers = {
       scrollZoom: false
     };
+
+    $scope.projects = [
+      {
+        href: 'https://naimikan.github.io/angular-mapboxgl-directive',
+        name: 'angular-mapboxgl-directive'
+      }, {
+        href: 'https://naimikan.github.io/vue2-mapboxgl-component',
+        name: 'vue2-mapboxgl-component'
+      }
+    ];
   }]);
 })(window.angular);
