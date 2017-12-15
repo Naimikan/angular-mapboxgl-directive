@@ -10,16 +10,20 @@
       templateUrl: 'javascripts/states/home/directives/HeaderDirectiveTemplate.html',
       link: function (scope, element, attrs) {
         var header = angular.element(element[0].getElementsByClassName('bg'));
-        var range = 200;
+        var maxScroll = $window.innerHeight * 0.75;
 
         angular.element($window).bind('scroll', function (e) {
           var scrollTop = this.pageYOffset;
-          var height = header[0].offsetHeight;
-          var offset = height / 2;
-          var calc = 1 - (scrollTop - offset + range) / range;
 
-          if (calc > 0) header.css({ 'opacity': 1 });
-          else header.css({ 'opacity': 0 })
+          if (scrollTop === 0) header.css({ 'opacity': 0 })
+          else if (scrollTop >= maxScroll) header.css({ 'opacity': 1 })
+          else {
+            var percentScrolled = scrollTop / maxScroll;
+
+            var calc = 1 - percentScrolled;
+
+            header.css({ 'opacity': calc });
+          }
         });
       }
     };
