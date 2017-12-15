@@ -5,7 +5,8 @@
 
   .controller('HomeController', ['$scope', function ($scope) {
     $scope.glCenter = {
-      autodiscover: true
+      lat: 78.374,
+      lng: -3.849
     };
 
     $scope.glZoom = {
@@ -14,21 +15,6 @@
 
     $scope.glHandlers = {
       scrollZoom: false
-    };
-
-    $scope.glControls = {
-      navigation: {
-        enabled: true,
-        options: {
-          position: 'top-left'
-        }
-      },
-      scale: {
-        enabled: true,
-        options: {
-          position: 'bottom-left'
-        }
-      }
     };
   }]);
 })(window.angular);
