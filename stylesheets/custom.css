@@ -12,7 +12,7 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  transition: all 0.5s;
+  transition: all 250ms;
   max-height: 64px;
   line-height: 64px;
   overflow: hidden;
@@ -35,14 +35,14 @@ body {
   padding-left: 25px;
   padding-right: 40px;
   margin-left: -25px;
-  transition: all 0.5s;
+  transition: all 250ms;
   max-height: 64px;
   overflow: hidden;
 }
 
 .header .header-container .project-selector:hover {
   max-height: 320px;
-  background: #267e63;
+  background: #073B4C;
 }
 
 .header .header-container .project-selector::after {
@@ -51,7 +51,7 @@ body {
   position: absolute;
   top: 0;
   right: 12px;
-  color: #00E5D2;
+  color: #006BA6;
 }
 
 .header .header-container .project-selector .project {
