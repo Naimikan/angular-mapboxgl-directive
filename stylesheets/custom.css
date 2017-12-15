@@ -5,6 +5,13 @@ body {
   margin: 0;
 }
 
+a {
+  outline: none;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+}
+
 .header {
   white-space: nowrap;
   z-index: 9999;
@@ -64,10 +71,27 @@ body {
 .header .header-container .project-selector .project a {
   width: 100%;
   color: #CDCDCD;
-  outline: none;
-  text-decoration: none;
-  display: inline-block;
-  cursor: pointer;
+}
+
+.header .header-container .navigation-links {
+  float: right;
+}
+
+.header .header-container .navigation-links a {
+  line-height: 58px;
+  color: #C3C3C3;
+  text-transform: uppercase;
+  margin-left: 40px;
+  border-style: solid;
+  border-width: 0 0 3px;
+  border-color: transparent;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.header .header-container .navigation-links a:hover {
+  border-color: #C3C3C3;
 }
 
 /*.header-container {
