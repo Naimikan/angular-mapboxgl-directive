@@ -30,7 +30,7 @@ a {
   -o-user-select: none;
 }
 
-.header .scroll-background {
+.header .bg {
   position: absolute;
   z-index: -1;
   width: 100%;
