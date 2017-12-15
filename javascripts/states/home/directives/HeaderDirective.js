@@ -9,7 +9,7 @@
       scope: true,
       templateUrl: 'javascripts/states/home/directives/HeaderDirectiveTemplate.html',
       link: function (scope, element, attrs) {
-        var header = element.find('.bg');
+        var header = angular.element(element[0].getElementsByClassName('bg'));
         var range = 200;
 
         angular.element($window).bind('scroll', function (e) {
