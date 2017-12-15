@@ -125,7 +125,7 @@ a {
   display: inline-flex;
 }
 
-.header .header-container .navigation-links a:hover {
+.header .header-container .navigation-links a.active, .header .header-container .navigation-links a:hover {
   border-color: #06D6A0;
 }
 
