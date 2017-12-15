@@ -59,6 +59,10 @@ body {
 .header .header-container .naimikan-projects .project a {
   width: 100%;
   color: #CDCDCD;
+  outline: none;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
 }
 
 /*.header-container {
