@@ -74,6 +74,7 @@ a {
   text-transform: uppercase;
   letter-spacing: 5px;
   font-weight: 700;
+  font-size: 12px;
 }
 
 .header .header-container .project-selector .project a {
