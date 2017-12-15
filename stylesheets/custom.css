@@ -5,7 +5,41 @@ body {
   margin: 0;
 }
 
-.header-container {
+.header {
+  white-space: nowrap;
+  line-height: 64px;
+}
+
+.header .header-container {
+  max-width: 100%;
+  padding: 0 25px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.header .header-container .naimikan-projects {
+  position: fixed;
+  padding-left: 25px;
+  padding-right: 40px;
+  margin-left: -25px;
+  transition: all 0.5s;
+  max-height: 64px;
+  overflow: hidden;
+}
+
+.header .header-container .naimikan-projects .project {
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  font-weight: 700;
+}
+
+.header .header-container .naimikan-projects .project a {
+  width: 100%;
+  color: #CDCDCD;
+}
+
+/*.header-container {
   color: #FFFFFF;
   margin-bottom: 10px;
   padding: 0 25%;
@@ -15,7 +49,7 @@ body {
   align-items: center;
   background: #FF6D19;
   background: linear-gradient(#FFA916, #FF6D19);
-}
+}*/
 
 .header-container .header-info {
 
