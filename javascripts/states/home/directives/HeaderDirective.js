@@ -20,9 +20,7 @@
           else {
             var percentScrolled = scrollTop / maxScroll;
 
-            var calc = 1 - percentScrolled;
-
-            header.css({ 'opacity': calc });
+            header.css({ 'opacity': percentScrolled });
           }
         });
       }
