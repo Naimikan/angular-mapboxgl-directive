@@ -12,7 +12,7 @@
         var header = element.find('.bg');
         var range = 200;
 
-        $window.onScroll = function () {
+        angular.element($window).bind('scroll', function (e) {
           var scrollTop = angular.element(this).scrollTop();
           var height = header.outerHeight();
           var offset = height / 2;
@@ -22,7 +22,7 @@
 
           if (calc > '1') header.css({ 'opacity': 1 });
           else if (calc < '0') header.css({ 'opacity': 0 })
-        };
+        });
       }
     };
   }]);
