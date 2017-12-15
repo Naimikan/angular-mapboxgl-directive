@@ -14,7 +14,7 @@
             href: '',
             name: 'API Reference'
           }, {
-            href: '',
+            href: 'examples.simple_map',
             name: 'Examples'
           }
         ];
