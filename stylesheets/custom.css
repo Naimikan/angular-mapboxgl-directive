@@ -6,8 +6,8 @@ body {
 }
 
 a {
-  outline: none;
-  text-decoration: none;
+  outline: none !important;
+  text-decoration: none !important;
   display: inline-block;
   cursor: pointer;
 }
@@ -83,7 +83,7 @@ a {
   text-transform: uppercase;
   margin-left: 40px;
   border-style: solid;
-  border-width: 0 0 3px;
+  border-width: 3px 0 0;
   border-color: transparent;
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
