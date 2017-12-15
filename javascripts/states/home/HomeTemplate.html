@@ -4,10 +4,8 @@
 
 <header class="header">
   <div class="header-container">
-    <div class="naimikan-projects">
-      <div ng-repeat="project in projects" class="project">
-        <a href="{{project.href}}" ng-bind="project.name"></a>
-      </div>
+    <div class="naimikan-projects" ng-repeat="project in projects">
+      <div class="project"><a href="{{project.href}}" ng-bind="project.name"></a></div>
     </div>
   </div>
 </header>
