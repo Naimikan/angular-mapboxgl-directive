@@ -1,4 +1,10 @@
-<div class="navigation-links">
-  <a ng-repeat="navigationLink in navigationLinks" ui-sref-active="active" ui-sref="{{navigationLink.href}}" ng-bind="navigationLink.name"></a>
-  <a href="https://github.com/Naimikan/angular-mapboxgl-directive" target="_blank" rel="noopener noreferrer">Github</a>
+<div>
+  <div class="navigation-links hidden-xs">
+    <a ng-repeat="navigationLink in navigationLinks" ui-sref-active="active" ui-sref="{{navigationLink.href}}" ng-bind="navigationLink.name"></a>
+    <a href="https://github.com/Naimikan/angular-mapboxgl-directive" target="_blank" rel="noopener noreferrer">Github</a>
+  </div>
+
+  <div class="menu-toggle hidden-lg hidden-md hidden-sm">
+    <i class="icon icon-menu"></i>
+  </div>
 </div>
