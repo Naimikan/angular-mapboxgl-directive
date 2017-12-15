@@ -7,7 +7,8 @@
     'hljs',
 
     'app.Home',
-    'app.Examples'
+    'app.Examples',
+    'app.Documentation'
   ])
 
   .config(['$compileProvider', '$urlRouterProvider', '$locationProvider', function ($compileProvider, $urlRouterProvider, $locationProvider) {
