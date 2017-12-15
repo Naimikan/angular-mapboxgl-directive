@@ -21,6 +21,11 @@ a {
   position: relative;
 }
 
+.home #features pre code.hljs {
+  background-color: #090909;
+  padding: 30px !important;
+}
+
 .header {
   white-space: nowrap;
   z-index: 9999;
