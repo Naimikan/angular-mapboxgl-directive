@@ -6,8 +6,10 @@ body {
 }
 
 .header-container {
+  color: #FFFFFF;
   margin-bottom: 10px;
-  height: 100vh;
+  padding: 0 25%;
+  height: 70vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,7 +18,7 @@ body {
 }
 
 .header-container .header-info {
-  
+
 }
 
 .title {
