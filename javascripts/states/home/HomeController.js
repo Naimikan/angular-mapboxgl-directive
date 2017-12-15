@@ -16,7 +16,13 @@
     };
 
     $scope.glHandlers = {
-      scrollZoom: false
+      scrollZoom: false,
+      boxZoom: false,
+      dragRotate: false,
+      dragPan: false,
+      keyboard: false,
+      doubleClickZoom: false,
+      touchZoomRotate: false
     };
   }]);
 })(window.angular);

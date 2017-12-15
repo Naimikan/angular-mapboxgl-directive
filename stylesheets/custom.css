@@ -12,6 +12,11 @@ a {
   cursor: pointer;
 }
 
+.home section {
+  padding: 50px 0;
+  position: relative;
+}
+
 .header {
   white-space: nowrap;
   z-index: 9999;
