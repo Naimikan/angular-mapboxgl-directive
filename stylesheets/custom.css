@@ -19,7 +19,7 @@ a {
 .section-text {
   line-height: 1.5;
   font-size: 15px;
-  color: #716e6e;
+  color: #716E6E;
 }
 
 .home section {
@@ -29,8 +29,13 @@ a {
 
 .home #features pre code.hljs {
   color: #F9F9F9;
-  background-color: #252222;
+  background-color: #073B4C;
   padding: 50px !important;
+}
+
+.home #footer {
+  background-color: #073B4C;
+  color: #CDCDCD;
 }
 
 .header {
@@ -87,7 +92,7 @@ a {
   position: absolute;
   top: 0;
   right: 12px;
-  color: #006BA6;
+  color: #06D6A0;
 }
 
 .header .header-container .project-selector .project {
@@ -109,7 +114,7 @@ a {
 
 .header .header-container .navigation-links a {
   line-height: 58px;
-  color: #C3C3C3;
+  color: #CDCDCD;
   text-transform: uppercase;
   margin-left: 40px;
   border-style: solid;
@@ -121,7 +126,7 @@ a {
 }
 
 .header .header-container .navigation-links a:hover {
-  border-color: #006BA6;
+  border-color: #06D6A0;
 }
 
 /*.header-container {
