@@ -12,6 +12,10 @@
       value: 2
     };
 
+    $scope.glHandlers = {
+      scrollZoom: false
+    };
+
     $scope.glControls = {
       navigation: {
         enabled: true,
