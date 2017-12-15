@@ -20,7 +20,9 @@
         ];
 
         $timeout(function () {
-          console.log(element)
+          element.on('hover', function (event) {
+            console.log(event);
+          });
         }, 0);
       }
     };
