@@ -9,7 +9,7 @@
       scope: true,
       templateUrl: 'javascripts/states/home/directives/ProjectSelectorDirectiveTemplate.html',
       link: function (scope, element, attrs) {
-        $scope.projects = [
+        scope.projects = [
           {
             href: 'https://naimikan.github.io/angular-mapboxgl-directive',
             name: 'angular-mapboxgl-directive'
