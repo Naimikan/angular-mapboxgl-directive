@@ -11,7 +11,7 @@
       link: function (scope, element, attrs) {
         scope.navigationLinks = [
           {
-            href: '',
+            href: 'documentation',
             name: 'API Reference'
           }, {
             href: 'examples.simple_map',
