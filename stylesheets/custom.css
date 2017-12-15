@@ -40,6 +40,15 @@ body {
   overflow: hidden;
 }
 
+.header .header-container .naimikan-projects::after {
+  content: '\25BE';
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 12px;
+  color: #00E5D2;
+}
+
 .header .header-container .naimikan-projects .project {
   width: 100%;
   text-transform: uppercase;
@@ -63,10 +72,6 @@ body {
   background: #FF6D19;
   background: linear-gradient(#FFA916, #FF6D19);
 }*/
-
-.header-container .header-info {
-
-}
 
 .title {
 
