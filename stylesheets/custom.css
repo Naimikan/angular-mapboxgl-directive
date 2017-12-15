@@ -12,6 +12,10 @@ a {
   cursor: pointer;
 }
 
+.noPadding {
+  padding: 0 !important;
+}
+
 .home section {
   padding: 50px 0;
   position: relative;
