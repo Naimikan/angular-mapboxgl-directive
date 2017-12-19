@@ -165,11 +165,8 @@ a {
 
 }
 
-.examples-header {
-  background-color: #56b1ff;
-  border-color: #6C8497;
-  padding-bottom: 15px;
-  margin-bottom: 15px;
+.examples {
+  margin-top: 90px;
 }
 
 .example-section-title {
@@ -177,18 +174,17 @@ a {
 }
 
 .example-link {
-  /*color: #4DAFFB;*/
   color: #4C4C4C;
   font-size: 12px;
 }
 
 .example-link:hover {
-  color: #4DAFFB;
+  color: #06D6A0;
   text-decoration: none;
 }
 
 .example-link-selected {
-  color: #4DAFFB;
+  color: #06D6A0;
 }
 
 pre {

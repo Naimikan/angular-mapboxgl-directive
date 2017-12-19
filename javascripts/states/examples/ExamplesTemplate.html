@@ -1,31 +1,39 @@
 <div page-header></div>
 
-<div class="container">
-  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-left: 0; padding-right: 0;">
-    <div class="col-lg-3 col-md-3 hidden-sm hidden-xs">
-      <div ng-repeat="eachType in examplesTypes">
-        <h5 class="example-section-title" ng-bind="eachType"></h5>
-        <hr style="margin: 5px 0px; border-top-color: #999999;" />
+<div class="container examples">
+  <section id="examples">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-left: 0; padding-right: 0;">
+      <div class="col-lg-3 col-md-3 hidden-sm hidden-xs">
+        <div ng-repeat="eachType in examplesTypes">
+          <h5 class="example-section-title" ng-bind="eachType"></h5>
+          <hr style="margin: 5px 0px; border-top-color: #999999;" />
 
-        <ul style="padding: 0; list-style: none;">
-          <li ng-repeat="eachExample in examplesAvailables | filter:{ type: eachType }">
-            <a class="example-link" ui-sref="{{eachExample.uiSref}}" ui-sref-active="example-link-selected" ng-bind="eachExample.title"></a>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 ng-bind="$state.current.data.title"></h4>
-          <em><small ng-bind-html="$state.current.data.description | unsafe"></small></em>
-        </div>
-
-        <div class="panel-body" style="padding: 0">
-          <div ui-view></div>
+          <ul style="padding: 0; list-style: none;">
+            <li ng-repeat="eachExample in examplesAvailables | filter:{ type: eachType }">
+              <a class="example-link" ui-sref="{{eachExample.uiSref}}" ui-sref-active="example-link-selected" ng-bind="eachExample.title"></a>
+            </li>
+          </ul>
         </div>
       </div>
+
+      <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 ng-bind="$state.current.data.title"></h4>
+            <em><small ng-bind-html="$state.current.data.description | unsafe"></small></em>
+          </div>
+
+          <div class="panel-body" style="padding: 0">
+            <div ui-view></div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
+
+  <section id="footer">
+    <div class="container">
+      <a class="green-link" href="https://github.com/Naimikan/angular-mapboxgl-directive">angular-mapboxgl-directive</a> is maintained by <a class="green-link" href="https://github.com/Naimikan">Naimikan</a>.
+    </div>
+  </section>
 </div>
