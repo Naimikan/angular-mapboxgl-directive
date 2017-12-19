@@ -27,11 +27,11 @@ a {
   position: relative;
 }
 
-/*.home #features pre code.hljs {
+.home #features pre code.hljs {
   color: #F9F9F9;
   background-color: #073B4C;
-  padding: 50px !important;
-}*/
+  padding: 25px !important;
+}
 
 .home #footer {
   background-color: #073B4C;
