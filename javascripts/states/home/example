@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+    <title></title>
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.39.0/angular-mapboxgl-directive.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.39.0/angular-mapboxgl-directive.min.js"></script>
+
+    <script>
+      var app = angular.module('app', ['mapboxgl-directive'])
+
+      .run([function () {
+        mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
+      }]);
+    </script>
+  </head>
+  <body>
+    <div mapboxgl></div>
+
+    <!-- Or <mapboxgl></mapboxgl> -->
+  </body>
+</html>

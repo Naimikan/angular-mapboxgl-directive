@@ -14,33 +14,7 @@
       <h2>angular-mapboxgl-directive</h2>
       <p class="section-text">angular-mapboxgl-directive is a directive for AngularJS 1.x that allows you to create Mapbox GL maps easily, on your AngularJS applications. With this directive, you can get the full power of Mapbox GL in your AngularJS application.</p>
 
-      <div class="col-md-6" hljs language="html">
-        <!DOCTYPE html>
-<html ng-app="app">
-  <head>
-    <title></title>
-
-    <link href="https://api.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.39.0/angular-mapboxgl-directive.min.css">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.39.0/angular-mapboxgl-directive.min.js"></script>
-
-    <script>
-      var app = angular.module('app', ['mapboxgl-directive'])
-
-      .run([function () {
-        mapboxgl.accessToken = '<YOUR_MAPBOXGL_TOKEN>';
-      }]);
-    </script>
-  </head>
-  <body>
-    <div mapboxgl></div>
-  </body>
-</html>
-      </div>
-
+      <div class="col-md-6" hljs language="html" include="'javascripts/states/home/example'"></div>
       <div class="col-md-6">
         <div mapboxgl></div>
       </div>
