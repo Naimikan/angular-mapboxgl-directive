@@ -8,7 +8,7 @@
       {
         id: 'earthquakes',
         type: 'geojson',
-        data: '/assets/earthquakes.geojson',
+        data: './assets/earthquakes.geojson',
         cluster: true,
         clusterMaxZoom: 14,
         clusterRadius: 50
