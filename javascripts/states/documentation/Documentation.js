@@ -3,6 +3,11 @@
 
   angular.module('app.Documentation', [])
 
+  .constant('documentationTypes', {
+    installation: 'Installation',
+    
+  })
+
   .config(['$stateProvider', function ($stateProvider) {
     $stateProvider.state('documentation', {
       url: '/api_reference',
