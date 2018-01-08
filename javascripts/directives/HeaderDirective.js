@@ -6,7 +6,9 @@
   .directive('pageHeader', ['$window', function ($window) {
     return {
       restrict: 'EA',
-      scope: true,
+      scope: {
+        solid: '='
+      },
       templateUrl: 'javascripts/directives/HeaderDirectiveTemplate.html',
       link: function (scope, element, attrs) {
         var header = angular.element(element[0].getElementsByClassName('bg'));

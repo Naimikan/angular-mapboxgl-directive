@@ -12,6 +12,10 @@ a {
   cursor: pointer;
 }
 
+.solid {
+  opacity: 1 !important;
+}
+
 .green-link {
   color: #06D6A0;
 }
