@@ -24,7 +24,8 @@ angular.module('mapboxgl-directive').factory('Utils', ['$window', '$q', function
 
 					defer.resolve([coordinates.longitude, coordinates.latitude]);
 				}, function (error) {
-					defer.reject(error);
+					defer.resolve(false);
+					// defer.reject(error);
 				}, {
 					enableHighAccuracy: true,
   				timeout: 5000,

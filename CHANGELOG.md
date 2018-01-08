@@ -1,11 +1,16 @@
+## 0.43.1 (Jan 8, 2018)
+
+#### Bug fixes
+- Fix assignament of center when user cancel autodiscover.
+
 ## 0.43.0 (Nov 11, 2017)
 
-## Improvements
+#### Improvements
 - Add support for url format in source.data property
 
 ## 0.42.0 (Nov 11, 2017)
 
-## Improvements
+#### Improvements
 - Add `features` attribute in `glControls.draw` #32, #37
 - Add `mapboxglMap:controlsRendered` event
 
