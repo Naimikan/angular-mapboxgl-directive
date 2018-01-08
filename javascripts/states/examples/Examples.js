@@ -213,6 +213,14 @@
       templateUrl: 'javascripts/states/examples/examples_source/max_bounds/MaxBoundsTemplate.html',
       controller: 'MaxBoundsController',
       uiSref: 'examples.max_bounds'
+    }, {
+      name: 'cluster_points',
+      title: 'Create a cluster of points',
+      type: examplesTypes.layers,
+      description: 'Visualize points as clusters using glSources and glLayers directives',
+      templateUrl: 'javascripts/states/examples/examples_source/cluster_points/ClusterPointsTemplate.html',
+      controller: 'ClusterPointsController',
+      uiSref: 'examples.cluster_points'
     }
   ])
 
