@@ -1,3 +1,8 @@
+## 0.43.2 (Jan 8, 2018)
+
+#### Improvements
+- Add support for relative urls in utils.isUrl method
+
 ## 0.43.1 (Jan 8, 2018)
 
 #### Bug fixes

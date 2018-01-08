@@ -104,7 +104,13 @@ angular.module('mapboxgl-directive').factory('Utils', ['$window', '$q', function
 	}
 
 	function isUrl (urlString) {
-		return /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/.test(urlString);
+		/*
+			http://www.test.com
+			or
+			/assets/test.json
+		*/
+
+		return /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/.test(urlString) || /^[^\/]+\/[^\/].*$|^\/[^\/].*$/.test(urlString);
 	}
 
 	var Utils = {
