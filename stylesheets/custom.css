@@ -167,6 +167,10 @@ section {
   color: #06D6A0;
 }
 
+.documentation {
+  margin-top: 90px;
+}
+
 pre {
   padding: 0;
   border: none;

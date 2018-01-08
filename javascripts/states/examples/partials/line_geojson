@@ -3,8 +3,8 @@
   <head>
     <title></title>
 
-    <link href="https://api.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.39.0/angular-mapboxgl-directive.min.css">
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-mapboxgl-directive/0.39.0/angular-mapboxgl-directive.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js"></script>
@@ -14,7 +14,7 @@
       var app = angular.module('app', ['mapboxgl-directive'])
 
       .run([function () {
-        mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
+        mapboxgl.accessToken = '<YOUR_MAPBOXGL_TOKEN>';
       }])
 
       .controller('LineGeojsonController', ['$scope', function ($scope) {
