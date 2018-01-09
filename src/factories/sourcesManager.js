@@ -196,7 +196,7 @@ angular.module('mapboxgl-directive').factory('SourcesManager', ['Utils', 'mapbox
       flagToUpdateSource = true;
     }
 
-    if (flagToUpdateSource) {
+    if (flagToUpdateSource && angular.isDefined(sourceObject.data)) {
       currentSource.setData(sourceObject.data);
     }
   };

@@ -1,3 +1,8 @@
+## 0.43.3 (Jan 9, 2018)
+
+#### Bug fixes
+- Fix update of source without data #39
+
 ## 0.43.2 (Jan 8, 2018)
 
 #### Improvements
