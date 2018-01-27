@@ -20,6 +20,8 @@
 
 <h5 align="center">AngularJS directive for Mapbox GL</h5>
 
+<p align="center"><img src="pinpinmap png.png" width="350" /></p>
+
 <h2 align="center">Installation</h2>
 
 NPM
