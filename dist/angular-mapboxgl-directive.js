@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.43.3 2018-01-09
+*  angular-mapboxgl-directive 0.44.0 2018-03-05
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -145,11 +145,16 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
       zoom: angular.isDefined(scope.glZoom) && scope.glZoom !== null && angular.isDefined(scope.glZoom.value) && scope.glZoom.value !== null ? scope.glZoom.value : mapboxglConstants.map.defaultZoom,
       hash: angular.isDefined(attrs.hash) ? Utils.stringToBoolean(attrs.hash) : mapboxglConstants.map.defaultHash,
       bearingSnap: angular.isDefined(attrs.bearingSnap) ? Utils.stringToNumber(attrs.bearingSnap) : mapboxglConstants.map.defaultBearingSnap,
+      pitchWithRotate: angular.isDefined(attrs.pitchWithRotate) ? Utils.stringToBoolean(attrs.pitchWithRotate) : mapboxglConstants.map.defaultPitchWithRotate,
       logoPosition: angular.isDefined(attrs.logoPosition) ? attrs.logoPosition : mapboxglConstants.map.defaultLogoPosition,
       failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) ? Utils.stringToBoolean(attrs.failIfMajorPerformanceCaveat) : mapboxglConstants.map.defaultFailIfMajorPerformanceCaveat,
       preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) ? Utils.stringToBoolean(attrs.preserveDrawingBuffer) : mapboxglConstants.map.defaultPreserveDrawingBuffer,
+      refreshExpiredTiles: angular.isDefined(attrs.refreshExpiredTiles) ? Utils.stringToBoolean(attrs.refreshExpiredTiles) : mapboxglConstants.map.defaultRefreshExpiredTiles,
       trackResize: angular.isDefined(attrs.trackResize) ? Utils.stringToBoolean(attrs.trackResize) : mapboxglConstants.map.defaultTrackResize,
       renderWorldCopies: angular.isDefined(attrs.renderWorldCopies) ? Utils.stringToBoolean(attrs.renderWorldCopies) : mapboxglConstants.map.defaultRenderWorldCopies,
+      maxTileCacheSize: angular.isDefined(attrs.maxTileCacheSize) ? Utils.stringToNumber(attrs.maxTileCacheSize) : mapboxglConstants.map.defaultMaxTileCacheSize,
+      localIdeographFontFamily: angular.isDefined(attrs.localIdeographFontFamily) ? attrs.localIdeographFontFamily : mapboxglConstants.map.defaultLocalIdeographFontFamily,
+      collectResourceTiming: angular.isDefined(attrs.collectResourceTiming) ? Utils.stringToBoolean(attrs.collectResourceTiming) : mapboxglConstants.map.defaultCollectResourceTiming,
       attributionControl: false
     };
 
@@ -1562,10 +1567,10 @@ angular.module('mapboxgl-directive').factory('Utils', ['$window', '$q', function
 }]);
 
 angular.module('mapboxgl-directive').constant('version', {
-	full: '0.43.3',
+	full: '0.44.0',
 	major: 0,
-	minor: 43,
-	patch: 3
+	minor: 44,
+	patch: 0
 });
 
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
@@ -1576,10 +1581,15 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 		defaultZoom: 0,
 		defaultHash: false,
 		defaultBearingSnap: 7,
+		defaultPitchWithRotate: true,
 		defaultFailIfMajorPerformanceCaveat: false,
 		defaultPreserveDrawingBuffer: false,
 		defaultTrackResize: true,
+		defaultRefreshExpiredTiles: true,
 		defaultRenderWorldCopies: true,
+		defaultMaxTileCacheSize: null,
+		defaultLocalIdeographFontFamily: null,
+		defaultCollectResourceTiming: false,
 		defaultLogoPosition: 'bottom-left'
 	},
 	source: {

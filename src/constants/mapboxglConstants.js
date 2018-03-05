@@ -1,8 +1,8 @@
 angular.module('mapboxgl-directive').constant('version', {
-	full: '0.43.3',
+	full: '0.44.0',
 	major: 0,
-	minor: 43,
-	patch: 3
+	minor: 44,
+	patch: 0
 });
 
 angular.module('mapboxgl-directive').constant('mapboxglConstants', {
@@ -13,10 +13,15 @@ angular.module('mapboxgl-directive').constant('mapboxglConstants', {
 		defaultZoom: 0,
 		defaultHash: false,
 		defaultBearingSnap: 7,
+		defaultPitchWithRotate: true,
 		defaultFailIfMajorPerformanceCaveat: false,
 		defaultPreserveDrawingBuffer: false,
 		defaultTrackResize: true,
+		defaultRefreshExpiredTiles: true,
 		defaultRenderWorldCopies: true,
+		defaultMaxTileCacheSize: null,
+		defaultLocalIdeographFontFamily: null,
+		defaultCollectResourceTiming: false,
 		defaultLogoPosition: 'bottom-left'
 	},
 	source: {

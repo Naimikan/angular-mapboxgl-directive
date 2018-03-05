@@ -137,11 +137,16 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
       zoom: angular.isDefined(scope.glZoom) && scope.glZoom !== null && angular.isDefined(scope.glZoom.value) && scope.glZoom.value !== null ? scope.glZoom.value : mapboxglConstants.map.defaultZoom,
       hash: angular.isDefined(attrs.hash) ? Utils.stringToBoolean(attrs.hash) : mapboxglConstants.map.defaultHash,
       bearingSnap: angular.isDefined(attrs.bearingSnap) ? Utils.stringToNumber(attrs.bearingSnap) : mapboxglConstants.map.defaultBearingSnap,
+      pitchWithRotate: angular.isDefined(attrs.pitchWithRotate) ? Utils.stringToBoolean(attrs.pitchWithRotate) : mapboxglConstants.map.defaultPitchWithRotate,
       logoPosition: angular.isDefined(attrs.logoPosition) ? attrs.logoPosition : mapboxglConstants.map.defaultLogoPosition,
       failIfMajorPerformanceCaveat: angular.isDefined(attrs.failIfMajorPerformanceCaveat) ? Utils.stringToBoolean(attrs.failIfMajorPerformanceCaveat) : mapboxglConstants.map.defaultFailIfMajorPerformanceCaveat,
       preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) ? Utils.stringToBoolean(attrs.preserveDrawingBuffer) : mapboxglConstants.map.defaultPreserveDrawingBuffer,
+      refreshExpiredTiles: angular.isDefined(attrs.refreshExpiredTiles) ? Utils.stringToBoolean(attrs.refreshExpiredTiles) : mapboxglConstants.map.defaultRefreshExpiredTiles,
       trackResize: angular.isDefined(attrs.trackResize) ? Utils.stringToBoolean(attrs.trackResize) : mapboxglConstants.map.defaultTrackResize,
       renderWorldCopies: angular.isDefined(attrs.renderWorldCopies) ? Utils.stringToBoolean(attrs.renderWorldCopies) : mapboxglConstants.map.defaultRenderWorldCopies,
+      maxTileCacheSize: angular.isDefined(attrs.maxTileCacheSize) ? Utils.stringToNumber(attrs.maxTileCacheSize) : mapboxglConstants.map.defaultMaxTileCacheSize,
+      localIdeographFontFamily: angular.isDefined(attrs.localIdeographFontFamily) ? attrs.localIdeographFontFamily : mapboxglConstants.map.defaultLocalIdeographFontFamily,
+      collectResourceTiming: angular.isDefined(attrs.collectResourceTiming) ? Utils.stringToBoolean(attrs.collectResourceTiming) : mapboxglConstants.map.defaultCollectResourceTiming,
       attributionControl: false
     };
 

@@ -1,3 +1,9 @@
+## 0.44.0 (March 5, 2018)
+
+#### Improvements
+- Add support for Mapbox GL v0.44.1
+- Add `pitchWithRotate`, `refreshExpiredTiles`, `maxTileCacheSize`, `localIdeographFontFamily` and `collectResourceTiming` attributes for `mapboxgl` directive
+
 ## 0.43.3 (Jan 9, 2018)
 
 #### Bug fixes

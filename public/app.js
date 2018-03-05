@@ -57,6 +57,10 @@
       console.log(event, mapboxglMapEvent);
     });
 
+    $scope.$on('mapboxglMap:mousemove', function (event, mapboxglMapEvent) {
+      console.log(event, mapboxglMapEvent);
+    });
+
     $scope.$on('mapboxglMap:styleChanged', function (event, mapboxglMapEvent) {
       console.log(event, mapboxglMapEvent);
     });
