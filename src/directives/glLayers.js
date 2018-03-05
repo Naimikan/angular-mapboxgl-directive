@@ -52,6 +52,7 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
 
       map.on('mousemove', function (event) {
         var allLayers = scope.layersManager.getCreatedLayers().map(function (e) { return e.layerId; });
+        allLayers = allLayers.concat(mapboxglScope.glInteractiveLayers);
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
         map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';

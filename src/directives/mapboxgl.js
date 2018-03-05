@@ -142,7 +142,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
       preserveDrawingBuffer: angular.isDefined(attrs.preserveDrawingBuffer) ? Utils.stringToBoolean(attrs.preserveDrawingBuffer) : mapboxglConstants.map.defaultPreserveDrawingBuffer,
       trackResize: angular.isDefined(attrs.trackResize) ? Utils.stringToBoolean(attrs.trackResize) : mapboxglConstants.map.defaultTrackResize,
       renderWorldCopies: angular.isDefined(attrs.renderWorldCopies) ? Utils.stringToBoolean(attrs.renderWorldCopies) : mapboxglConstants.map.defaultRenderWorldCopies,
-      attributionControl: false
+      attributionControl: false,
+      interactiveLayers: angular.isDefined(scope.glInteractiveLayers) ? scope.glInteractiveLayers : []
     };
 
     Utils.validateAndFormatCenter(scope.glCenter).then(function (newCenter) {
@@ -311,7 +312,8 @@ angular.module('mapboxgl-directive', []).directive('mapboxgl', ['$q', 'Utils', '
       glSources: '=',
       glStyle: '=',
       glVideo: '=',
-      glZoom: '='
+      glZoom: '=',
+      glInteractiveLayers: '='
     },
     template: '<div class="angular-mapboxgl-map"><div class="angular-mapboxgl-map-loader"><div class="spinner"><div class="double-bounce"></div><div class="double-bounce delayed"></div></div></div></div>',
     controller: mapboxGlDirectiveController,
