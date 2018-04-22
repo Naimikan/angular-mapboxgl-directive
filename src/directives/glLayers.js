@@ -1,4 +1,4 @@
-angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$timeout', '$q', function (LayersManager, $timeout, $q) {
+angular.module('mapboxgl-directive').directive('glLayers', ['interactiveLayers', 'LayersManager', '$timeout', '$q', function (interactiveLayers, LayersManager, $timeout, $q) {
   function mapboxGlLayersDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -19,7 +19,8 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
         event.originalEvent.preventDefault();
         event.originalEvent.stopPropagation();
 
-        var allLayers = scope.layersManager.getCreatedLayers().map(function (e) { return e.layerId; });
+        var layersCreated = scope.layersManager.getCreatedLayers().map(function (e) { return e.layerId; });
+        var allLayers = interactiveLayers.layers.concat(layersCreated).filter(function (item, index, array) { return array.indexOf(item) === index; });
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
 

@@ -3,7 +3,7 @@
 		"jshintrc": true
 	},
 	"source": {
-		"src": ["src/directives/*.js", "src/factories/*.js", "src/constants/*.js"]
+		"src": ["src/directives/*.js", "src/factories/*.js", "src/constants/*.js", "src/providers/*.js"]
 	},
 	"grunt": {
 		"src": ["Gruntfile.js"]

@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-*  angular-mapboxgl-directive 0.45.0 2018-04-22
+*  angular-mapboxgl-directive 0.46.0 2018-04-22
 *  An AngularJS directive for Mapbox GL
 *  git: git+https://github.com/Naimikan/angular-mapboxgl-directive.git
 */
@@ -1567,9 +1567,9 @@ angular.module('mapboxgl-directive').factory('Utils', ['$window', '$q', function
 }]);
 
 angular.module('mapboxgl-directive').constant('version', {
-	full: '0.45.0',
+	full: '0.46.0',
 	major: 0,
-	minor: 45,
+	minor: 46,
 	patch: 0
 });
 
@@ -2188,7 +2188,7 @@ angular.module('mapboxgl-directive').directive('glInteractive', [function () {
   return directive;
 }]);
 
-angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$timeout', '$q', function (LayersManager, $timeout, $q) {
+angular.module('mapboxgl-directive').directive('glLayers', ['interactiveLayers', 'LayersManager', '$timeout', '$q', function (interactiveLayers, LayersManager, $timeout, $q) {
   function mapboxGlLayersDirectiveLink (scope, element, attrs, controller) {
     if (!controller) {
 			throw new Error('Invalid angular-mapboxgl-directive controller');
@@ -2209,7 +2209,8 @@ angular.module('mapboxgl-directive').directive('glLayers', ['LayersManager', '$t
         event.originalEvent.preventDefault();
         event.originalEvent.stopPropagation();
 
-        var allLayers = scope.layersManager.getCreatedLayers().map(function (e) { return e.layerId; });
+        var layersCreated = scope.layersManager.getCreatedLayers().map(function (e) { return e.layerId; });
+        var allLayers = interactiveLayers.layers.concat(layersCreated).filter(function (item, index, array) { return array.indexOf(item) === index; });
 
         var features = map.queryRenderedFeatures(event.point, { layers: allLayers });
 
@@ -2898,6 +2899,26 @@ angular.module('mapboxgl-directive').directive('glZoom', [function () {
 	};
 
 	return directive;
+}]);
+
+angular.module('mapboxgl-directive').provider('interactiveLayers', [function () {
+  var interactiveLayers = [];
+
+  return {
+    setLayers: function (newInteractiveLayers) {
+      interactiveLayers = newInteractiveLayers;
+    },
+
+    addLayer: function (newInterativeLayer) {
+      interactiveLayers.push(newInterativeLayer);
+    },
+
+    $get: function () {
+      return {
+        layers: interactiveLayers
+      };
+    }
+  };
 }]);
 
 }(angular, mapboxgl));

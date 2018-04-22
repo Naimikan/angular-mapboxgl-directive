@@ -3,6 +3,10 @@
 
   angular.module('app', ['mapboxgl-directive'])
 
+  .config(['interactiveLayersProvider', function (interactiveLayersProvider) {
+    interactiveLayersProvider.addLayer('background');
+  }])
+
   .run([function () {
     mapboxgl.accessToken = 'pk.eyJ1IjoibmFpbWlrYW4iLCJhIjoiY2lraXJkOXFjMDA0OXdhbTYzNTE0b2NtbiJ9.O64XgZQHNHcV2gwNLN2a0Q';
   }])
