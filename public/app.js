@@ -53,7 +53,7 @@
       }
     });
 
-    $scope.$on('mapboxglMap:load', function (event, mapboxglMapEvent) {
+    $scope.$on('mapboxglMap:click', function (event, mapboxglMapEvent) {
       console.log(event, mapboxglMapEvent);
     });
 
@@ -6540,6 +6540,11 @@
         type: 'circle',
         source: 'earthquakes',
         filter: ['has', 'point_count'],
+        events: {
+          onClick: function (map, feature, features) {
+            console.log(map, feature, features);
+          }
+        },
         paint: {
           'circle-color': {
             property: 'point_count',
@@ -6583,9 +6588,6 @@
         }
       }
     ];
-
-
-
 
 
 

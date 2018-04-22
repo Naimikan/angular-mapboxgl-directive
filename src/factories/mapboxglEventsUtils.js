@@ -47,7 +47,7 @@ angular.module('mapboxgl-directive').factory('mapboxglEventsUtils', ['$rootScope
   function exposeMapEvents (map) {
     eventsAvailables.map(function (eachEvent) {
       map.on(eachEvent, function (event) {
-        $rootScope.$broadcast('mapboxglMap:' + eachEvent, event);
+        $rootScope.$applyAsync($rootScope.$broadcast('mapboxglMap:' + eachEvent, event));
       });
     });
   }
